@@ -23,7 +23,7 @@ apply plugin: 'org.spongepowered.mixin'
 
 version = '18.0.1.12beta'
 group = 'net.p1nero.wk' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
-archivesBaseName = 'wukong_moveset-forge1.18.2'
+archivesBaseName = 'wukong_moveset-duel-forge1.18.2'
 
 // Mojang ships Java 17 to end users in 1.18+, so your mod should target Java 17.
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
