@@ -22,6 +22,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.registries.ForgeRegistries;
 import yesman.epicfight.api.animation.types.DynamicAnimation;
+import yesman.epicfight.api.animation.types.EntityState;
 import yesman.epicfight.api.animation.types.StaticAnimation;
 import yesman.epicfight.api.data.reloader.SkillManager;
 import yesman.epicfight.api.utils.AttackResult;
@@ -224,7 +225,7 @@ public class StaffPassive extends Skill {
             return;
         }
 
-        if(WukongKeyMappings.STAFF_FLOWER.isDown() && container.getExecuter().hasStamina(Config.STAFF_FLOWER_STAMINA_CONSUME.get().floatValue())){
+        if(WukongKeyMappings.STAFF_FLOWER.isDown() && container.getExecuter().hasStamina(Config.STAFF_FLOWER_STAMINA_CONSUME.get().floatValue()) && !container.getExecuter().getEntityState().knockDown()){
             if(!container.getDataManager().getDataValue(PLAYING_STAFF_SPIN) && Minecraft.getInstance().player != null){
                 PacketRelay.sendToServer(PacketHandler.INSTANCE, new PlayStaffFlowerPacket(WukongKeyMappings.W.isDown()));//按w可变双手棍花
                 container.getDataManager().setDataSync(PLAYING_STAFF_SPIN, true, ((LocalPlayer) container.getExecuter().getOriginal()));

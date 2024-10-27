@@ -26,7 +26,7 @@ public class WukongSkills {
     public static Skill PILLAR_HEAVY_ATTACK;
     public static Skill STAFF_SPIN;
     public static Skill WUKONG_DODGE;
-    public static Skill TEST;
+    public static Skill RED_TIDE_SKILL;
     public static Skill Ding;//定身术
     public static int getCurrentStack(Player player){
         AtomicInteger stack = new AtomicInteger(0);
@@ -101,7 +101,6 @@ public class WukongSkills {
 
 
     public static void BuildSkills(SkillBuildEvent event){
-        TEST = event.build(WukongMoveset.MOD_ID, "simple_attack");
         WUKONG_DODGE = event.build(WukongMoveset.MOD_ID, "dodge");
         STAFF_SPIN = event.build(WukongMoveset.MOD_ID, "staff_flower");
 

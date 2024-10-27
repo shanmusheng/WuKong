@@ -63,9 +63,6 @@ public class WukongWeaponCapabilityPresets {
                     LivingMotions.RUN,
                     WukongAnimations.DASH)
             .livingMotionModifier(WukongStyles.SMASH,
-                    LivingMotions.SWIM,
-                    WukongAnimations.WALK)
-            .livingMotionModifier(WukongStyles.SMASH,
                     LivingMotions.JUMP,
                     WukongAnimations.JUMP)
             .livingMotionModifier(WukongStyles.SMASH,
@@ -93,9 +90,6 @@ public class WukongWeaponCapabilityPresets {
             .livingMotionModifier(WukongStyles.THRUST,
                     LivingMotions.RUN,
                     WukongAnimations.RUN)
-            .livingMotionModifier(WukongStyles.THRUST,
-                    LivingMotions.SWIM,
-                    WukongAnimations.WALK)
 //            .livingMotionModifier(WukongStyles.THRUST,
 //                    LivingMotions.JUMP,
 //                    WukongAnimations.JUMP)
@@ -121,13 +115,40 @@ public class WukongWeaponCapabilityPresets {
             .livingMotionModifier(WukongStyles.PILLAR,
                     LivingMotions.RUN,
                     WukongAnimations.RUN)
-            .livingMotionModifier(WukongStyles.PILLAR,
-                    LivingMotions.SWIM,
-                    WukongAnimations.WALK)
 //            .livingMotionModifier(WukongStyles.STAND,
 //                    LivingMotions.JUMP,
 //                    WukongAnimations.JUMP)
             ;
+
+
+    public static final Function<Item, CapabilityItem.Builder> RED_TIDE = (item) ->
+            (CapabilityItem.Builder) WeaponCapability.builder().category(WukongWeaponCategories.RED_TIDE)
+                    .styleProvider((livingEntityPatch) -> CapabilityItem.Styles.TWO_HAND).collider(WukongColliders.RED_TIDE)
+                    .hitSound(EpicFightSounds.BLADE_HIT)
+                    .hitParticle(EpicFightParticles.HIT_BLADE.get())
+                    .canBePlacedOffhand(true)
+                    .comboCancel((style) -> false)
+                    //劈棍
+                    .newStyleCombo(CapabilityItem.Styles.TWO_HAND,
+                            WukongAnimations.RED_TIDE_AUTO1,
+                            WukongAnimations.RED_TIDE_AUTO2,
+                            WukongAnimations.RED_TIDE_AUTO3,
+                            WukongAnimations.RED_TIDE_AUTO4,
+                            WukongAnimations.RED_TIDE_DASH,
+                            WukongAnimations.RED_TIDE_AUTO1)
+                    .innateSkill(CapabilityItem.Styles.TWO_HAND, (itemstack) -> WukongSkills.SMASH_HEAVY_ATTACK)
+                    .livingMotionModifier(CapabilityItem.Styles.TWO_HAND,
+                            LivingMotions.IDLE,
+                            WukongAnimations.IDLE)
+                    .livingMotionModifier(CapabilityItem.Styles.TWO_HAND,
+                            LivingMotions.WALK,
+                            WukongAnimations.RED_TIDE_WALK)
+                    .livingMotionModifier(CapabilityItem.Styles.TWO_HAND,
+                            LivingMotions.CHASE,
+                            WukongAnimations.RED_TIDE_RUN)
+                    .livingMotionModifier(CapabilityItem.Styles.TWO_HAND,
+                            LivingMotions.RUN,
+                            WukongAnimations.RED_TIDE_RUN);
 
     public static final Function<Item, CapabilityItem.Builder> SMASH_ONLY = (item) ->
             (CapabilityItem.Builder) WeaponCapability.builder().category(WukongWeaponCategories.WK_STAFF)
@@ -159,9 +180,6 @@ public class WukongWeaponCapabilityPresets {
                     .livingMotionModifier(WukongStyles.SMASH,
                             LivingMotions.RUN,
                             WukongAnimations.DASH)
-                    .livingMotionModifier(WukongStyles.SMASH,
-                            LivingMotions.SWIM,
-                            WukongAnimations.WALK)
                     .livingMotionModifier(WukongStyles.SMASH,
                             LivingMotions.JUMP,
                             WukongAnimations.JUMP)
@@ -199,10 +217,7 @@ public class WukongWeaponCapabilityPresets {
                             WukongAnimations.RUN)
                     .livingMotionModifier(WukongStyles.THRUST,
                             LivingMotions.RUN,
-                            WukongAnimations.RUN)
-                    .livingMotionModifier(WukongStyles.THRUST,
-                            LivingMotions.SWIM,
-                            WukongAnimations.WALK);
+                            WukongAnimations.RUN);
 
     public static final Function<Item, CapabilityItem.Builder> PILLAR_ONLY = (item) ->
             (CapabilityItem.Builder) WeaponCapability.builder().category(WukongWeaponCategories.WK_STAFF)
@@ -234,12 +249,7 @@ public class WukongWeaponCapabilityPresets {
                             WukongAnimations.RUN)
                     .livingMotionModifier(WukongStyles.PILLAR,
                             LivingMotions.RUN,
-                            WukongAnimations.RUN)
-                    .livingMotionModifier(WukongStyles.PILLAR,
-                            LivingMotions.SWIM,
-                            WukongAnimations.WALK)
-            ;
-
+                            WukongAnimations.RUN);
 
     @SubscribeEvent
     public static void register(WeaponCapabilityPresetRegistryEvent event) {
@@ -247,6 +257,7 @@ public class WukongWeaponCapabilityPresets {
         event.getTypeEntry().put("smash_only", SMASH_ONLY);
         event.getTypeEntry().put("thrust_only", THRUST_ONLY);
         event.getTypeEntry().put("pillar_only", PILLAR_ONLY);
+        event.getTypeEntry().put("red_tide", RED_TIDE);
     }
 
 }

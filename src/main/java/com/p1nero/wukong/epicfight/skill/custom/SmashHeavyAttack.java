@@ -227,6 +227,8 @@ public class SmashHeavyAttack extends WeaponInnateSkill {
                     container.getSkill().setConsumptionSynchronize(event.getPlayerPatch(), container.getResource() + Config.CHARGING_SPEED.get().floatValue() * 20);//获得大量棍势
                     container.getDataManager().setDataSync(IS_SPECIAL_ATTACK_SUCCESS, true, event.getPlayerPatch().getOriginal());
                 }
+            }
+            if(container.getDataManager().getDataValue(IS_SPECIAL_ATTACK_SUCCESS)){
                 BasicAttack.setComboCounterWithEvent(ComboCounterHandleEvent.Causal.ACTION_ANIMATION_RESET, event.getPlayerPatch(), event.getPlayerPatch().getSkill(SkillSlots.BASIC_ATTACK), deriveAnimation1, 2);
                 event.setAmount(0);
                 event.setCanceled(true);
@@ -300,10 +302,10 @@ public class SmashHeavyAttack extends WeaponInnateSkill {
 
         container.getExecuter().getEventListener().addEventListener(
                 PlayerEventListener.EventType.DEALT_DAMAGE_EVENT_PRE, EVENT_UUID, (event -> {
-                    //对方在攻击则识破对方攻击
-                    LivingEntityPatch<?> patch = EpicFightCapabilities.getEntityPatch(event.getPlayerPatch().getTarget(), LivingEntityPatch.class);
-                    if(patch != null && patch.getEntityState().attacking()){
+                    //成功识破则无视防御并造成强硬直
+                    if(container.getDataManager().getDataValue(IS_SPECIAL_ATTACK_SUCCESS)){
                         event.getDamageSource().addTag(SourceTags.GUARD_PUNCTURE);
+                        event.getDamageSource().setStunType(StunType.HOLD);
                     }
 
                     //根据星数改跳跃重击和破、斩棍式伤害

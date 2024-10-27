@@ -10,7 +10,7 @@
   "skill.wukong.pillar_style": "立棍式",
   "skill.wukong.dodge": "悟空闪避",
   "skill.wukong.staff_spin": "棍花",
-  "skill.wukong.smash_style.tooltip": "劈棍式：\n\n轻攻击后按技能键可消耗1层棍势使用破棍式，若成功识破则可接斩棍式，并且轻攻击将从第三段继续。",
+  "skill.wukong.smash_style.tooltip": "劈棍式：\n\n轻攻击后按技能键可消耗1层棍势使用破棍式，若成功识破（0.4s内受到攻击）则可接斩棍式，并且轻攻击将从第三段继续。",
   "skill.wukong.thrust_style.tooltip": "",
   "skill.wukong.pillar_style.tooltip": "",
   "skill.wukong.staff_flower.tooltip": "",

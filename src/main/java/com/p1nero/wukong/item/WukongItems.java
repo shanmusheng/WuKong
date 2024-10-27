@@ -18,6 +18,7 @@ public class WukongItems {
     };
 
     public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, WukongMoveset.MOD_ID);
+    public static final RegistryObject<Item> RED_TIDE = ITEMS.register("red_tide", () -> new RedTide(Tiers.NETHERITE, 7, -3, (new Item.Properties()).defaultDurability(1427).rarity(Rarity.UNCOMMON).tab(CREATIVE_MODE_TAB)));
     public static final RegistryObject<Item> STAFF = ITEMS.register("staff", () -> new TestStaff(Tiers.NETHERITE, 4, -3, (new Item.Properties()).defaultDurability(208).rarity(Rarity.COMMON).tab(CREATIVE_MODE_TAB)));
     public static final RegistryObject<Item> KANG_JIN = ITEMS.register("kang_jin", () -> new KangJinStaff(Tiers.NETHERITE, 7, -3, (new Item.Properties()).defaultDurability(2777).rarity(Rarity.UNCOMMON).tab(CREATIVE_MODE_TAB)));
 //    public static final RegistryObject<Item> RED_TIDE = ITEMS.register("red_tide", () -> new RedTide(Tiers.NETHERITE, 1, -3, (new Item.Properties()).defaultDurability(2777).rarity(Rarity.UNCOMMON)));
