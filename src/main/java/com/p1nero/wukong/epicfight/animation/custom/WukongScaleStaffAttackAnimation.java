@@ -10,10 +10,13 @@ import yesman.epicfight.api.animation.types.BasicAttackAnimation;
 import yesman.epicfight.api.animation.types.DynamicAnimation;
 import yesman.epicfight.api.collider.Collider;
 import yesman.epicfight.api.model.Armature;
+import yesman.epicfight.client.world.capabilites.entitypatch.player.LocalPlayerPatch;
 import yesman.epicfight.world.capabilities.entitypatch.LivingEntityPatch;
+import yesman.epicfight.world.capabilities.entitypatch.player.PlayerPatch;
 
 public class WukongScaleStaffAttackAnimation extends BasicAttackAnimation {
     private float damageReduce;
+    private boolean ordinalLock;
     public WukongScaleStaffAttackAnimation(float convertTime, float antic, float contact, float recovery, @Nullable Collider collider, Joint colliderJoint, String path, Armature armature, float damageReduce) {
         super(convertTime, antic, contact, recovery, collider, colliderJoint, path, armature);
         this.damageReduce = damageReduce;
@@ -37,6 +40,13 @@ public class WukongScaleStaffAttackAnimation extends BasicAttackAnimation {
         entityPatch.getOriginal().getCapability(WKCapabilityProvider.WK_PLAYER).ifPresent(wkPlayer -> {
             wkPlayer.setDamageReduce(damageReduce);
         });
+//        //开启修正
+//        if(entityPatch instanceof LocalPlayerPatch localPlayerPatch){
+//            ordinalLock = localPlayerPatch.isTargetLockedOn();
+//            if(!ordinalLock){
+//                localPlayerPatch.toggleLockOn();
+//            }
+//        }
     }
 
     /**
@@ -46,6 +56,12 @@ public class WukongScaleStaffAttackAnimation extends BasicAttackAnimation {
     @Override
     public void end(LivingEntityPatch<?> entityPatch, DynamicAnimation nextAnimation, boolean isEnd) {
         super.end(entityPatch, nextAnimation, isEnd);
+//        //复原
+//        if(entityPatch instanceof LocalPlayerPatch localPlayerPatch){
+//            if(!ordinalLock){
+//                localPlayerPatch.toggleLockOn();
+//            }
+//        }
         entityPatch.getOriginal().getCapability(WKCapabilityProvider.WK_PLAYER).ifPresent(wkPlayer -> {
             wkPlayer.setDamageReduce(-1.0F);
         });

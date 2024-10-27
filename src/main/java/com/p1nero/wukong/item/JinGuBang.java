@@ -1,6 +1,7 @@
 package com.p1nero.wukong.item;
 
 import com.p1nero.wukong.item.client.JinGuBangRenderer;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
@@ -32,7 +33,8 @@ public class JinGuBang extends WeaponItem implements IAnimatable {
     @Override
     public void appendHoverText(@NotNull ItemStack itemStack, @Nullable Level p_41422_, @NotNull List<Component> list, @NotNull TooltipFlag p_41424_) {
         super.appendHoverText(itemStack, p_41422_, list, p_41424_);
-        list.add(Component.nullToEmpty("凝星制作组赞助"));
+        list.add(Component.nullToEmpty("那块铁，挽着些儿就死，磕着些儿就亡，挨挨儿皮破，擦擦儿筋伤！").copy().withStyle(ChatFormatting.GOLD));
+        list.add(Component.nullToEmpty("【凝星制作组赞助】"));
     }
 
     @Override

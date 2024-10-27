@@ -344,8 +344,8 @@ public class WukongAnimations {
                 .addProperty(AnimationProperty.ActionAnimationProperty.MOVE_VERTICAL, true)
                 .addProperty(AnimationProperty.ActionAnimationProperty.CANCELABLE_MOVE, false)
                 .addProperty(AnimationProperty.ActionAnimationProperty.NO_GRAVITY_TIME, TimePairList.create(0.01F, 1.30F))
-                .newTimePair(0, 2.5F)
-                .addState(EntityState.TURNING_LOCKED, true)
+//                .newTimePair(0, 1.30F)
+//                .addState(EntityState.TURNING_LOCKED, true)
                 .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.0F));
         List<AnimationEvent.TimeStampedEvent> sc2List = append(
                 AnimationEvent.TimeStampedEvent.create(0.292F, ((livingEntityPatch, anim, obj) -> livingEntityPatch.playSound(WuKongSounds.HIT_GROUND.get(), 1, 1)), AnimationEvent.Side.SERVER),
@@ -371,8 +371,8 @@ public class WukongAnimations {
                 .addProperty(AnimationProperty.ActionAnimationProperty.MOVE_VERTICAL, true)
                 .addProperty(AnimationProperty.ActionAnimationProperty.CANCELABLE_MOVE, false)
                 .addProperty(AnimationProperty.ActionAnimationProperty.NO_GRAVITY_TIME, TimePairList.create(0.01F, 1.30F))
-                .newTimePair(0, 2.667F)
-                .addState(EntityState.TURNING_LOCKED, true)
+//                .newTimePair(0, 1.792F)
+//                .addState(EntityState.TURNING_LOCKED, true)
                 .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.0F));
         List<AnimationEvent.TimeStampedEvent> sc3List = append(
                 AnimationEvent.TimeStampedEvent.create(0.292F, ((livingEntityPatch, anim, obj) -> livingEntityPatch.playSound(WuKongSounds.HIT_GROUND.get(), 1, 1)), AnimationEvent.Side.SERVER),
@@ -399,8 +399,8 @@ public class WukongAnimations {
                 .addProperty(AnimationProperty.ActionAnimationProperty.MOVE_VERTICAL, true)
                 .addProperty(AnimationProperty.ActionAnimationProperty.CANCELABLE_MOVE, false)
                 .addProperty(AnimationProperty.ActionAnimationProperty.NO_GRAVITY_TIME, TimePairList.create(0.01F, 2.75F))
-                .newTimePair(0, 3.3F)
-                .addState(EntityState.TURNING_LOCKED, true)
+//                .newTimePair(0, 2.63F)
+//                .addState(EntityState.TURNING_LOCKED, true)
                 .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.3F));
         List<AnimationEvent.TimeStampedEvent> sc4List = append(
                 AnimationEvent.TimeStampedEvent.create(0.208F, ((livingEntityPatch, anim, obj) -> livingEntityPatch.playSound(WuKongSounds.HIT_GROUND.get(), 1, 1)), AnimationEvent.Side.SERVER),
@@ -423,7 +423,7 @@ public class WukongAnimations {
         SMASH_SPECIAL1 = new WukongScaleStaffAttackAnimation(0.15F, 0.63F, 0.75F, 1.20F, null, biped.toolR,  "biped/smash/smash_special1", biped)
                 .addProperty(AnimationProperty.AttackPhaseProperty.STUN_TYPE, StunType.HOLD)
                 .addProperty(AnimationProperty.AttackPhaseProperty.IMPACT_MODIFIER, ValueModifier.multiplier(4.0F))
-                .addProperty(AnimationProperty.AttackPhaseProperty.SOURCE_TAG,  Set.of(SourceTags.WEAPON_INNATE, SourceTags.GUARD_PUNCTURE))
+//                .addProperty(AnimationProperty.AttackPhaseProperty.SOURCE_TAG,  Set.of(SourceTags.WEAPON_INNATE, SourceTags.GUARD_PUNCTURE)) //NOTE 换到出伤前判断，敌人正好在攻击的时候再破防
                 .addProperty(AnimationProperty.ActionAnimationProperty.MOVE_VERTICAL, true)
                 .addProperty(AnimationProperty.ActionAnimationProperty.CANCELABLE_MOVE, false)
                 .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.0F))

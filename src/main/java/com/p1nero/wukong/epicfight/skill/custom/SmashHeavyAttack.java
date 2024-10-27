@@ -46,6 +46,7 @@ import yesman.epicfight.world.capabilities.entitypatch.player.PlayerPatch;
 import yesman.epicfight.world.capabilities.entitypatch.player.ServerPlayerPatch;
 import yesman.epicfight.world.capabilities.item.CapabilityItem;
 import yesman.epicfight.world.damagesource.EpicFightDamageSource;
+import yesman.epicfight.world.damagesource.SourceTags;
 import yesman.epicfight.world.damagesource.StunType;
 import yesman.epicfight.world.entity.eventlistener.ComboCounterHandleEvent;
 import yesman.epicfight.world.entity.eventlistener.PlayerEventListener;
@@ -223,7 +224,7 @@ public class SmashHeavyAttack extends WeaponInnateSkill {
             if(container.getDataManager().getDataValue(IS_IN_SPECIAL_ATTACK)){
                 //需加判断，否则此期间会猛涨
                 if(!container.getDataManager().getDataValue(IS_SPECIAL_ATTACK_SUCCESS)){
-                    container.getSkill().setConsumptionSynchronize(event.getPlayerPatch(), container.getResource() + Config.CHARGING_SPEED.get().floatValue() * 30);//获得大量棍势
+                    container.getSkill().setConsumptionSynchronize(event.getPlayerPatch(), container.getResource() + Config.CHARGING_SPEED.get().floatValue() * 20);//获得大量棍势
                     container.getDataManager().setDataSync(IS_SPECIAL_ATTACK_SUCCESS, true, event.getPlayerPatch().getOriginal());
                 }
                 BasicAttack.setComboCounterWithEvent(ComboCounterHandleEvent.Causal.ACTION_ANIMATION_RESET, event.getPlayerPatch(), event.getPlayerPatch().getSkill(SkillSlots.BASIC_ATTACK), deriveAnimation1, 2);
@@ -299,6 +300,12 @@ public class SmashHeavyAttack extends WeaponInnateSkill {
 
         container.getExecuter().getEventListener().addEventListener(
                 PlayerEventListener.EventType.DEALT_DAMAGE_EVENT_PRE, EVENT_UUID, (event -> {
+                    //对方在攻击则识破对方攻击
+                    LivingEntityPatch<?> patch = EpicFightCapabilities.getEntityPatch(event.getPlayerPatch().getTarget(), LivingEntityPatch.class);
+                    if(patch != null && patch.getEntityState().attacking()){
+                        event.getDamageSource().addTag(SourceTags.GUARD_PUNCTURE);
+                    }
+
                     //根据星数改跳跃重击和破、斩棍式伤害
                     int starCnt = container.getDataManager().getDataValue(STARS_CONSUMED);
                     if(event.getDamageSource().getAnimation().equals(jumpAttackHeavy)){
