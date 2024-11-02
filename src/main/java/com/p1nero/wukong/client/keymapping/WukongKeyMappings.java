@@ -3,6 +3,7 @@ package com.p1nero.wukong.client.keymapping;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.p1nero.wukong.WukongMoveset;
 import com.p1nero.wukong.epicfight.WukongSkillCategories;
+import com.p1nero.wukong.epicfight.WukongSkillSlots;
 import com.p1nero.wukong.epicfight.skill.WukongSkills;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
@@ -20,6 +21,7 @@ import yesman.epicfight.network.EpicFightNetworkManager;
 import yesman.epicfight.network.client.CPChangeSkill;
 import yesman.epicfight.skill.Skill;
 import yesman.epicfight.skill.SkillContainer;
+import yesman.epicfight.skill.SkillSlots;
 import yesman.epicfight.world.capabilities.EpicFightCapabilities;
 
 import java.util.Collection;
@@ -70,7 +72,7 @@ public class WukongKeyMappings {
                 skillContainer.setSkill(skill);
                 capabilitySkill.addLearnedSkill(skill);
                 localPlayer.displayClientMessage(new TranslatableComponent("tips.wukong.style_change").append(skill.getDisplayName()), true);
-                EpicFightNetworkManager.sendToServer(new CPChangeSkill(skillContainer.getSlot().universalOrdinal(), -1, skill.toString(), false));
+                EpicFightNetworkManager.sendToServer(new CPChangeSkill(WukongSkillSlots.STAFF_STYLE.universalOrdinal(), -1, skill.toString(), false));
             });
         }
     }

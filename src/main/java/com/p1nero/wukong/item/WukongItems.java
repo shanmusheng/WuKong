@@ -2,6 +2,7 @@ package com.p1nero.wukong.item;
 
 import com.p1nero.wukong.WukongMoveset;
 import com.p1nero.wukong.item.client.KangJinStaff;
+import net.minecraft.ChatFormatting;
 import net.minecraft.world.item.*;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.registries.DeferredRegister;
@@ -25,7 +26,7 @@ public class WukongItems {
     public static final RegistryObject<Item> JIN_GU_BANG;
     static {
         if(ModList.get().isLoaded("geckolib3")){//damage In 83
-            JIN_GU_BANG = ITEMS.register("jingubang", () -> new JinGuBang(Tiers.NETHERITE, 11, -3, (new Item.Properties()).defaultDurability(2777).rarity(Rarity.EPIC).tab(CREATIVE_MODE_TAB)));
+            JIN_GU_BANG = ITEMS.register("jingubang", () -> new JinGuBang(Tiers.NETHERITE, 11, -3, (new Item.Properties()).defaultDurability(2777).rarity(StaffRarity.SHEN_ZHEN).tab(CREATIVE_MODE_TAB)));
         } else {
             JIN_GU_BANG = STAFF;
         }

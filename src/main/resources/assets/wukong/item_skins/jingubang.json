@@ -1,8 +1,8 @@
 {
     "trail": {
-    	"color": [255, 255, 255],
+    	"color": [200, 255, 255],
     	"begin_pos": [0.0, 0.0, 1.6],
-    	"end_pos": [0.0, 0.0, -2.0],
+    	"end_pos": [0.0, 0.0, -2.4],
     	"lifetime": 6,
 		"interpolations": 4,
     	"texture_path": "wukong:textures/particle/staff2.png",

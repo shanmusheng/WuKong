@@ -9,8 +9,7 @@ public enum WukongStyles implements Style {
     PILLAR(false);
     final boolean canUseOffhand;
     final int id;
-
-        WukongStyles(boolean canUseOffhand) {
+    WukongStyles(boolean canUseOffhand) {
         this.id = Style.ENUM_MANAGER.assign(this);
         this.canUseOffhand = canUseOffhand;
     }

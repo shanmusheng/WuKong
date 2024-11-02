@@ -12,6 +12,7 @@ import net.minecraftforge.fml.common.Mod;
 import yesman.epicfight.api.animation.LivingMotions;
 import yesman.epicfight.api.forgeevent.WeaponCapabilityPresetRegistryEvent;
 import yesman.epicfight.gameasset.Animations;
+import yesman.epicfight.gameasset.EpicFightSkills;
 import yesman.epicfight.gameasset.EpicFightSounds;
 import yesman.epicfight.particle.EpicFightParticles;
 import yesman.epicfight.skill.SkillContainer;
@@ -75,24 +76,27 @@ public class WukongWeaponCapabilityPresets {
                     WukongAnimations.STAFF_AUTO3,
                     WukongAnimations.STAFF_AUTO4,
                     WukongAnimations.STAFF_AUTO5,
-                    WukongAnimations.STAFF_AUTO1,
-                    Animations.SPEAR_TWOHAND_AIR_SLASH)
+                    WukongAnimations.STAFF_AUTO1_DASH,
+                    WukongAnimations.JUMP_ATTACK_LIGHT)
             .innateSkill(WukongStyles.THRUST, (itemstack) -> WukongSkills.THRUST_HEAVY_ATTACK)
-            .livingMotionModifier(WukongStyles.THRUST,
-                    LivingMotions.IDLE,
-                    WukongAnimations.IDLE)
-//            .livingMotionModifier(WukongStyles.THRUST,
-//                    LivingMotions.WALK,
-//                    WukongAnimations.WALK)
-            .livingMotionModifier(WukongStyles.THRUST,
-                    LivingMotions.CHASE,
-                    WukongAnimations.RUN)
-            .livingMotionModifier(WukongStyles.THRUST,
-                    LivingMotions.RUN,
-                    WukongAnimations.RUN)
-//            .livingMotionModifier(WukongStyles.THRUST,
-//                    LivingMotions.JUMP,
-//                    WukongAnimations.JUMP)
+                    .livingMotionModifier(WukongStyles.THRUST,
+                            LivingMotions.IDLE,
+                            WukongAnimations.IDLE)
+                    .livingMotionModifier(WukongStyles.THRUST,
+                            LivingMotions.WALK,
+                            WukongAnimations.RUN)
+                    .livingMotionModifier(WukongStyles.THRUST,
+                            LivingMotions.CHASE,
+                            WukongAnimations.DASH)
+                    .livingMotionModifier(WukongStyles.THRUST,
+                            LivingMotions.RUN,
+                            WukongAnimations.DASH)
+                    .livingMotionModifier(WukongStyles.THRUST,
+                            LivingMotions.JUMP,
+                            WukongAnimations.JUMP)
+                    .livingMotionModifier(WukongStyles.THRUST,
+                            LivingMotions.FALL,
+                            WukongAnimations.FALL)
             //立棍
             .newStyleCombo(WukongStyles.PILLAR,
                     WukongAnimations.STAFF_AUTO1,
@@ -100,25 +104,28 @@ public class WukongWeaponCapabilityPresets {
                     WukongAnimations.STAFF_AUTO3,
                     WukongAnimations.STAFF_AUTO4,
                     WukongAnimations.STAFF_AUTO5,
-                    WukongAnimations.STAFF_AUTO1,
-                    WukongAnimations.STAFF_AUTO1)
+                    WukongAnimations.STAFF_AUTO1_DASH,
+                    WukongAnimations.JUMP_ATTACK_LIGHT)
+//            .innateSkill(WukongStyles.PILLAR, (itemstack) -> WukongSkills.PILLAR_HEAVY_ATTACK)
             .innateSkill(WukongStyles.PILLAR, (itemstack) -> WukongSkills.PILLAR_HEAVY_ATTACK)
-            .livingMotionModifier(WukongStyles.PILLAR,
-                    LivingMotions.IDLE,
-                    WukongAnimations.IDLE)
-//            .livingMotionModifier(WukongStyles.STAND,
-//                    LivingMotions.WALK,
-//                    WukongAnimations.WALK)
-            .livingMotionModifier(WukongStyles.PILLAR,
-                    LivingMotions.CHASE,
-                    WukongAnimations.RUN)
-            .livingMotionModifier(WukongStyles.PILLAR,
-                    LivingMotions.RUN,
-                    WukongAnimations.RUN)
-//            .livingMotionModifier(WukongStyles.STAND,
-//                    LivingMotions.JUMP,
-//                    WukongAnimations.JUMP)
-            ;
+                    .livingMotionModifier(WukongStyles.PILLAR,
+                            LivingMotions.IDLE,
+                            WukongAnimations.IDLE)
+                    .livingMotionModifier(WukongStyles.PILLAR,
+                            LivingMotions.WALK,
+                            WukongAnimations.RUN)
+                    .livingMotionModifier(WukongStyles.PILLAR,
+                            LivingMotions.CHASE,
+                            WukongAnimations.DASH)
+                    .livingMotionModifier(WukongStyles.PILLAR,
+                            LivingMotions.RUN,
+                            WukongAnimations.DASH)
+                    .livingMotionModifier(WukongStyles.PILLAR,
+                            LivingMotions.JUMP,
+                            WukongAnimations.JUMP)
+                    .livingMotionModifier(WukongStyles.PILLAR,
+                            LivingMotions.FALL,
+                            WukongAnimations.FALL);
 
 
     public static final Function<Item, CapabilityItem.Builder> RED_TIDE = (item) ->
@@ -139,7 +146,7 @@ public class WukongWeaponCapabilityPresets {
                     .innateSkill(CapabilityItem.Styles.TWO_HAND, (itemstack) -> WukongSkills.SMASH_HEAVY_ATTACK)
                     .livingMotionModifier(CapabilityItem.Styles.TWO_HAND,
                             LivingMotions.IDLE,
-                            WukongAnimations.IDLE)
+                            WukongAnimations.RED_TIDE_IDLE)
                     .livingMotionModifier(CapabilityItem.Styles.TWO_HAND,
                             LivingMotions.WALK,
                             WukongAnimations.RED_TIDE_WALK)

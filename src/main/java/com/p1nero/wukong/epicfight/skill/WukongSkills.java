@@ -11,7 +11,6 @@ import yesman.epicfight.api.forgeevent.SkillBuildEvent;
 import yesman.epicfight.skill.Skill;
 import yesman.epicfight.skill.SkillCategories;
 import yesman.epicfight.skill.SkillSlots;
-import yesman.epicfight.skill.weaponinnate.SimpleWeaponInnateSkill;
 import yesman.epicfight.world.capabilities.EpicFightCapabilities;
 import yesman.epicfight.world.capabilities.entitypatch.player.PlayerPatch;
 
@@ -80,6 +79,13 @@ public class WukongSkills {
                                 () -> WukongAnimations.SMASH_SPECIAL2)
                         .setJumpAttackHeavy(() -> WukongAnimations.JUMP_ATTACK_HEAVY)
                 , WukongMoveset.MOD_ID, "smash_charged");
+        SkillManager.register(PillarHeavyAttack::new, PillarHeavyAttack.createChargedAttack()
+                        .setPreAnimations(()-> WukongAnimations.PILLAR_PRE0)
+                        .setTransAnimations(()-> WukongAnimations.PILLAR_PRE0)
+                        .setHeavyAttacks(() -> WukongAnimations.PILLAR_CHARGED0)
+                        .setDeriveAnimations(()-> WukongAnimations.PILLAR_PRE0, ()-> WukongAnimations.PILLAR_PRE0, ()-> WukongAnimations.PILLAR_PRE0, ()-> WukongAnimations.PILLAR_PRE0)
+                        .setJumpAttackHeavy(() -> WukongAnimations.JUMP_ATTACK_HEAVY)
+                , WukongMoveset.MOD_ID, "pillar_charged");
         SkillManager.register(ThrustHeavyAttack::new, ThrustHeavyAttack.createChargedAttack()
                 .setChargePreAnimation(()-> WukongAnimations.THRUST_PRE)
                 .setChargingAnimation(()->WukongAnimations.THRUST_CHARGING)
