@@ -1,8 +1,11 @@
 package com.p1nero.wukong.epicfight.animation;
 
+import com.p1nero.wukong.Config;
 import com.p1nero.wukong.WukongMoveset;
 import com.p1nero.wukong.client.WuKongSounds;
 import com.p1nero.wukong.epicfight.animation.custom.*;
+import com.p1nero.wukong.epicfight.skill.custom.PillarHeavyAttack;
+import com.p1nero.wukong.epicfight.skill.custom.RedTideHeavyAttack;
 import com.p1nero.wukong.epicfight.skill.custom.SmashHeavyAttack;
 import com.p1nero.wukong.epicfight.weapon.WukongColliders;
 import com.p1nero.wukong.epicfight.weapon.WukongWeaponCategories;
@@ -37,6 +40,8 @@ import yesman.epicfight.skill.BasicAttack;
 import yesman.epicfight.skill.SkillDataManager;
 import yesman.epicfight.skill.SkillSlots;
 import yesman.epicfight.world.capabilities.EpicFightCapabilities;
+import yesman.epicfight.world.capabilities.entitypatch.LivingEntityPatch;
+import yesman.epicfight.world.capabilities.entitypatch.player.PlayerPatch;
 import yesman.epicfight.world.capabilities.entitypatch.player.ServerPlayerPatch;
 import yesman.epicfight.world.damagesource.SourceTags;
 import yesman.epicfight.world.damagesource.StunType;
@@ -166,8 +171,8 @@ public class WukongAnimations {
     public static StaticAnimation RED_TIDE_AUTO2;
     public static StaticAnimation RED_TIDE_AUTO3;
     public static StaticAnimation RED_TIDE_AUTO4;
-    public static StaticAnimation RED_TIDE_DASH;
-    public static StaticAnimation RED_TIDE_SKILL_PRE;
+    public static StaticAnimation RED_TIDE_DODGE;
+    public static StaticAnimation RED_TIDE_SKILL_F;
     public static StaticAnimation RED_TIDE_SKILL;
 
     @SubscribeEvent
@@ -518,8 +523,29 @@ public class WukongAnimations {
                 );
         //劈end
         //立start
+//        PILLAR_DERIVE1_PRE = new ActionAnimation(){
+//            @Override
+//            public void end(LivingEntityPatch<?> entitypatch, DynamicAnimation nextAnimation, boolean isEnd) {
+//                super.end(entitypatch, nextAnimation, isEnd);
+//                if(entitypatch instanceof ServerPlayerPatch serverPlayerPatch){
+//                    SkillDataManager dataManager = serverPlayerPatch.getSkill(SkillSlots.WEAPON_INNATE).getDataManager();
+//                    dataManager.setData(PillarHeavyAttack.IS_REPEATING_DERIVE, true);//在pre 设为true， 在loop结束后设为false
+//                }
+//            }
+//        };
+//        PILLAR_DERIVE1_LOOP = new AttackAnimation(){
+//            @Override
+//            public void end(LivingEntityPatch<?> entitypatch, DynamicAnimation nextAnimation, boolean isEnd) {
+//                super.end(entitypatch, nextAnimation, isEnd);
+//                if(entitypatch instanceof ServerPlayerPatch serverPlayerPatch){
+//                    SkillDataManager dataManager = serverPlayerPatch.getSkill(SkillSlots.WEAPON_INNATE).getDataManager();
+//                    dataManager.setData(PillarHeavyAttack.IS_REPEATING_DERIVE, false);//在pre 设为true， 在loop结束后设为false
+//                }
+//            }
+//        };
         PILLAR_LOOP0 = new LoopedActionAnimation("biped/pillar/loop0", biped);
-//        PILLAR_LOOP0 = new StaticAnimation(true, "biped/pillar/loop0", biped);
+        PILLAR_0_1 = new LoopedActionAnimation("biped/pillar/0_1", biped);
+        PILLAR_LOOP1 = new LoopedActionAnimation("biped/pillar/loop1", biped);
         PILLAR_PRE0 = new ActionAnimation(0.15F, "biped/pillar/pre0", biped)
                 .addProperty(AnimationProperty.ActionAnimationProperty.MOVE_VERTICAL, true)
                 .addProperty(AnimationProperty.ActionAnimationProperty.NO_GRAVITY_TIME, TimePairList.create(0.01F, 0.8333F))
@@ -545,7 +571,29 @@ public class WukongAnimations {
         RED_TIDE_RUN = new StaticAnimation(true, "cc/cc_run",biped);
         RED_TIDE_JUMP = new StaticAnimation(true, "cc/cc_jump",biped);
 
-        RED_TIDE_DASH = new BasicAttackAnimation(0.15F, 0.2916F, 0.5000F, 0.5833F, null, biped.toolL,  "cc/cc_dash", biped)
+        RED_TIDE_DODGE = new AttackAnimation(0.15F, 0.2916F, 0.2916F,0.5000F, 0.5833F, null, biped.toolL,  "cc/cc_dodge", biped)
+                .addProperty(AnimationProperty.AttackAnimationProperty.FIXED_MOVE_DISTANCE, true)
+                .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(0.9F))
+                .addProperty(AnimationProperty.ActionAnimationProperty.CANCELABLE_MOVE, false)
+                .newTimePair(0.0F, 0.5F)//无敌时间
+                .addStateRemoveOld(EntityState.ATTACK_RESULT, (source -> AttackResult.ResultType.MISSED))
+                .newTimePair(0.0F, 1.5F)//禁用技能，播完才能
+                .addStateRemoveOld(EntityState.CAN_SKILL_EXECUTION, false)
+                .addEvents(AnimationEvent.TimeStampedEvent.create(1.3F, ((livingEntityPatch, staticAnimation, objects) -> {
+                    if(livingEntityPatch instanceof PlayerPatch<?> patch){
+                        SkillDataManager manager = patch.getSkill(SkillSlots.WEAPON_INNATE).getDataManager();
+                        if(manager.hasData(RedTideHeavyAttack.COUNTER)){
+                            manager.setData(RedTideHeavyAttack.COUNTER, Config.DERIVE_CHECK_TIME.get().intValue());
+                        }
+                    }
+                }), AnimationEvent.Side.BOTH));//无敌时间
+        RED_TIDE_SKILL_F = new AttackAnimation(0.15F, 1.5F, 1.5F,1.7F, 3, null, biped.toolL,  "cc/cc_skill_f", biped)
+                .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(0.9F))
+                .addProperty(AnimationProperty.ActionAnimationProperty.CANCELABLE_MOVE, false)
+                .addProperty(AnimationProperty.ActionAnimationProperty.MOVE_VERTICAL, true)
+                .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 0.9F));
+        RED_TIDE_SKILL = new AttackAnimation(0.15F, 1.17F, 1.17F,1.83F, 2.3F, null, biped.toolL,  "cc/cc_skill", biped)
+                .addProperty(AnimationProperty.AttackAnimationProperty.FIXED_MOVE_DISTANCE, true)
                 .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(0.9F))
                 .addProperty(AnimationProperty.ActionAnimationProperty.CANCELABLE_MOVE, false);
         RED_TIDE_AUTO1 = new BasicAttackAnimation(0.15F,  0.6F, 1, 1.3F, null, biped.toolL,  "cc/cc_auto1", biped)
@@ -554,11 +602,14 @@ public class WukongAnimations {
         RED_TIDE_AUTO2 = new BasicAttackAnimation(0.15F, 1.17F, 1.5F, 2,null, biped.toolL,  "cc/cc_auto2", biped)
                 .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(0.9F))
                 .addProperty(AnimationProperty.ActionAnimationProperty.CANCELABLE_MOVE, false);
-        RED_TIDE_AUTO3 = new BasicAttackAnimation(0.15F, 0.2F, 1.3F, 2.17F, null, biped.toolL,  "cc/cc_auto3", biped)
-                .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(0.9F))
+        RED_TIDE_AUTO3 = new BasicMultipleAttackAnimation(0.15F, "cc/cc_auto3", biped,
+                new AttackAnimation.Phase(0.0F, 0.33F, 0.53F, 0.63F, 0.63F , biped.toolR, null),
+                new AttackAnimation.Phase(0.63F, 0.63F, 0.9F, 1.0F, 1.0F , biped.toolR, null),
+                new AttackAnimation.Phase(1, 1.0F, 1.2F, 2.16F, 2.16F , biped.toolR, null))
                 .addProperty(AnimationProperty.ActionAnimationProperty.CANCELABLE_MOVE, false);
         RED_TIDE_AUTO4= new BasicMultipleAttackAnimation(0.15F, "cc/cc_auto4", biped,
-                new AttackAnimation.Phase(0.0F, 0.3F, 1.07F, 1.23F, 1.23F , biped.toolR, null),
+                new AttackAnimation.Phase(0.0F, 0.3F, 0.77F, 0.77F, 0.77F , biped.toolR, null),
+                new AttackAnimation.Phase(0.77F, 0.77F, 0.93F, 1.23F, 1.23F , biped.toolR, null),
                 new AttackAnimation.Phase(1.23F, 1.23F, 1.5F, 2, 2 , biped.toolR, null))
                 .addProperty(AnimationProperty.ActionAnimationProperty.CANCELABLE_MOVE, false);
         RED_TIDE_JUMP_ATTACK= new BasicMultipleAttackAnimation(0.15F, "cc/cc_jump_attack", biped,

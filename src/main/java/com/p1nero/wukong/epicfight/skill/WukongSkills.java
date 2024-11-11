@@ -5,12 +5,15 @@ import com.p1nero.wukong.epicfight.WukongStyles;
 import com.p1nero.wukong.epicfight.animation.WukongAnimations;
 import com.p1nero.wukong.epicfight.skill.custom.*;
 import com.p1nero.wukong.item.WukongItems;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import yesman.epicfight.api.data.reloader.SkillManager;
 import yesman.epicfight.api.forgeevent.SkillBuildEvent;
 import yesman.epicfight.skill.Skill;
 import yesman.epicfight.skill.SkillCategories;
 import yesman.epicfight.skill.SkillSlots;
+import yesman.epicfight.skill.dodge.DodgeSkill;
+import yesman.epicfight.skill.weaponinnate.WeaponInnateSkill;
 import yesman.epicfight.world.capabilities.EpicFightCapabilities;
 import yesman.epicfight.world.capabilities.entitypatch.player.PlayerPatch;
 
@@ -26,6 +29,7 @@ public class WukongSkills {
     public static Skill STAFF_SPIN;
     public static Skill WUKONG_DODGE;
     public static Skill RED_TIDE_SKILL;
+    public static Skill RED_TIDE_DODGE;
     public static Skill Ding;//定身术
     public static int getCurrentStack(Player player){
         AtomicInteger stack = new AtomicInteger(0);
@@ -66,7 +70,8 @@ public class WukongSkills {
                 WukongMoveset.MOD_ID, "dodge");
         SkillManager.register(StaffPassive::new, Skill.createBuilder().setResource(Skill.Resource.NONE).setCategory(SkillCategories.WEAPON_PASSIVE), WukongMoveset.MOD_ID, "staff_flower");
         SkillManager.register(SmashHeavyAttack::new, SmashHeavyAttack.createChargedAttack()
-                        .setChargePreAnimation(()-> WukongAnimations.SMASH_CHARGING_PRE)
+                        .setChargePreAnimation(()-> WukongAnimations.PILLAR_PRE0)
+//                        .setChargePreAnimation(()-> WukongAnimations.SMASH_CHARGING_PRE)
                         .setChargingAnimation(()->WukongAnimations.SMASH_CHARGING_LOOP)
                         .setHeavyAttacks(
                                 () -> WukongAnimations.SMASH_CHARGED0,
@@ -81,7 +86,7 @@ public class WukongSkills {
                 , WukongMoveset.MOD_ID, "smash_charged");
         SkillManager.register(PillarHeavyAttack::new, PillarHeavyAttack.createChargedAttack()
                         .setPreAnimations(()-> WukongAnimations.PILLAR_PRE0)
-                        .setTransAnimations(()-> WukongAnimations.PILLAR_PRE0)
+                        .setTransAnimations(()-> WukongAnimations.PILLAR_0_1)
                         .setHeavyAttacks(() -> WukongAnimations.PILLAR_CHARGED0)
                         .setDeriveAnimations(()-> WukongAnimations.PILLAR_PRE0, ()-> WukongAnimations.PILLAR_PRE0, ()-> WukongAnimations.PILLAR_PRE0, ()-> WukongAnimations.PILLAR_PRE0)
                         .setJumpAttackHeavy(() -> WukongAnimations.JUMP_ATTACK_HEAVY)
@@ -103,6 +108,9 @@ public class WukongSkills {
         SkillManager.register(StaffStance::new, StaffStance.createStaffStyle().setStyle(WukongStyles.SMASH).setCreativeTab(WukongItems.CREATIVE_MODE_TAB), WukongMoveset.MOD_ID, "smash_style");
         SkillManager.register(StaffStance::new, StaffStance.createStaffStyle().setStyle(WukongStyles.THRUST).setCreativeTab(WukongItems.CREATIVE_MODE_TAB), WukongMoveset.MOD_ID, "thrust_style");
         SkillManager.register(StaffStance::new, StaffStance.createStaffStyle().setStyle(WukongStyles.PILLAR).setCreativeTab(WukongItems.CREATIVE_MODE_TAB), WukongMoveset.MOD_ID, "pillar_style");
+
+        SkillManager.register(RedTideHeavyAttack::new, WeaponInnateSkill.createWeaponInnateBuilder(), WukongMoveset.MOD_ID, "red_tide_heavy");
+        SkillManager.register(DodgeSkill::new, DodgeSkill.createDodgeBuilder().setAnimations(new ResourceLocation(WukongMoveset.MOD_ID, "cc/cc_dodge"), new ResourceLocation(WukongMoveset.MOD_ID, "cc/cc_dodge"), new ResourceLocation(WukongMoveset.MOD_ID, "cc/cc_dodge"), new ResourceLocation(WukongMoveset.MOD_ID, "cc/cc_dodge")), WukongMoveset.MOD_ID, "red_tide_dodge");
     }
 
 
@@ -117,6 +125,9 @@ public class WukongSkills {
         SMASH_STYLE = event.build(WukongMoveset.MOD_ID, "smash_style");
         THRUST_STYLE = event.build(WukongMoveset.MOD_ID, "thrust_style");
         PILLAR_STYLE = event.build(WukongMoveset.MOD_ID, "pillar_style");
+
+        RED_TIDE_SKILL = event.build(WukongMoveset.MOD_ID, "red_tide_heavy");
+        RED_TIDE_DODGE = event.build(WukongMoveset.MOD_ID, "red_tide_dodge");
     }
 
 }

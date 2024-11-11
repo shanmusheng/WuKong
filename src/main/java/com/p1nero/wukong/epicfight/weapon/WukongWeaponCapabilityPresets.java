@@ -11,8 +11,6 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import yesman.epicfight.api.animation.LivingMotions;
 import yesman.epicfight.api.forgeevent.WeaponCapabilityPresetRegistryEvent;
-import yesman.epicfight.gameasset.Animations;
-import yesman.epicfight.gameasset.EpicFightSkills;
 import yesman.epicfight.gameasset.EpicFightSounds;
 import yesman.epicfight.particle.EpicFightParticles;
 import yesman.epicfight.skill.SkillContainer;
@@ -141,9 +139,9 @@ public class WukongWeaponCapabilityPresets {
                             WukongAnimations.RED_TIDE_AUTO2,
                             WukongAnimations.RED_TIDE_AUTO3,
                             WukongAnimations.RED_TIDE_AUTO4,
-                            WukongAnimations.RED_TIDE_DASH,
+                            WukongAnimations.RED_TIDE_DODGE,
                             WukongAnimations.RED_TIDE_AUTO1)
-                    .innateSkill(CapabilityItem.Styles.TWO_HAND, (itemstack) -> WukongSkills.SMASH_HEAVY_ATTACK)
+                    .innateSkill(CapabilityItem.Styles.TWO_HAND, (itemstack) -> WukongSkills.RED_TIDE_SKILL)
                     .livingMotionModifier(CapabilityItem.Styles.TWO_HAND,
                             LivingMotions.IDLE,
                             WukongAnimations.RED_TIDE_IDLE)
