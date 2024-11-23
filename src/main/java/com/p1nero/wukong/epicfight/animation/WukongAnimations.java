@@ -172,6 +172,9 @@ public class WukongAnimations {
     public static StaticAnimation RED_TIDE_AUTO3;
     public static StaticAnimation RED_TIDE_AUTO4;
     public static StaticAnimation RED_TIDE_DODGE;
+    public static StaticAnimation RED_TIDE_DODGE_B;
+    public static StaticAnimation RED_TIDE_DODGE_L;
+    public static StaticAnimation RED_TIDE_DODGE_R;
     public static StaticAnimation RED_TIDE_SKILL_F;
     public static StaticAnimation RED_TIDE_SKILL;
 
@@ -579,6 +582,60 @@ public class WukongAnimations {
                 .addStateRemoveOld(EntityState.ATTACK_RESULT, (source -> AttackResult.ResultType.MISSED))
                 .newTimePair(0.0F, 1.5F)//禁用技能，播完才能
                 .addStateRemoveOld(EntityState.CAN_SKILL_EXECUTION, false)
+                .addState(EntityState.LOCKON_ROTATE, true)
+                .addState(EntityState.MOVEMENT_LOCKED, true)
+                .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.5F))
+                .addEvents(AnimationEvent.TimeStampedEvent.create(1.3F, ((livingEntityPatch, staticAnimation, objects) -> {
+                    if(livingEntityPatch instanceof PlayerPatch<?> patch){
+                        SkillDataManager manager = patch.getSkill(SkillSlots.WEAPON_INNATE).getDataManager();
+                        if(manager.hasData(RedTideHeavyAttack.COUNTER)){
+                            manager.setData(RedTideHeavyAttack.COUNTER, Config.DERIVE_CHECK_TIME.get().intValue());
+                        }
+                    }
+                }), AnimationEvent.Side.BOTH));//无敌时间
+        RED_TIDE_DODGE_B = new AttackAnimation(0.15F, 0.2916F, 0.2916F,0.5000F, 0.5833F, null, biped.toolL,  "cc/cc_dodge_b", biped)
+                .addProperty(AnimationProperty.AttackAnimationProperty.FIXED_MOVE_DISTANCE, true)
+                .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(0.9F))
+                .addProperty(AnimationProperty.ActionAnimationProperty.CANCELABLE_MOVE, false)
+                .newTimePair(0.0F, 0.5F)//无敌时间
+                .addStateRemoveOld(EntityState.ATTACK_RESULT, (source -> AttackResult.ResultType.MISSED))
+                .newTimePair(0.0F, 1.5F)//禁用技能，播完才能
+                .addStateRemoveOld(EntityState.CAN_SKILL_EXECUTION, false)
+                .addState(EntityState.LOCKON_ROTATE, true)
+                .addEvents(AnimationEvent.TimeStampedEvent.create(1.3F, ((livingEntityPatch, staticAnimation, objects) -> {
+                    if(livingEntityPatch instanceof PlayerPatch<?> patch){
+                        SkillDataManager manager = patch.getSkill(SkillSlots.WEAPON_INNATE).getDataManager();
+                        if(manager.hasData(RedTideHeavyAttack.COUNTER)){
+                            manager.setData(RedTideHeavyAttack.COUNTER, Config.DERIVE_CHECK_TIME.get().intValue());
+                        }
+                    }
+                }), AnimationEvent.Side.BOTH));//无敌时间
+        RED_TIDE_DODGE_L = new AttackAnimation(0.15F, 0.2916F, 0.2916F,0.5000F, 0.5833F, null, biped.toolL,  "cc/cc_dodge_l", biped)
+                .addProperty(AnimationProperty.AttackAnimationProperty.FIXED_MOVE_DISTANCE, true)
+                .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(0.9F))
+                .addProperty(AnimationProperty.ActionAnimationProperty.CANCELABLE_MOVE, false)
+                .newTimePair(0.0F, 0.5F)//无敌时间
+                .addStateRemoveOld(EntityState.ATTACK_RESULT, (source -> AttackResult.ResultType.MISSED))
+                .newTimePair(0.0F, 1.5F)//禁用技能，播完才能
+                .addStateRemoveOld(EntityState.CAN_SKILL_EXECUTION, false)
+                .addState(EntityState.LOCKON_ROTATE, true)
+                .addEvents(AnimationEvent.TimeStampedEvent.create(1.3F, ((livingEntityPatch, staticAnimation, objects) -> {
+                    if(livingEntityPatch instanceof PlayerPatch<?> patch){
+                        SkillDataManager manager = patch.getSkill(SkillSlots.WEAPON_INNATE).getDataManager();
+                        if(manager.hasData(RedTideHeavyAttack.COUNTER)){
+                            manager.setData(RedTideHeavyAttack.COUNTER, Config.DERIVE_CHECK_TIME.get().intValue());
+                        }
+                    }
+                }), AnimationEvent.Side.BOTH));//无敌时间
+        RED_TIDE_DODGE_R = new AttackAnimation(0.15F, 0.2916F, 0.2916F,0.5000F, 0.5833F, null, biped.toolL,  "cc/cc_dodge_r", biped)
+                .addProperty(AnimationProperty.AttackAnimationProperty.FIXED_MOVE_DISTANCE, true)
+                .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(0.9F))
+                .addProperty(AnimationProperty.ActionAnimationProperty.CANCELABLE_MOVE, false)
+                .newTimePair(0.0F, 0.5F)//无敌时间
+                .addStateRemoveOld(EntityState.ATTACK_RESULT, (source -> AttackResult.ResultType.MISSED))
+                .newTimePair(0.0F, 1.5F)//禁用技能，播完才能
+                .addStateRemoveOld(EntityState.CAN_SKILL_EXECUTION, false)
+                .addState(EntityState.LOCKON_ROTATE, true)
                 .addEvents(AnimationEvent.TimeStampedEvent.create(1.3F, ((livingEntityPatch, staticAnimation, objects) -> {
                     if(livingEntityPatch instanceof PlayerPatch<?> patch){
                         SkillDataManager manager = patch.getSkill(SkillSlots.WEAPON_INNATE).getDataManager();
@@ -591,6 +648,7 @@ public class WukongAnimations {
                 .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(0.9F))
                 .addProperty(AnimationProperty.ActionAnimationProperty.CANCELABLE_MOVE, false)
                 .addProperty(AnimationProperty.ActionAnimationProperty.MOVE_VERTICAL, true)
+                .addProperty(AnimationProperty.ActionAnimationProperty.NO_GRAVITY_TIME, TimePairList.create(0.0F, 1.133F))
                 .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 0.9F));
         RED_TIDE_SKILL = new AttackAnimation(0.15F, 1.17F, 1.17F,1.83F, 2.3F, null, biped.toolL,  "cc/cc_skill", biped)
                 .addProperty(AnimationProperty.AttackAnimationProperty.FIXED_MOVE_DISTANCE, true)

@@ -13,6 +13,7 @@ import yesman.epicfight.skill.Skill;
 import yesman.epicfight.skill.SkillCategories;
 import yesman.epicfight.skill.SkillSlots;
 import yesman.epicfight.skill.dodge.DodgeSkill;
+import yesman.epicfight.skill.dodge.StepSkill;
 import yesman.epicfight.skill.weaponinnate.WeaponInnateSkill;
 import yesman.epicfight.world.capabilities.EpicFightCapabilities;
 import yesman.epicfight.world.capabilities.entitypatch.player.PlayerPatch;
@@ -110,7 +111,7 @@ public class WukongSkills {
         SkillManager.register(StaffStance::new, StaffStance.createStaffStyle().setStyle(WukongStyles.PILLAR).setCreativeTab(WukongItems.CREATIVE_MODE_TAB), WukongMoveset.MOD_ID, "pillar_style");
 
         SkillManager.register(RedTideHeavyAttack::new, WeaponInnateSkill.createWeaponInnateBuilder(), WukongMoveset.MOD_ID, "red_tide_heavy");
-        SkillManager.register(DodgeSkill::new, DodgeSkill.createDodgeBuilder().setAnimations(new ResourceLocation(WukongMoveset.MOD_ID, "cc/cc_dodge"), new ResourceLocation(WukongMoveset.MOD_ID, "cc/cc_dodge"), new ResourceLocation(WukongMoveset.MOD_ID, "cc/cc_dodge"), new ResourceLocation(WukongMoveset.MOD_ID, "cc/cc_dodge")), WukongMoveset.MOD_ID, "red_tide_dodge");
+        SkillManager.register(StepSkill::new, DodgeSkill.createDodgeBuilder().setAnimations(new ResourceLocation(WukongMoveset.MOD_ID, "cc/cc_dodge"), new ResourceLocation(WukongMoveset.MOD_ID, "cc/cc_dodge_b"), new ResourceLocation(WukongMoveset.MOD_ID, "cc/cc_dodge_l"), new ResourceLocation(WukongMoveset.MOD_ID, "cc/cc_dodge_r")), WukongMoveset.MOD_ID, "red_tide_dodge");
     }
 
 
