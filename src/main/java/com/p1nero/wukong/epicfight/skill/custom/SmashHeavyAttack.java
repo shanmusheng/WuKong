@@ -9,6 +9,7 @@ import com.p1nero.wukong.capability.WKCapabilityProvider;
 import com.p1nero.wukong.client.WuKongSounds;
 import com.p1nero.wukong.epicfight.WukongStyles;
 import com.p1nero.wukong.epicfight.animation.StaticAnimationProvider;
+import com.p1nero.wukong.epicfight.animation.WukongAnimations;
 import com.p1nero.wukong.epicfight.animation.custom.WukongDodgeAnimation;
 import com.p1nero.wukong.epicfight.skill.SkillDataRegister;
 import com.p1nero.wukong.epicfight.weapon.WukongWeaponCategories;
@@ -280,7 +281,7 @@ public class SmashHeavyAttack extends WeaponInnateSkill {
                     }
 
                     //释放普攻后重置可衍生时间
-                    if(isLightAttack && !isLastLightAttack) {
+                    if(isLightAttack || event.getAnimation().equals(WukongAnimations.STAFF_AUTO1_DASH) && !isLastLightAttack) {
                         container.getDataManager().setDataSync(CAN_FIRST_DERIVE, true, player);
                         container.getDataManager().setDataSync(DERIVE_TIMER, MAX_DERIVE_TIMER, player);
                     }
@@ -416,6 +417,8 @@ public class SmashHeavyAttack extends WeaponInnateSkill {
                 if(container.getStack() < 3){
                     this.setConsumptionSynchronize(serverPlayerPatch, container.getResource() + Config.CHARGING_SPEED.get().floatValue());
                 }
+                //扣耐力
+                serverPlayerPatch.consumeStamina(Config.CHARGING_STAMINA_CONSUME.get().floatValue());
                 //松手则清空棍势打重击
                 if(!dataManager.getDataValue(KEY_PRESSING)){
                     dataManager.setDataSync(IS_CHARGING, false, serverPlayer);
