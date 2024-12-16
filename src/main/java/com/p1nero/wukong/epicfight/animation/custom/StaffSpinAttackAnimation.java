@@ -7,6 +7,7 @@ import net.minecraft.client.player.LocalPlayer;
 import yesman.epicfight.api.animation.property.AnimationEvent;
 import yesman.epicfight.api.animation.property.AnimationProperty;
 import yesman.epicfight.api.animation.types.AttackAnimation;
+import yesman.epicfight.api.animation.types.BasicAttackAnimation;
 import yesman.epicfight.api.animation.types.DynamicAnimation;
 import yesman.epicfight.api.animation.types.EntityState;
 import yesman.epicfight.api.utils.math.ValueModifier;
@@ -22,7 +23,7 @@ import yesman.epicfight.world.capabilities.entitypatch.player.ServerPlayerPatch;
  * 尝试修改动画播放的move lock
  * 后面直接监听输入事件取消input了。。
  */
-public class StaffSpinAttackAnimation extends BasicMultipleAttackAnimation {
+public class StaffSpinAttackAnimation extends BasicAttackAnimation {
 
     public StaffSpinAttackAnimation(float end, HumanoidArmature biped, String path, float damageMultiplier, boolean isTwoHand){
         super(0, path, biped,

@@ -419,8 +419,8 @@ public class SmashHeavyAttack extends WeaponInnateSkill {
                 }
                 //扣耐力
                 serverPlayerPatch.consumeStamina(Config.CHARGING_STAMINA_CONSUME.get().floatValue());
-                //松手则清空棍势打重击
-                if(!dataManager.getDataValue(KEY_PRESSING)){
+                //松手或没耐力则清空棍势打重击
+                if(!dataManager.getDataValue(KEY_PRESSING) || !serverPlayerPatch.hasStamina(Config.CHARGING_STAMINA_CONSUME.get().floatValue() + 0.1F)){
                     dataManager.setDataSync(IS_CHARGING, false, serverPlayer);
                     dataManager.setData(PROTECT_NEXT_FALL, true);//MAN
                     serverPlayerPatch.playAnimationSynchronized(animations[container.getStack()], 0.0F);//有几星就几星重击

@@ -71,8 +71,8 @@ public class WukongSkills {
                 WukongMoveset.MOD_ID, "dodge");
         SkillManager.register(StaffPassive::new, Skill.createBuilder().setResource(Skill.Resource.NONE).setCategory(SkillCategories.WEAPON_PASSIVE), WukongMoveset.MOD_ID, "staff_flower");
         SkillManager.register(SmashHeavyAttack::new, SmashHeavyAttack.createChargedAttack()
-                        .setChargePreAnimation(()-> WukongAnimations.PILLAR_PRE0)
-//                        .setChargePreAnimation(()-> WukongAnimations.SMASH_CHARGING_PRE)
+//                        .setChargePreAnimation(()-> WukongAnimations.PILLAR_PRE0)
+                        .setChargePreAnimation(()-> WukongAnimations.SMASH_CHARGING_PRE)
                         .setChargingAnimation(()->WukongAnimations.SMASH_CHARGING_LOOP)
                         .setHeavyAttacks(
                                 () -> WukongAnimations.SMASH_CHARGED0,
