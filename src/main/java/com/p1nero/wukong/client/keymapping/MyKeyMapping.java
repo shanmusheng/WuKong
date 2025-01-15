@@ -1,5 +1,6 @@
 package com.p1nero.wukong.client.keymapping;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.KeyMapping;
 
 /**
@@ -10,13 +11,20 @@ public class MyKeyMapping extends KeyMapping {
     boolean lock;
     boolean isEvenNumber;
     int pressCnt = 0;
+    boolean isDown;
+
     public MyKeyMapping(String p_90821_, int p_90822_, String p_90823_) {
         super(p_90821_, p_90822_, p_90823_);
+    }
+
+    public MyKeyMapping(String description, InputConstants.Type type, int code, String category) {
+        super(description, type, code, category);
     }
 
     @Override
     public void setDown(boolean down) {
         super.setDown(down);
+        this.isDown = down;
         if(down){
             lock = true;
             isRelease = false;
@@ -26,6 +34,15 @@ public class MyKeyMapping extends KeyMapping {
             isEvenNumber = !isEvenNumber;
             pressCnt++;
         }
+    }
+
+    public boolean isDownWithoutConflictCheck() {
+        return isDown;
+    }
+
+    @Override
+    public boolean hasKeyModifierConflict(KeyMapping other) {
+        return false;
     }
 
     /**

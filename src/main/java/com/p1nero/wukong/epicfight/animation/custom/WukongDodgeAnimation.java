@@ -2,6 +2,7 @@ package com.p1nero.wukong.epicfight.animation.custom;
 
 import com.p1nero.wukong.capability.WKCapabilityProvider;
 import com.p1nero.wukong.epicfight.skill.custom.SmashHeavyAttack;
+import com.p1nero.wukong.epicfight.skill.custom.ThrustHeavyAttack;
 import com.p1nero.wukong.epicfight.skill.custom.WukongDodgeSkill;
 import com.p1nero.wukong.epicfight.weapon.WukongWeaponCategories;
 import yesman.epicfight.api.animation.property.AnimationEvent;
@@ -31,11 +32,23 @@ public class WukongDodgeAnimation extends DodgeAnimation {
             if(livingEntityPatch instanceof ServerPlayerPatch serverPlayerPatch && WukongWeaponCategories.isWeaponValid(livingEntityPatch)){
                 serverPlayerPatch.getOriginal().getCapability(WKCapabilityProvider.WK_PLAYER).ifPresent(wkPlayer -> {
                     SkillContainer weaponInnate = serverPlayerPatch.getSkill(SkillSlots.WEAPON_INNATE);
+                    //立棍戳棍要进行完美闪避的判断
                     if(weaponInnate.getDataManager().hasData(SmashHeavyAttack.IS_CHARGING) && weaponInnate.getDataManager().getDataValue(SmashHeavyAttack.IS_CHARGING) && !wkPlayer.isPerfectDodge() && !isPerfect){
                         weaponInnate.getSkill().setConsumptionSynchronize(serverPlayerPatch, 1);
                         weaponInnate.getSkill().setStackSynchronize(serverPlayerPatch, 0);
                     }
-                    weaponInnate.getDataManager().setDataSync(SmashHeavyAttack.IS_CHARGING, false, serverPlayerPatch.getOriginal());//无论如何都要中断蓄力
+                    if(weaponInnate.getDataManager().hasData(SmashHeavyAttack.IS_CHARGING)){
+                        weaponInnate.getDataManager().setDataSync(SmashHeavyAttack.IS_CHARGING, false, serverPlayerPatch.getOriginal());//无论如何都要中断蓄力
+                    }
+                    if(weaponInnate.getDataManager().hasData(ThrustHeavyAttack.IS_CHARGING) && weaponInnate.getDataManager().getDataValue(ThrustHeavyAttack.IS_CHARGING)){
+                        weaponInnate.getSkill().setConsumptionSynchronize(serverPlayerPatch, 1);
+                        weaponInnate.getSkill().setStackSynchronize(serverPlayerPatch, 0);
+                        weaponInnate.getDataManager().setDataSync(ThrustHeavyAttack.IS_CHARGING, false, serverPlayerPatch.getOriginal());//无论如何都要中断蓄力
+                    }
+                    //允许凤穿花
+                    if(weaponInnate.getDataManager().hasData(ThrustHeavyAttack.FENGCHUANHUA_TIMER) && (wkPlayer.isPerfectDodge() || isPerfect)){
+                        weaponInnate.getDataManager().setDataSync(ThrustHeavyAttack.FENGCHUANHUA_TIMER, ThrustHeavyAttack.MAX_DERIVE_TIMER, serverPlayerPatch.getOriginal());
+                    }
                 });
             }
         }), AnimationEvent.Side.SERVER));

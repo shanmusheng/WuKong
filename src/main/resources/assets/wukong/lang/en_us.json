@@ -15,6 +15,8 @@
   "skill.wukong.pillar_style.tooltip": "",
   "skill.wukong.dodge.tooltip": "Don't need to learn this skill. This skill now is bind with staff and it will automatically replace other dodge skill. But you need to have any other dodge skill at first. Dodge perfectly can increase consumption.",
   "skill.wukong.staff_flower.tooltip": "",
+  "key.wukong.jiao_zhen": "搅阵",
+  "key.wukong.heavy": "Heavy Attack",
   "key.wukong.smash_stance": "Smash Stance",
   "key.wukong.thrust_stance": "Thrust Stance",
   "key.wukong.pillar_stance": "Pillar Stance",

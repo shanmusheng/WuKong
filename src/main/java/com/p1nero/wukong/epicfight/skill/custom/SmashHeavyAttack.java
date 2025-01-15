@@ -7,6 +7,7 @@ import com.p1nero.wukong.Config;
 import com.p1nero.wukong.WukongMoveset;
 import com.p1nero.wukong.capability.WKCapabilityProvider;
 import com.p1nero.wukong.client.WuKongSounds;
+import com.p1nero.wukong.client.keymapping.WukongKeyMappings;
 import com.p1nero.wukong.epicfight.WukongStyles;
 import com.p1nero.wukong.epicfight.animation.StaticAnimationProvider;
 import com.p1nero.wukong.epicfight.animation.WukongAnimations;
@@ -26,17 +27,14 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import yesman.epicfight.api.animation.types.EntityState;
 import yesman.epicfight.api.animation.types.StaticAnimation;
 import yesman.epicfight.api.utils.AttackResult;
 import yesman.epicfight.api.utils.math.ValueModifier;
 import yesman.epicfight.api.utils.math.Vec2i;
 import yesman.epicfight.client.gui.BattleModeGui;
-import yesman.epicfight.client.input.EpicFightKeyMappings;
 import yesman.epicfight.config.ConfigurationIngame;
 import yesman.epicfight.main.EpicFightMod;
 import yesman.epicfight.skill.*;
@@ -77,7 +75,7 @@ public class SmashHeavyAttack extends WeaponInnateSkill {
     public static final SkillDataManager.SkillDataKey<Boolean> CAN_SECOND_DERIVE = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.BOOLEAN);//是否可以使用第二段衍生
     public static final SkillDataManager.SkillDataKey<Boolean> CAN_JUMP_HEAVY = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.BOOLEAN);//是否可以使用跳跃重击
     public static final SkillDataManager.SkillDataKey<Boolean> PLAY_SOUND = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.BOOLEAN);//是否播放棍势消耗音效
-    public static final SkillDataManager.SkillDataKey<Float> DAMAGE_REDUCE = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.FLOAT);//是否播放棍势消耗音效
+    public static final SkillDataManager.SkillDataKey<Float> DAMAGE_REDUCE = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.FLOAT);//伤害减免
     public static final SkillDataManager.SkillDataKey<Boolean> PROTECT_NEXT_FALL = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.BOOLEAN);//防止坠机
     protected final StaticAnimation[] animations;//0~4共有五种重击
     protected StaticAnimation deriveAnimation1;
@@ -145,11 +143,13 @@ public class SmashHeavyAttack extends WeaponInnateSkill {
             boolean stackConsumed = container.getStack() > 0;
             if(dataManager.getDataValue(DERIVE_TIMER) > 0 && stackConsumed){//有星才能用破棍式
                 if(dataManager.getDataValue(CAN_FIRST_DERIVE)){
+                    dataManager.setDataSync(CAN_FIRST_DERIVE, false, player);
                     dataManager.setData(PROTECT_NEXT_FALL, true);
                     executer.playSound(WuKongSounds.stackSounds.get(container.getStack() - 1).get(), 1, 1);
                     this.setStackSynchronize(executer, container.getStack() - 1);
                     executer.playAnimationSynchronized(deriveAnimation1, 0.2F);
                 }else if(dataManager.getDataValue(CAN_SECOND_DERIVE)){
+                    dataManager.setDataSync(CAN_SECOND_DERIVE, false, player);
                     dataManager.setData(PROTECT_NEXT_FALL, true);
                     executer.playSound(WuKongSounds.stackSounds.get(container.getStack() - 1).get(), 1, 1);
                     this.setStackSynchronize(executer, container.getStack() - 1);
@@ -214,7 +214,7 @@ public class SmashHeavyAttack extends WeaponInnateSkill {
 
         //长按期间禁止跳跃
         container.getExecuter().getEventListener().addEventListener(PlayerEventListener.EventType.MOVEMENT_INPUT_EVENT, EVENT_UUID, (event -> {
-            if (event.getPlayerPatch().isBattleMode() && EpicFightKeyMappings.WEAPON_INNATE_SKILL.isDown()) {
+            if (event.getPlayerPatch().isBattleMode() && WukongKeyMappings.HEAVY.isDownWithoutConflictCheck()) {
                 Input input = event.getMovementInput();
                 input.jumping = false;
             }
@@ -296,8 +296,8 @@ public class SmashHeavyAttack extends WeaponInnateSkill {
                         container.getDataManager().setDataSync(CHARGED4_TIMER, MAX_CHARGED4_TICKS, player);
                     }
                     if(event.getDamageSource().getAnimation().equals(deriveAnimation1)){
-                        container.getDataManager().setDataSync(SmashHeavyAttack.CAN_SECOND_DERIVE, true, player);
-                        container.getDataManager().setDataSync(SmashHeavyAttack.DERIVE_TIMER, SmashHeavyAttack.MAX_DERIVE_TIMER, player);
+                        container.getDataManager().setDataSync(CAN_SECOND_DERIVE, true, player);
+                        container.getDataManager().setDataSync(DERIVE_TIMER, MAX_DERIVE_TIMER, player);
                     }
                 }));
 
@@ -377,7 +377,7 @@ public class SmashHeavyAttack extends WeaponInnateSkill {
         }
         if(container.getExecuter().isLogicalClient()){
             //KEY_PRESSING用于服务端判断是否继续播动画
-            boolean isKeyDown = EpicFightKeyMappings.WEAPON_INNATE_SKILL.isDown();
+            boolean isKeyDown = WukongKeyMappings.HEAVY.isDown();
             dataManager.setDataSync(KEY_PRESSING, isKeyDown, ((LocalPlayer) container.getExecuter().getOriginal()));
         } else {
             ServerPlayerPatch serverPlayerPatch = ((ServerPlayerPatch) container.getExecuter());
@@ -391,9 +391,9 @@ public class SmashHeavyAttack extends WeaponInnateSkill {
             dataManager.setData(LAST_STACK, container.getStack());
 
             //跳重击的判断
-            if(!serverPlayer.isOnGround()){
+            if (!serverPlayer.isOnGround() && !serverPlayer.isInWater() && serverPlayer.getDeltaMovement().y > 0.05D) {
                 dataManager.setDataSync(CAN_JUMP_HEAVY, true, serverPlayer);
-            } else if(dataManager.getDataValue(CAN_JUMP_HEAVY)){
+            } else if (dataManager.getDataValue(CAN_JUMP_HEAVY)) {
                 dataManager.setDataSync(CAN_JUMP_HEAVY, false, serverPlayer);
             }
 
@@ -418,7 +418,9 @@ public class SmashHeavyAttack extends WeaponInnateSkill {
                     this.setConsumptionSynchronize(serverPlayerPatch, container.getResource() + Config.CHARGING_SPEED.get().floatValue());
                 }
                 //扣耐力
-                serverPlayerPatch.consumeStamina(Config.CHARGING_STAMINA_CONSUME.get().floatValue());
+                if(!serverPlayer.isCreative()){
+                    serverPlayerPatch.consumeStamina(Config.CHARGING_STAMINA_CONSUME.get().floatValue());
+                }
                 //松手或没耐力则清空棍势打重击
                 if(!dataManager.getDataValue(KEY_PRESSING) || !serverPlayerPatch.hasStamina(Config.CHARGING_STAMINA_CONSUME.get().floatValue() + 0.1F)){
                     dataManager.setDataSync(IS_CHARGING, false, serverPlayer);

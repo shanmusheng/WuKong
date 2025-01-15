@@ -25,6 +25,10 @@ public class WukongScaleStaffAttackAnimation extends BasicAttackAnimation {
         super(convertTime, antic, contact, recovery, collider, colliderJoint, path, armature);
     }
 
+    public WukongScaleStaffAttackAnimation(float convertTime, String path, Armature armature, Phase... phases) {
+        super(convertTime, path, armature, phases);
+    }
+
     /**
      * 取消加棍势
      * 设置减伤
@@ -68,6 +72,7 @@ public class WukongScaleStaffAttackAnimation extends BasicAttackAnimation {
         if(entityPatch.isLogicalClient() && WukongWeaponCategories.isWeaponValid(entityPatch)){
             CompoundTag tag = entityPatch.getOriginal().getMainHandItem().getOrCreateTag();
             tag.putBoolean("WK_shouldScaleItem", false);
+            tag.putBoolean("WK_shouldTranslateItem", false);
         }
     }
 }

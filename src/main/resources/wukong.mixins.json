@@ -5,7 +5,8 @@
   "package": "com.p1nero.wukong.mixin",
   "client": [
     "BattleModeGuiMixin",
-    "ItemRendererMixin"
+    "ItemRendererMixin",
+    "RenderEngineMixin"
   ],
   "mixins": [
     "BasicAttackMixin",

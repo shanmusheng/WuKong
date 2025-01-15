@@ -7,6 +7,7 @@ import com.p1nero.wukong.Config;
 import com.p1nero.wukong.WukongMoveset;
 import com.p1nero.wukong.capability.WKCapabilityProvider;
 import com.p1nero.wukong.client.WuKongSounds;
+import com.p1nero.wukong.client.keymapping.WukongKeyMappings;
 import com.p1nero.wukong.epicfight.WukongStyles;
 import com.p1nero.wukong.epicfight.animation.StaticAnimationProvider;
 import com.p1nero.wukong.epicfight.animation.custom.WukongDodgeAnimation;
@@ -34,7 +35,6 @@ import yesman.epicfight.api.utils.math.ValueModifier;
 import yesman.epicfight.api.utils.math.Vec2i;
 import yesman.epicfight.client.ClientEngine;
 import yesman.epicfight.client.gui.BattleModeGui;
-import yesman.epicfight.client.input.EpicFightKeyMappings;
 import yesman.epicfight.config.ConfigurationIngame;
 import yesman.epicfight.main.EpicFightMod;
 import yesman.epicfight.skill.*;
@@ -76,7 +76,6 @@ public class PillarHeavyAttack extends WeaponInnateSkill {
     public static final SkillDataManager.SkillDataKey<Float> DAMAGE_REDUCE = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.FLOAT);//是否播放棍势消耗音效
     public static final SkillDataManager.SkillDataKey<Boolean> PROTECT_NEXT_FALL = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.BOOLEAN);//防止坠机
     protected final StaticAnimation[] pres;//升起
-    protected final StaticAnimation[] trans;//过渡
     protected final StaticAnimation[] posts;//打出
     protected StaticAnimation deriveAnimationPre;
     protected StaticAnimation deriveAnimationLoop;
@@ -85,26 +84,20 @@ public class PillarHeavyAttack extends WeaponInnateSkill {
     @NotNull
     protected StaticAnimation jumpAttackHeavy;
 
-    public static Builder createChargedAttack(){
+    public static Builder createChargedAttack() {
         return new Builder().setCategory(SkillCategories.WEAPON_INNATE).setResource(Resource.NONE);
     }
 
     public PillarHeavyAttack(PillarHeavyAttack.Builder builder) {
         super(builder);
         this.pres = new StaticAnimation[builder.pres.length];
-        for(int i = 0; i < builder.pres.length; i++) {
+        for (int i = 0; i < builder.pres.length; i++) {
             WukongMoveset.LOGGER.info("loading heavy attack animations: {}", builder.pres[i].get());
             this.pres[i] = builder.pres[i].get();
         }
 
-        this.trans = new StaticAnimation[builder.trans.length];
-        for(int i = 0; i < builder.trans.length; i++) {
-            WukongMoveset.LOGGER.info("loading heavy attack animations: {}", builder.trans[i].get());
-            this.trans[i] = builder.trans[i].get();
-        }
-
         this.posts = new StaticAnimation[builder.posts.length];
-        for(int i = 0; i < builder.posts.length; i++) {
+        for (int i = 0; i < builder.posts.length; i++) {
             WukongMoveset.LOGGER.info("loading heavy attack animations: {}", builder.posts[i].get());
             this.posts[i] = builder.posts[i].get();
         }
@@ -138,25 +131,25 @@ public class PillarHeavyAttack extends WeaponInnateSkill {
         SkillDataManager dataManager = container.getDataManager();
         ServerPlayer player = executer.getOriginal();
         dataManager.setDataSync(STARS_CONSUMED, container.getStack(), player);//0星也是星！
-        if(dataManager.getDataValue(CAN_JUMP_HEAVY)){
+        if (dataManager.getDataValue(CAN_JUMP_HEAVY)) {
             dataManager.setData(PROTECT_NEXT_FALL, true);//放里面，防止瞎按技能键就防坠机的bug
             //跳跃攻击，也消耗所有棍势
             dataManager.setDataSync(CAN_JUMP_HEAVY, false, player);
-            if(container.getStack() > 0){//0星是null会中断
+            if (container.getStack() > 0) {//0星是null会中断
                 executer.playSound(WuKongSounds.stackSounds.get(container.getStack() - 1).get(), 1, 1);
             }
             executer.playAnimationSynchronized(jumpAttackHeavy, 0.15F);
             resetConsumption(container, executer, false);
-        } else if(player.isOnGround()){
+        } else if (player.isOnGround()) {
             //如果用了星则要强化衍生
             boolean stackConsumed = container.getStack() > 0;
-            if(dataManager.getDataValue(DERIVE_TIMER) > 0 && stackConsumed){
-                if(dataManager.getDataValue(CAN_FIRST_DERIVE)){
+            if (dataManager.getDataValue(DERIVE_TIMER) > 0 && stackConsumed) {
+                if (dataManager.getDataValue(CAN_FIRST_DERIVE)) {
                     dataManager.setData(PROTECT_NEXT_FALL, true);
                     executer.playSound(WuKongSounds.stackSounds.get(container.getStack() - 1).get(), 1, 1);
                     this.setStackSynchronize(executer, container.getStack() - 1);
                     executer.playAnimationSynchronized(deriveAnimationPre, 0.2F);
-                }else if(dataManager.getDataValue(CAN_SECOND_DERIVE)){
+                } else if (dataManager.getDataValue(CAN_SECOND_DERIVE)) {
                     dataManager.setData(PROTECT_NEXT_FALL, true);
                     executer.playSound(WuKongSounds.stackSounds.get(container.getStack() - 1).get(), 1, 1);
                     this.setStackSynchronize(executer, container.getStack() - 1);
@@ -164,7 +157,7 @@ public class PillarHeavyAttack extends WeaponInnateSkill {
                 }
             } else {
                 //重击，消耗所有星，开始蓄力，松手在客户端判断
-                if(!dataManager.getDataValue(IS_CHARGING)){
+                if (!dataManager.getDataValue(IS_CHARGING)) {
                     executer.playAnimationSynchronized(pres[container.getStack()], 0.2F);
                 }
             }
@@ -176,13 +169,14 @@ public class PillarHeavyAttack extends WeaponInnateSkill {
 
     /**
      * 清空耐力并播红光和音效
+     *
      * @param playSound 如果是通过蓄力而释放的就不播音效
      */
-    private void resetConsumption(SkillContainer container, ServerPlayerPatch executer, boolean playSound){
-        if(playSound && container.getStack() > 0){
+    private void resetConsumption(SkillContainer container, ServerPlayerPatch executer, boolean playSound) {
+        if (playSound && container.getStack() > 0) {
             int cnt = container.getStack();
-            new Thread(()->{
-                for(int i = 0; i < cnt; i++){
+            new Thread(() -> {
+                for (int i = 0; i < cnt; i++) {
                     executer.playSound(WuKongSounds.stackSounds.get(i).get(), 1, 1);
                     try {
                         Thread.sleep(300);
@@ -201,7 +195,6 @@ public class PillarHeavyAttack extends WeaponInnateSkill {
 
     @Override
     public void onInitiate(SkillContainer container) {
-        System.out.println("pillar Init");
         SkillDataManager manager = container.getDataManager();
         SkillDataRegister.register(manager, IS_REPEATING_DERIVE, false);
         SkillDataRegister.register(manager, KEY_PRESSING, false);
@@ -222,7 +215,7 @@ public class PillarHeavyAttack extends WeaponInnateSkill {
 
         //长按期间禁止移动
         container.getExecuter().getEventListener().addEventListener(PlayerEventListener.EventType.MOVEMENT_INPUT_EVENT, EVENT_UUID, (event -> {
-            if (event.getPlayerPatch().isBattleMode() && EpicFightKeyMappings.WEAPON_INNATE_SKILL.isDown()) {
+            if (event.getPlayerPatch().isBattleMode() && WukongKeyMappings.HEAVY.isDownWithoutConflictCheck()) {
                 Input input = event.getMovementInput();
                 input.forwardImpulse = 0.0F;
                 input.leftImpulse = 0.0F;
@@ -243,8 +236,8 @@ public class PillarHeavyAttack extends WeaponInnateSkill {
         //钢管舞期间减伤
         container.getExecuter().getEventListener().addEventListener(PlayerEventListener.EventType.HURT_EVENT_PRE, EVENT_UUID, (event -> {
             event.getPlayerPatch().getOriginal().getCapability(WKCapabilityProvider.WK_PLAYER).ifPresent(wkPlayer -> {
-                if(wkPlayer.getDamageReduce() > 0){
-                    if(event.getDamageSource() instanceof EpicFightDamageSource epicFightDamageSource){
+                if (wkPlayer.getDamageReduce() > 0) {
+                    if (event.getDamageSource() instanceof EpicFightDamageSource epicFightDamageSource) {
                         epicFightDamageSource.setStunType(StunType.NONE);
                     }
                     LivingEntityPatch<?> attackerPatch = EpicFightCapabilities.getEntityPatch(event.getDamageSource().getEntity(), LivingEntityPatch.class);
@@ -271,24 +264,24 @@ public class PillarHeavyAttack extends WeaponInnateSkill {
                 PlayerEventListener.EventType.ACTION_EVENT_SERVER, EVENT_UUID, (event -> {
                     ServerPlayer player = event.getPlayerPatch().getOriginal();
                     CapabilityItem capabilityItem = EpicFightCapabilities.getItemStackCapability(player.getMainHandItem());
-                    if(!WukongWeaponCategories.isWeaponValid(event.getPlayerPatch())){
+                    if (!WukongWeaponCategories.isWeaponValid(event.getPlayerPatch())) {
                         return;
                     }
 
                     List<StaticAnimation> autoAnimations = capabilityItem.getAutoAttckMotion(event.getPlayerPatch());
                     //autoAnimations 的倒一倒二是冲刺和跳跃攻击，倒三是第五段普攻
-                    boolean isLightAttack = autoAnimations.contains(event.getAnimation()) && !event.getAnimation().equals(autoAnimations.get(autoAnimations.size()-1)) && !event.getAnimation().equals(autoAnimations.get(autoAnimations.size()-2));
-                    boolean isLastLightAttack = autoAnimations.get(autoAnimations.size()-3).equals(event.getAnimation());
+                    boolean isLightAttack = autoAnimations.contains(event.getAnimation()) && !event.getAnimation().equals(autoAnimations.get(autoAnimations.size() - 1)) && !event.getAnimation().equals(autoAnimations.get(autoAnimations.size() - 2));
+                    boolean isLastLightAttack = autoAnimations.get(autoAnimations.size() - 3).equals(event.getAnimation());
 
                     //蓄力的时候做动作是非法的，应该清空棍势，悟空Dodge额外判断
-                    if(container.getDataManager().getDataValue(IS_CHARGING) && !List.of(pres).contains(event.getAnimation()) && !(event.getAnimation() instanceof WukongDodgeAnimation)){
+                    if (container.getDataManager().getDataValue(IS_CHARGING) && !List.of(pres).contains(event.getAnimation()) && !(event.getAnimation() instanceof WukongDodgeAnimation)) {
                         this.setConsumptionSynchronize(event.getPlayerPatch(), 1);
                         this.setStackSynchronize(event.getPlayerPatch(), 0);
                         container.getDataManager().setDataSync(IS_CHARGING, false, player);
                     }
 
                     //释放普攻后重置可衍生时间
-                    if(isLightAttack && !isLastLightAttack) {
+                    if (isLightAttack && !isLastLightAttack) {
                         container.getDataManager().setDataSync(CAN_FIRST_DERIVE, true, player);
                         container.getDataManager().setDataSync(DERIVE_TIMER, MAX_DERIVE_TIMER, player);
                     }
@@ -299,7 +292,7 @@ public class PillarHeavyAttack extends WeaponInnateSkill {
         container.getExecuter().getEventListener().addEventListener(
                 PlayerEventListener.EventType.DEALT_DAMAGE_EVENT_POST, EVENT_UUID, (event -> {
                     ServerPlayer player = event.getPlayerPatch().getOriginal();
-                    if(container.isFull()){
+                    if (container.isFull()) {
                         container.getDataManager().setDataSync(CHARGED4_TIMER, MAX_CHARGED4_TICKS, player);
                     }
                 })
@@ -309,7 +302,7 @@ public class PillarHeavyAttack extends WeaponInnateSkill {
                 PlayerEventListener.EventType.DEALT_DAMAGE_EVENT_PRE, EVENT_UUID, (event -> {
                     //根据星数改跳跃重击和切手2伤害
                     int starCnt = container.getDataManager().getDataValue(STARS_CONSUMED);
-                    if(event.getDamageSource().getAnimation().equals(jumpAttackHeavy)){
+                    if (event.getDamageSource().getAnimation().equals(jumpAttackHeavy)) {
                         float mul = switch (starCnt) {
                             case 1 -> 3;
                             case 2 -> 4.5F;
@@ -318,7 +311,7 @@ public class PillarHeavyAttack extends WeaponInnateSkill {
                             default -> 1.45F;
                         };
                         event.getDamageSource().setDamageModifier(ValueModifier.multiplier(mul));
-                    } else if(event.getDamageSource().getAnimation().equals(deriveAnimation2)){
+                    } else if (event.getDamageSource().getAnimation().equals(deriveAnimation2)) {
                         float mul = switch (starCnt) {
                             case 1 -> 4.7F;
                             case 2 -> 4.9F;
@@ -329,8 +322,8 @@ public class PillarHeavyAttack extends WeaponInnateSkill {
                     }
                     //对倒地的敌人不施加硬直
                     event.getTarget().getCapability(EpicFightCapabilities.CAPABILITY_ENTITY).ifPresent(entityPatch -> {
-                        if(entityPatch instanceof LivingEntityPatch<?> livingEntityPatch){
-                            if(livingEntityPatch.getEntityState().knockDown()){
+                        if (entityPatch instanceof LivingEntityPatch<?> livingEntityPatch) {
+                            if (livingEntityPatch.getEntityState().knockDown()) {
                                 event.getDamageSource().setStunType(StunType.NONE);
                             }
                         }
@@ -340,7 +333,7 @@ public class PillarHeavyAttack extends WeaponInnateSkill {
         super.onInitiate(container);
     }
 
-    public void processDamage(PlayerPatch<?> entitypatch, DamageSource damageSource, AttackResult.ResultType resultType, float amount, @Nullable LivingEntityPatch<?> attackerPatch){
+    public void processDamage(PlayerPatch<?> entitypatch, DamageSource damageSource, AttackResult.ResultType resultType, float amount, @Nullable LivingEntityPatch<?> attackerPatch) {
         AttackResult result = (entitypatch != null && !damageSource.isBypassInvul()) ? new AttackResult(resultType, amount) : AttackResult.success(amount);
         if (attackerPatch != null) {
             attackerPatch.setLastAttackResult(result);
@@ -367,85 +360,83 @@ public class PillarHeavyAttack extends WeaponInnateSkill {
     public void updateContainer(SkillContainer container) {
         super.updateContainer(container);
         SkillDataManager dataManager = container.getDataManager();
-        if(!dataManager.hasData(KEY_PRESSING)){
+        if (!dataManager.hasData(KEY_PRESSING)) {
             dataManager.registerData(KEY_PRESSING);
         }
-        if(container.getExecuter().isLogicalClient()){
+        if (container.getExecuter().isLogicalClient()) {
             //KEY_PRESSING用于服务端判断是否继续播动画
-            boolean isKeyDown = EpicFightKeyMappings.WEAPON_INNATE_SKILL.isDown();
+            boolean isKeyDown = WukongKeyMappings.HEAVY.isDown();
             dataManager.setDataSync(KEY_PRESSING, isKeyDown, ((LocalPlayer) container.getExecuter().getOriginal()));
         } else {
             ServerPlayerPatch serverPlayerPatch = ((ServerPlayerPatch) container.getExecuter());
             ServerPlayer serverPlayer = serverPlayerPatch.getOriginal();
 
             //层数变化检测以播音效
-            if(container.getStack() > dataManager.getDataValue(LAST_STACK)){
+            if (container.getStack() > dataManager.getDataValue(LAST_STACK)) {
                 serverPlayerPatch.playSound(WuKongSounds.stackSounds.get(container.getStack() - 1).get(), 1, 1);
                 dataManager.setDataSync(PLAY_SOUND, false, serverPlayer);
             }
             dataManager.setData(LAST_STACK, container.getStack());
 
             //跳重击的判断
-            if(!serverPlayer.isOnGround()){
+            if (!serverPlayer.isOnGround() && !serverPlayer.isInWater() && serverPlayer.getDeltaMovement().y > 0.05D) {
                 dataManager.setDataSync(CAN_JUMP_HEAVY, true, serverPlayer);
-            } else if(dataManager.getDataValue(CAN_JUMP_HEAVY)){
+            } else if (dataManager.getDataValue(CAN_JUMP_HEAVY)) {
                 dataManager.setDataSync(CAN_JUMP_HEAVY, false, serverPlayer);
             }
 
             //更新计时器
             dataManager.setDataSync(DERIVE_TIMER, Math.max(dataManager.getDataValue(DERIVE_TIMER) - 1, 0), serverPlayer);//切手技有效时间计算
             dataManager.setDataSync(RED_TIMER, Math.max(dataManager.getDataValue(RED_TIMER) - 1, 0), serverPlayer);//使用技能星数显示
-            if(dataManager.getDataValue(DERIVE_TIMER) <= 0){
+            if (dataManager.getDataValue(DERIVE_TIMER) <= 0) {
                 dataManager.setDataSync(CAN_FIRST_DERIVE, false, serverPlayer);
                 dataManager.setDataSync(CAN_SECOND_DERIVE, false, serverPlayer);
             }
 
-            if(dataManager.getDataValue(IS_CHARGING)){
+            if (dataManager.getDataValue(IS_CHARGING)) {
                 //防止切物品产生的bug
-                if(!WukongWeaponCategories.isWeaponValid(serverPlayerPatch)){
+                if (!WukongWeaponCategories.isWeaponValid(serverPlayerPatch)) {
                     dataManager.setDataSync(IS_CHARGING, false, serverPlayer);
                     this.setConsumptionSynchronize(serverPlayerPatch, 1);
                     this.setStackSynchronize(serverPlayerPatch, 0);
                     return;
                 }
                 //蓄力的加条
-                if(container.getStack() < 3){
+                if (container.getStack() < 3) {
                     int stackOld = container.getStack();
                     this.setConsumptionSynchronize(serverPlayerPatch, container.getResource() + Config.CHARGING_SPEED.get().floatValue());
                     int stackNew = container.getStack();
-                    if(stackNew > stackOld){
-                        serverPlayerPatch.playAnimationSynchronized(trans[stackOld], 0.0F);
+                    if (stackNew > stackOld) {
+                        serverPlayerPatch.playAnimationSynchronized(pres[stackNew], 0.25F);//升高
                     }
                 }
                 //松手则清空棍势打重击
-                if(!dataManager.getDataValue(KEY_PRESSING)){
+                if (!dataManager.getDataValue(KEY_PRESSING)) {
                     dataManager.setDataSync(IS_CHARGING, false, serverPlayer);
                     dataManager.setData(PROTECT_NEXT_FALL, true);//MAN
-                    System.out.println("play0");
                     serverPlayerPatch.playAnimationSynchronized(posts[container.getStack()], 0.0F);//有几星就几星重击
-                    System.out.println("play1");
                     dataManager.setDataSync(STARS_CONSUMED, container.getStack(), serverPlayer);//设置消耗星数，方便客户端绘制
                     resetConsumption(container, serverPlayerPatch, true);
                 }
             }
 
             //破条则加stack清空蓄力条
-            if(container.getStack() < 3 && Math.ceil(container.getResource(1.0F) * 20) > 10) {
+            if (container.getStack() < 3 && Math.ceil(container.getResource(1.0F) * 20) > 10) {
                 this.setConsumptionSynchronize(serverPlayerPatch, 1);
                 this.setStackSynchronize(serverPlayerPatch, container.getStack() + 1);
             }
 
             //四蓄的掉棍势时间判断
             int current = dataManager.getDataValue(CHARGED4_TIMER);
-            if(current > 0){
+            if (current > 0) {
                 dataManager.setDataSync(CHARGED4_TIMER, current - 1, serverPlayer);
             }
             float consumption = Config.CHARGING_SPEED.get().floatValue() / 5;
-            if(current == 1 && container.isFull()){
+            if (current == 1 && container.isFull()) {
                 this.setStackSynchronize(serverPlayerPatch, 3);
                 this.setConsumptionSynchronize(serverPlayerPatch, container.getMaxResource() - consumption);
             }
-            if(current == 0 && container.getStack() >= 3 && container.getResource() > consumption + 0.1){
+            if (current == 0 && container.getStack() >= 3 && container.getResource() > consumption + 0.1) {
                 this.setConsumptionSynchronize(serverPlayerPatch, container.getResource() - consumption);
             }
 
@@ -479,7 +470,7 @@ public class PillarHeavyAttack extends WeaponInnateSkill {
         poseStack.pushPose();
         poseStack.translate(0.0, gui.getSlidingProgression(), 0.0);
         ResourceLocation progressTexture = new ResourceLocation(WukongMoveset.MOD_ID, "textures/gui/staff_stack/progress/" + progress + ".png");
-        ResourceLocation styleTexture = new ResourceLocation(WukongMoveset.MOD_ID, "textures/gui/staff_stack/style/" + style + (stack == 4?"_1":"_0") + ".png");
+        ResourceLocation styleTexture = new ResourceLocation(WukongMoveset.MOD_ID, "textures/gui/staff_stack/style/" + style + (stack == 4 ? "_1" : "_0") + ".png");
         ResourceLocation stackTexture = new ResourceLocation(WukongMoveset.MOD_ID, "textures/gui/staff_stack/stack/" + stack + ".png");
         ResourceLocation goldenLightTexture = new ResourceLocation(WukongMoveset.MOD_ID, "textures/gui/staff_stack/light/gold.png");
         RenderSystem.setShaderTexture(0, progressTexture);
@@ -492,9 +483,9 @@ public class PillarHeavyAttack extends WeaponInnateSkill {
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
         GuiComponent.blit(poseStack, pos.x - 12, pos.y - 12, 48, 48, 0.0F, 0.0F, 2, 2, 2, 2);
 
-        if(container.getDataManager().getDataValue(RED_TIMER) > 0){
+        if (container.getDataManager().getDataValue(RED_TIMER) > 0) {
             int star = Math.min(container.getDataManager().getDataValue(STARS_CONSUMED), 3);
-            if(star > 0){
+            if (star > 0) {
                 ResourceLocation lightTexture = new ResourceLocation(WukongMoveset.MOD_ID, "textures/gui/staff_stack/light/" + star + ".png");//及时获取stack，新鲜的，热乎的
                 RenderSystem.setShaderTexture(0, lightTexture);
                 RenderSystem.setShader(GameRenderer::getPositionTexShader);
@@ -503,7 +494,7 @@ public class PillarHeavyAttack extends WeaponInnateSkill {
             }
         }
 
-        if(container.isFull()){
+        if (container.isFull()) {
             RenderSystem.setShaderTexture(0, goldenLightTexture);
             RenderSystem.setShader(GameRenderer::getPositionTexShader);
             GuiComponent.blit(poseStack, pos.x - 12, pos.y - 12, 48, 48, 0.0F, 0.0F, 2, 2, 2, 2);
@@ -520,7 +511,7 @@ public class PillarHeavyAttack extends WeaponInnateSkill {
     public static class Builder extends Skill.Builder<PillarHeavyAttack> {
         protected StaticAnimationProvider jumpAttackHeavy;
         protected StaticAnimationProvider[] pres;
-        protected StaticAnimationProvider[] trans;
+        protected StaticAnimationProvider[] loops;
         protected StaticAnimationProvider[] posts;
         protected StaticAnimationProvider derive1Pre;
         protected StaticAnimationProvider derive1Loop;
@@ -550,12 +541,11 @@ public class PillarHeavyAttack extends WeaponInnateSkill {
             return this;
         }
 
+        /**
+         * 升起
+         */
         public PillarHeavyAttack.Builder setPreAnimations(StaticAnimationProvider... pre) {
             this.pres = pre;
-            return this;
-        }
-        public PillarHeavyAttack.Builder setTransAnimations(StaticAnimationProvider... trans) {
-            this.trans = trans;
             return this;
         }
 
@@ -578,7 +568,7 @@ public class PillarHeavyAttack extends WeaponInnateSkill {
             return this;
         }
 
-        public PillarHeavyAttack.Builder setJumpAttackHeavy(StaticAnimationProvider jumpAttackHeavy){
+        public PillarHeavyAttack.Builder setJumpAttackHeavy(StaticAnimationProvider jumpAttackHeavy) {
             this.jumpAttackHeavy = jumpAttackHeavy;
             return this;
         }

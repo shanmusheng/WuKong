@@ -1,9 +1,6 @@
 package com.p1nero.wukong.mixin;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.p1nero.wukong.epicfight.skill.custom.PillarHeavyAttack;
-import com.p1nero.wukong.epicfight.skill.custom.SmashHeavyAttack;
-import com.p1nero.wukong.epicfight.skill.custom.ThrustHeavyAttack;
 import com.p1nero.wukong.epicfight.weapon.WukongWeaponCategories;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -28,9 +25,7 @@ public class BattleModeGuiMixin {
         if(capabilityItem.getWeaponCategory().equals(WukongWeaponCategories.WK_STAFF)){
             ci.cancel();
         }
-//        if(container.getSkill() instanceof SmashHeavyAttack || container.getSkill() instanceof PillarHeavyAttack || container.getSkill() instanceof ThrustHeavyAttack || container.getSkill().getRegistryName().getPath().equals("common")){
-//            ci.cancel();
-//        }
+
     }
 
 

@@ -21,11 +21,20 @@ import yesman.epicfight.world.capabilities.EpicFightCapabilities;
 public class ItemRendererMixin {
     @Inject(method = "render", at = @At("HEAD"))
     public void render(ItemStack itemStack, ItemTransforms.TransformType type, boolean p_115146_, PoseStack poseStack, MultiBufferSource p_115148_, int p_115149_, int p_115150_, BakedModel p_115151_, CallbackInfo ci){
+        if (type == ItemTransforms.TransformType.NONE || type == ItemTransforms.TransformType.GUI) {
+            return; // 如果是物品栏中的物品，不进行任何修改
+        }
         itemStack.getCapability(EpicFightCapabilities.CAPABILITY_ITEM).ifPresent(capabilityItem -> {
             if(capabilityItem.getWeaponCategory().equals(WukongWeaponCategories.WK_STAFF)){
                 CompoundTag tag = itemStack.getOrCreateTag();
                 if(tag.getBoolean("WK_shouldScaleItem")){
                     poseStack.scale(tag.getFloat("WK_XScale"), tag.getFloat("WK_YScale"), tag.getFloat("WK_ZScale"));
+                }
+                if (tag.getBoolean("WK_shouldTranslateItem")) {
+                    float tx = tag.getFloat("WK_XTranslation");
+                    float ty = tag.getFloat("WK_YTranslation");
+                    float tz = tag.getFloat("WK_ZTranslation");
+                    poseStack.translate(tx, ty, tz);  // 平移物品
                 }
             }
         });
