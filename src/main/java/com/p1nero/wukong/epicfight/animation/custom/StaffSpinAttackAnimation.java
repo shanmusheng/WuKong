@@ -3,21 +3,19 @@ package com.p1nero.wukong.epicfight.animation.custom;
 import com.p1nero.wukong.client.event.CameraAnim;
 import com.p1nero.wukong.epicfight.skill.custom.StaffPassive;
 import com.p1nero.wukong.epicfight.weapon.WukongWeaponCategories;
-import net.minecraft.client.player.LocalPlayer;
 import yesman.epicfight.api.animation.property.AnimationEvent;
 import yesman.epicfight.api.animation.property.AnimationProperty;
 import yesman.epicfight.api.animation.types.AttackAnimation;
 import yesman.epicfight.api.animation.types.BasicAttackAnimation;
 import yesman.epicfight.api.animation.types.DynamicAnimation;
-import yesman.epicfight.api.animation.types.EntityState;
 import yesman.epicfight.api.utils.math.ValueModifier;
 import yesman.epicfight.api.utils.math.Vec3f;
+import yesman.epicfight.client.world.capabilites.entitypatch.player.LocalPlayerPatch;
 import yesman.epicfight.model.armature.HumanoidArmature;
 import yesman.epicfight.skill.SkillContainer;
 import yesman.epicfight.skill.SkillSlots;
 import yesman.epicfight.world.capabilities.entitypatch.LivingEntityPatch;
 import yesman.epicfight.world.capabilities.entitypatch.player.PlayerPatch;
-import yesman.epicfight.world.capabilities.entitypatch.player.ServerPlayerPatch;
 
 /**
  * 尝试修改动画播放的move lock
@@ -38,7 +36,7 @@ public class StaffSpinAttackAnimation extends BasicAttackAnimation {
         this.addProperty(AnimationProperty.ActionAnimationProperty.CANCELABLE_MOVE, false);
         this.addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.5F))
                 .addEvents(AnimationProperty.StaticAnimationProperty.ON_BEGIN_EVENTS, AnimationEvent.TimeStampedEvent.create(((livingEntityPatch, staticAnimation, objects) -> {
-                            if(isTwoHand && livingEntityPatch.getOriginal() instanceof LocalPlayer){
+                            if(isTwoHand && livingEntityPatch instanceof LocalPlayerPatch localPlayerPatch && !localPlayerPatch.isTargetLockedOn()){
                                 CameraAnim.zoomIn(new Vec3f(-1.0F, 0.0F, 1.25F), 20);
                             }
                         }), AnimationEvent.Side.CLIENT));
@@ -69,7 +67,7 @@ public class StaffSpinAttackAnimation extends BasicAttackAnimation {
             SkillContainer passiveContainer = serverPlayerPatch.getSkill(SkillSlots.WEAPON_PASSIVE);
             passiveContainer.getDataManager().setData(StaffPassive.PLAYING_STAFF_SPIN, false);
         }
-        if(entityPatch.isLogicalClient() && CameraAnim.isAiming()){
+        if(entityPatch instanceof LocalPlayerPatch && CameraAnim.isAiming()){
             CameraAnim.zoomOut(20);//保险
         }
     }

@@ -12,6 +12,7 @@ import com.p1nero.wukong.network.packet.server.UpdateWeaponInnatePacket;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -28,7 +29,7 @@ import yesman.epicfight.world.capabilities.EpicFightCapabilities;
 import java.util.Collection;
 import java.util.Set;
 
-@Mod.EventBusSubscriber(modid = WukongMoveset.MOD_ID)
+@Mod.EventBusSubscriber(modid = WukongMoveset.MOD_ID, value = {Dist.CLIENT})
 public class HandleClientInput {
 
     /**
@@ -63,17 +64,19 @@ public class HandleClientInput {
     }
 
     @SubscribeEvent
-    public static void onMouseInput(InputEvent.MouseInputEvent event){
-        if(WukongKeyMappings.JIAO_ZHEN.getKey().equals(WukongKeyMappings.JIAO_ZHEN.getDefaultKey())){
-            if(event.getButton() == 0 && Minecraft.getInstance().player != null){
+    public static void onMouseInput(InputEvent.MouseInputEvent event) {
+        if (WukongKeyMappings.JIAO_ZHEN.getKey().equals(WukongKeyMappings.JIAO_ZHEN.getDefaultKey())) {
+            if (event.getButton() == 0 && Minecraft.getInstance().player != null) {
                 LocalPlayer player = Minecraft.getInstance().player;
                 LocalPlayerPatch patch = EpicFightCapabilities.getEntityPatch(player, LocalPlayerPatch.class);
-                if(patch.getSkill(SkillSlots.WEAPON_INNATE) != null){
+                if (player.isAlive() && patch != null && patch.getSkill(SkillSlots.WEAPON_INNATE) != null) {
                     SkillDataManager manager = patch.getSkill(SkillSlots.WEAPON_INNATE).getDataManager();
-                    if(event.getAction() == 1){
-                        manager.setDataSync(ThrustHeavyAttack.IS_ATTACK_KEY_DOWN, true, player);
-                    } else if(event.getAction() == 0){
-                        manager.setDataSync(ThrustHeavyAttack.IS_ATTACK_KEY_DOWN, false, player);
+                    if (manager.hasData(ThrustHeavyAttack.IS_ATTACK_KEY_DOWN)) {
+                        if (event.getAction() == 1) {
+                            manager.setDataSync(ThrustHeavyAttack.IS_ATTACK_KEY_DOWN, true, player);
+                        } else if (event.getAction() == 0) {
+                            manager.setDataSync(ThrustHeavyAttack.IS_ATTACK_KEY_DOWN, false, player);
+                        }
                     }
                 }
             }

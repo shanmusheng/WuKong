@@ -14,6 +14,9 @@ import com.p1nero.wukong.epicfight.animation.WukongAnimations;
 import com.p1nero.wukong.epicfight.animation.custom.WukongDodgeAnimation;
 import com.p1nero.wukong.epicfight.skill.SkillDataRegister;
 import com.p1nero.wukong.epicfight.weapon.WukongWeaponCategories;
+import com.p1nero.wukong.network.PacketHandler;
+import com.p1nero.wukong.network.PacketRelay;
+import com.p1nero.wukong.network.packet.client.AddEntityAfterImageParticle;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.player.Input;
@@ -30,13 +33,13 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import yesman.epicfight.api.animation.types.DynamicAnimation;
 import yesman.epicfight.api.animation.types.StaticAnimation;
 import yesman.epicfight.api.utils.AttackResult;
 import yesman.epicfight.api.utils.math.ValueModifier;
 import yesman.epicfight.api.utils.math.Vec2i;
 import yesman.epicfight.client.ClientEngine;
 import yesman.epicfight.client.gui.BattleModeGui;
-import yesman.epicfight.client.input.EpicFightKeyMappings;
 import yesman.epicfight.client.world.capabilites.entitypatch.player.LocalPlayerPatch;
 import yesman.epicfight.config.ConfigurationIngame;
 import yesman.epicfight.main.EpicFightMod;
@@ -48,9 +51,7 @@ import yesman.epicfight.world.capabilities.entitypatch.player.PlayerPatch;
 import yesman.epicfight.world.capabilities.entitypatch.player.ServerPlayerPatch;
 import yesman.epicfight.world.capabilities.item.CapabilityItem;
 import yesman.epicfight.world.damagesource.EpicFightDamageSource;
-import yesman.epicfight.world.damagesource.SourceTags;
 import yesman.epicfight.world.damagesource.StunType;
-import yesman.epicfight.world.entity.eventlistener.ComboCounterHandleEvent;
 import yesman.epicfight.world.entity.eventlistener.PlayerEventListener;
 
 import java.util.List;
@@ -64,17 +65,18 @@ public class ThrustHeavyAttack extends WeaponInnateSkill {
     private static final UUID EVENT_UUID = UUID.fromString("d2d057cc-f30f-11ed-a05b-0242ac114514");
     public static final int MAX_DERIVE_TIMER = Config.DERIVE_CHECK_TIME.get().intValue();//在此期间内再按才被视为衍生
     public static SkillDataManager.SkillDataKey<Boolean> KEY_PRESSING = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.BOOLEAN);//技能键是否按下
-    public static final SkillDataManager.SkillDataKey<Boolean> IS_ATTACK_KEY_DOWN = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.BOOLEAN);//是否处于长按衍生
+    public static SkillDataManager.SkillDataKey<Boolean> IS_ATTACK_KEY_DOWN = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.BOOLEAN);//是否处于长按衍生
     public static final SkillDataManager.SkillDataKey<Boolean> IS_REPEATING_DERIVE = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.BOOLEAN);//是否处于搅棍
+
     public static SkillDataManager.SkillDataKey<Integer> REPEATING_DERIVE_TIMER = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.INTEGER);//搅棍合法时间计时器
+    public static SkillDataManager.SkillDataKey<Integer> TRANSPARENT_TIMER = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.INTEGER);//虚化计时器
     public static SkillDataManager.SkillDataKey<Integer> FENGCHUANHUA_TIMER = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.INTEGER);//凤穿花合法时间计时器
     private static final SkillDataManager.SkillDataKey<Integer> CHARGED4_TIMER = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.INTEGER);//四段棍势持续时间
     public static final int MAX_CHARGED4_TICKS = 300;//15s
+    public static final int MAX_TRANSPARENT_TIMER = 30;
     private static SkillDataManager.SkillDataKey<Integer> RED_TIMER = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.INTEGER);//亮灯时间
     public static final SkillDataManager.SkillDataKey<Integer> LAST_STACK = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.INTEGER);//上一次的层数，用于判断是否加层
     public static final SkillDataManager.SkillDataKey<Integer> STARS_CONSUMED = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.INTEGER);//本次攻击是否消耗星（是否强化）
-    public static final SkillDataManager.SkillDataKey<Boolean> IS_IN_SPECIAL_ATTACK = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.BOOLEAN);//是否正在切手技
-    public static final SkillDataManager.SkillDataKey<Boolean> IS_SPECIAL_ATTACK_SUCCESS = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.BOOLEAN);//是否识破成功
     public static SkillDataManager.SkillDataKey<Boolean> IS_CHARGING = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.BOOLEAN);//是否正在蓄力
     public static SkillDataManager.SkillDataKey<Integer> DERIVE_TIMER = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.INTEGER);//衍生合法时间计时器
     public static SkillDataManager.SkillDataKey<Boolean> CAN_FIRST_DERIVE = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.BOOLEAN);//是否可以使用第一段衍生
@@ -126,6 +128,7 @@ public class ThrustHeavyAttack extends WeaponInnateSkill {
             ThrustHeavyAttack.KEY_PRESSING = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.BOOLEAN);
             ThrustHeavyAttack.DERIVE_TIMER = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.INTEGER);
             ThrustHeavyAttack.RED_TIMER = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.INTEGER);
+            ThrustHeavyAttack.IS_ATTACK_KEY_DOWN = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.BOOLEAN);//是否处于长按衍生
         });
     }
 
@@ -149,9 +152,9 @@ public class ThrustHeavyAttack extends WeaponInnateSkill {
             executer.playAnimationSynchronized(jumpAttackHeavy, 0.15F);
             resetConsumption(container, executer, false);
         } else {
-            //具体看闪避动画相关判断
-            if (dataManager.getDataValue(FENGCHUANHUA_TIMER) > 0 && container.isFull()) {
-                executer.playAnimationSynchronized(animations[container.getStack()], 0.15F);
+            //凤穿花，具体看闪避动画相关判断
+            if (dataManager.getDataValue(FENGCHUANHUA_TIMER) > 10 && container.isFull()) {
+                executer.playAnimationSynchronized(animations[container.getStack()], 0.0F);
                 this.setStackSynchronize(executer, 0);
                 this.setConsumptionSynchronize(executer, 1);
             } else if (dataManager.getDataValue(DERIVE_TIMER) > 0) {//有无星都能退
@@ -213,6 +216,7 @@ public class ThrustHeavyAttack extends WeaponInnateSkill {
         SkillDataRegister.register(manager, IS_ATTACK_KEY_DOWN, false);
         SkillDataRegister.register(manager, IS_REPEATING_DERIVE, false);
         SkillDataRegister.register(manager, REPEATING_DERIVE_TIMER, 0);
+        SkillDataRegister.register(manager, TRANSPARENT_TIMER, 0);
         SkillDataRegister.register(manager, FENGCHUANHUA_TIMER, 0);
         SkillDataRegister.register(manager, KEY_PRESSING, false);
         SkillDataRegister.register(manager, CHARGED4_TIMER, 0);
@@ -221,8 +225,6 @@ public class ThrustHeavyAttack extends WeaponInnateSkill {
         SkillDataRegister.register(manager, STARS_CONSUMED, 0);
         SkillDataRegister.register(manager, DAMAGE_REDUCE, 0.0F);
         SkillDataRegister.register(manager, IS_CHARGING, false);
-        SkillDataRegister.register(manager, IS_IN_SPECIAL_ATTACK, false);
-        SkillDataRegister.register(manager, IS_SPECIAL_ATTACK_SUCCESS, false);
         SkillDataRegister.register(manager, CAN_FIRST_DERIVE, false);
         SkillDataRegister.register(manager, CAN_SECOND_DERIVE, false);
         SkillDataRegister.register(manager, CAN_JUMP_HEAVY, false);
@@ -250,21 +252,40 @@ public class ThrustHeavyAttack extends WeaponInnateSkill {
             }
         }));
 
+        //退寸成功
+        container.getExecuter().getEventListener().addEventListener(PlayerEventListener.EventType.DODGE_SUCCESS_EVENT, EVENT_UUID, (event -> {
+            if(event.getPlayerPatch().getAnimator().getPlayerFor(null).getAnimation().equals(deriveAnimation1)){
+                container.getDataManager().setDataSync(TRANSPARENT_TIMER, MAX_TRANSPARENT_TIMER, event.getPlayerPatch().getOriginal());
+                event.getPlayerPatch().playSound(WuKongSounds.PERFECT_DODGE.get(), 0.5F, 0, 0);//TODO 替换
+                PacketRelay.sendToAll(PacketHandler.INSTANCE, new AddEntityAfterImageParticle(event.getPlayerPatch().getOriginal().getId()));
+            }
+        }));
+
         //成功识破加棍势，并重置普攻计数器，下次从三段普攻开始
         container.getExecuter().getEventListener().addEventListener(PlayerEventListener.EventType.HURT_EVENT_PRE, EVENT_UUID, (event -> {
-            if (container.getDataManager().getDataValue(IS_IN_SPECIAL_ATTACK)) {
-                //需加判断，否则此期间会猛涨
-                if (!container.getDataManager().getDataValue(IS_SPECIAL_ATTACK_SUCCESS)) {
-                    container.getSkill().setConsumptionSynchronize(event.getPlayerPatch(), container.getResource() + Config.CHARGING_SPEED.get().floatValue() * 20);//获得大量棍势
-                    container.getDataManager().setDataSync(IS_SPECIAL_ATTACK_SUCCESS, true, event.getPlayerPatch().getOriginal());
-                }
-            }
-            if (container.getDataManager().getDataValue(IS_SPECIAL_ATTACK_SUCCESS)) {
-                BasicAttack.setComboCounterWithEvent(ComboCounterHandleEvent.Causal.ACTION_ANIMATION_RESET, event.getPlayerPatch(), event.getPlayerPatch().getSkill(SkillSlots.BASIC_ATTACK), deriveAnimation1, 2);
+
+            //隐身无敌
+            //寸退成功在闪避成功事件里判断
+            if(container.getDataManager().getDataValue(TRANSPARENT_TIMER) > 0){
+                event.setResult(AttackResult.ResultType.MISSED);
                 event.setAmount(0);
+                event.setCanceled(true);
+                return;
+            }
+
+            //寸退和进尺过程中的霸体
+            DynamicAnimation current = event.getPlayerPatch().getAnimator().getPlayerFor(null).getAnimation();
+            if(current.equals(deriveAnimation1) || current.equals(deriveAnimation2)){
+                if(event.getDamageSource() instanceof EpicFightDamageSource epicFightDamageSource){
+                    epicFightDamageSource.setStunType(StunType.NONE);
+                }
+                LivingEntityPatch<?> attackerPatch = EpicFightCapabilities.getEntityPatch(event.getDamageSource().getEntity(), LivingEntityPatch.class);
+                this.processDamage(event.getPlayerPatch(), event.getDamageSource(), AttackResult.ResultType.SUCCESS, event.getAmount() * 0.7F, attackerPatch);
+                event.setResult(AttackResult.ResultType.BLOCKED);
                 event.setCanceled(true);
             }
 
+            //减伤动画的霸体
             event.getPlayerPatch().getOriginal().getCapability(WKCapabilityProvider.WK_PLAYER).ifPresent(wkPlayer -> {
                 if (wkPlayer.getDamageReduce() > 0) {
                     if (event.getDamageSource() instanceof EpicFightDamageSource epicFightDamageSource) {
@@ -332,11 +353,6 @@ public class ThrustHeavyAttack extends WeaponInnateSkill {
 
         container.getExecuter().getEventListener().addEventListener(
                 PlayerEventListener.EventType.DEALT_DAMAGE_EVENT_PRE, EVENT_UUID, (event -> {
-                    //成功识破则无视防御并造成强硬直
-                    if (container.getDataManager().getDataValue(IS_SPECIAL_ATTACK_SUCCESS)) {
-                        event.getDamageSource().addTag(SourceTags.GUARD_PUNCTURE);
-                        event.getDamageSource().setStunType(StunType.HOLD);
-                    }
 
                     //根据星数改跳跃重击和进尺伤害
                     int starCnt = container.getDataManager().getDataValue(STARS_CONSUMED);
@@ -358,6 +374,7 @@ public class ThrustHeavyAttack extends WeaponInnateSkill {
 //                        };
 //                        event.getDamageSource().setDamageModifier(ValueModifier.multiplier(mul));
                     }
+
                     //对倒地的敌人不施加硬直
                     event.getTarget().getCapability(EpicFightCapabilities.CAPABILITY_ENTITY).ifPresent(entityPatch -> {
                         if (entityPatch instanceof LivingEntityPatch<?> livingEntityPatch) {
@@ -371,14 +388,14 @@ public class ThrustHeavyAttack extends WeaponInnateSkill {
         super.onInitiate(container);
     }
 
-    public void processDamage(PlayerPatch<?> entitypatch, DamageSource damageSource, AttackResult.ResultType resultType, float amount, @Nullable LivingEntityPatch<?> attackerPatch) {
-        AttackResult result = (entitypatch != null && !damageSource.isBypassInvul()) ? new AttackResult(resultType, amount) : AttackResult.success(amount);
+    public void processDamage(PlayerPatch<?> playerPatch, DamageSource damageSource, AttackResult.ResultType resultType, float amount, @Nullable LivingEntityPatch<?> attackerPatch) {
+        AttackResult result = (playerPatch != null && !damageSource.isBypassInvul()) ? new AttackResult(resultType, amount) : AttackResult.success(amount);
         if (attackerPatch != null) {
             attackerPatch.setLastAttackResult(result);
         }
         DamageSource deflictedDamage = new DamageSource(damageSource.msgId).bypassInvul();
-        if (entitypatch != null) {
-            entitypatch.getOriginal().hurt(deflictedDamage, result.damage);
+        if (playerPatch != null) {
+            playerPatch.getOriginal().hurt(deflictedDamage, result.damage);
         }
     }
 
@@ -391,6 +408,7 @@ public class ThrustHeavyAttack extends WeaponInnateSkill {
         listener.removeListener(PlayerEventListener.EventType.DEALT_DAMAGE_EVENT_POST, EVENT_UUID);
         listener.removeListener(PlayerEventListener.EventType.DEALT_DAMAGE_EVENT_PRE, EVENT_UUID);
         listener.removeListener(PlayerEventListener.EventType.HURT_EVENT_PRE, EVENT_UUID);
+        listener.removeListener(PlayerEventListener.EventType.DODGE_SUCCESS_EVENT, EVENT_UUID);
         listener.removeListener(PlayerEventListener.EventType.FALL_EVENT, EVENT_UUID);
     }
 
@@ -433,6 +451,7 @@ public class ThrustHeavyAttack extends WeaponInnateSkill {
             dataManager.setDataSync(DERIVE_TIMER, Math.max(dataManager.getDataValue(DERIVE_TIMER) - 1, 0), serverPlayer);//切手技有效时间计算
             dataManager.setDataSync(REPEATING_DERIVE_TIMER, Math.max(dataManager.getDataValue(REPEATING_DERIVE_TIMER) - 1, 0), serverPlayer);//搅棍有效时间计算
             dataManager.setDataSync(FENGCHUANHUA_TIMER, Math.max(dataManager.getDataValue(FENGCHUANHUA_TIMER) - 1, 0), serverPlayer);//凤穿花有效时间计算
+            dataManager.setDataSync(TRANSPARENT_TIMER, Math.max(dataManager.getDataValue(TRANSPARENT_TIMER) - 1, 0), serverPlayer);//凤穿花有效时间计算
             dataManager.setDataSync(RED_TIMER, Math.max(dataManager.getDataValue(RED_TIMER) - 1, 0), serverPlayer);//使用技能星数显示
             if (dataManager.getDataValue(DERIVE_TIMER) <= 0) {
                 dataManager.setDataSync(CAN_FIRST_DERIVE, false, serverPlayer);

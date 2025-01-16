@@ -5,6 +5,8 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import yesman.epicfight.skill.SkillContainer;
+import yesman.epicfight.skill.SkillSlots;
 import yesman.epicfight.world.capabilities.EpicFightCapabilities;
 import yesman.epicfight.world.capabilities.entitypatch.player.ServerPlayerPatch;
 
@@ -22,7 +24,15 @@ public record UpdateWeaponInnatePacket() implements BasePacket {
     public void execute(Player player) {
         if(player != null){
             ItemStack toChange = player.getMainHandItem();
-            EpicFightCapabilities.getItemStackCapability(player.getMainHandItem()).changeWeaponInnateSkill(EpicFightCapabilities.getEntityPatch(player, ServerPlayerPatch.class), toChange);
+            ServerPlayerPatch patch = EpicFightCapabilities.getEntityPatch(player, ServerPlayerPatch.class);
+            if(player.isAlive() && patch != null){
+                SkillContainer container = patch.getSkill(SkillSlots.WEAPON_INNATE);
+                float resource = container.getResource();
+                int stack = container.getStack();
+                EpicFightCapabilities.getItemStackCapability(player.getMainHandItem()).changeWeaponInnateSkill(EpicFightCapabilities.getEntityPatch(player, ServerPlayerPatch.class), toChange);
+                container.getSkill().setStackSynchronize(patch, stack);
+                container.getSkill().setConsumptionSynchronize(patch, resource);
+            }
         }
     }
 }

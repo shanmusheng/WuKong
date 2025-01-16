@@ -4,6 +4,7 @@ import com.p1nero.wukong.Config;
 import com.p1nero.wukong.capability.WKCapabilityProvider;
 import com.p1nero.wukong.client.WuKongSounds;
 import com.p1nero.wukong.epicfight.animation.StaticAnimationProvider;
+import com.p1nero.wukong.epicfight.animation.custom.WukongDodgeAnimation;
 import com.p1nero.wukong.network.PacketHandler;
 import com.p1nero.wukong.network.PacketRelay;
 import com.p1nero.wukong.network.packet.client.AddEntityAfterImageParticle;
@@ -62,16 +63,19 @@ public class WukongDodgeSkill extends Skill {
             player.getCapability(WKCapabilityProvider.WK_PLAYER).ifPresent(wkPlayer -> {
                 wkPlayer.setPerfectDodge(true);
             });
-            if(!container.getDataManager().getDataValue(DODGE_PLAYED)){
-                event.getPlayerPatch().playSound(WuKongSounds.PERFECT_DODGE.get(), 1, 1);
-                if(player.level instanceof ServerLevel){
-                    PacketRelay.sendToAll(PacketHandler.INSTANCE, new AddEntityAfterImageParticle(player.getId()));//下面那行无效，手动发包解决
+            //和退寸区别开来
+            if(event.getPlayerPatch().getAnimator().getPlayerFor(null).getAnimation() instanceof WukongDodgeAnimation){
+                if(!container.getDataManager().getDataValue(DODGE_PLAYED)){
+                    event.getPlayerPatch().playSound(WuKongSounds.PERFECT_DODGE.get(), 1, 1);
+                    if(player.level instanceof ServerLevel){
+                        PacketRelay.sendToAll(PacketHandler.INSTANCE, new AddEntityAfterImageParticle(player.getId()));//下面那行无效，手动发包解决
 //                serverLevel.sendParticles(EpicFightParticles.ENTITY_AFTER_IMAGE.get(), player.getX(), player.getY(), player.getZ(), 0, Double.longBitsToDouble(player.getId()), 0.0, 0.0, 1.0);
+                    }
+                    SkillContainer weaponInnateContainer = event.getPlayerPatch().getSkill(SkillSlots.WEAPON_INNATE);
+                    weaponInnateContainer.getSkill().setConsumptionSynchronize(event.getPlayerPatch(), weaponInnateContainer.getResource() + Config.CHARGING_SPEED.get().floatValue() * 30);//获得棍势
+                    container.getDataManager().setData(DODGE_PLAYED, true);
+                    event.getPlayerPatch().playAnimationSynchronized(this.animations[3][container.getDataManager().getDataValue(DIRECTION)].get(), 0.0F);//只播一次
                 }
-                SkillContainer weaponInnateContainer = event.getPlayerPatch().getSkill(SkillSlots.WEAPON_INNATE);
-                weaponInnateContainer.getSkill().setConsumptionSynchronize(event.getPlayerPatch(), weaponInnateContainer.getResource() + Config.CHARGING_SPEED.get().floatValue() * 30);//获得棍势
-                container.getDataManager().setData(DODGE_PLAYED, true);
-                event.getPlayerPatch().playAnimationSynchronized(this.animations[3][container.getDataManager().getDataValue(DIRECTION)].get(), 0.0F);//只播一次
             }
         }));
     }

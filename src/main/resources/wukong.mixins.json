@@ -6,6 +6,7 @@
   "client": [
     "BattleModeGuiMixin",
     "ItemRendererMixin",
+    "PatchedLivingEntityRendererMixin",
     "RenderEngineMixin"
   ],
   "mixins": [

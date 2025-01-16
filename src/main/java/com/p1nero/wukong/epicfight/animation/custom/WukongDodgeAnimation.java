@@ -3,11 +3,9 @@ package com.p1nero.wukong.epicfight.animation.custom;
 import com.p1nero.wukong.capability.WKCapabilityProvider;
 import com.p1nero.wukong.epicfight.skill.custom.SmashHeavyAttack;
 import com.p1nero.wukong.epicfight.skill.custom.ThrustHeavyAttack;
-import com.p1nero.wukong.epicfight.skill.custom.WukongDodgeSkill;
 import com.p1nero.wukong.epicfight.weapon.WukongWeaponCategories;
 import yesman.epicfight.api.animation.property.AnimationEvent;
 import yesman.epicfight.api.animation.types.DodgeAnimation;
-import yesman.epicfight.api.animation.types.DynamicAnimation;
 import yesman.epicfight.api.animation.types.EntityState;
 import yesman.epicfight.api.model.Armature;
 import yesman.epicfight.skill.SkillContainer;
@@ -45,10 +43,6 @@ public class WukongDodgeAnimation extends DodgeAnimation {
                         weaponInnate.getSkill().setStackSynchronize(serverPlayerPatch, 0);
                         weaponInnate.getDataManager().setDataSync(ThrustHeavyAttack.IS_CHARGING, false, serverPlayerPatch.getOriginal());//无论如何都要中断蓄力
                     }
-                    //允许凤穿花
-                    if(weaponInnate.getDataManager().hasData(ThrustHeavyAttack.FENGCHUANHUA_TIMER) && (wkPlayer.isPerfectDodge() || isPerfect)){
-                        weaponInnate.getDataManager().setDataSync(ThrustHeavyAttack.FENGCHUANHUA_TIMER, ThrustHeavyAttack.MAX_DERIVE_TIMER, serverPlayerPatch.getOriginal());
-                    }
                 });
             }
         }), AnimationEvent.Side.SERVER));
@@ -70,10 +64,15 @@ public class WukongDodgeAnimation extends DodgeAnimation {
     @Override
     public void begin(LivingEntityPatch<?> entityPatch) {
         super.begin(entityPatch);
-        if(entityPatch instanceof ServerPlayerPatch playerPatch){
-            playerPatch.getOriginal().getCapability(WKCapabilityProvider.WK_PLAYER).ifPresent(wkPlayer -> {
+        if(entityPatch instanceof ServerPlayerPatch serverPlayerPatch){
+            serverPlayerPatch.getOriginal().getCapability(WKCapabilityProvider.WK_PLAYER).ifPresent(wkPlayer -> {
                 wkPlayer.setPerfectDodge(false);
             });
+            SkillContainer weaponInnate = serverPlayerPatch.getSkill(SkillSlots.WEAPON_INNATE);
+            //允许凤穿花
+            if(weaponInnate.getDataManager().hasData(ThrustHeavyAttack.FENGCHUANHUA_TIMER)){
+                weaponInnate.getDataManager().setDataSync(ThrustHeavyAttack.FENGCHUANHUA_TIMER, ThrustHeavyAttack.MAX_DERIVE_TIMER, serverPlayerPatch.getOriginal());
+            }
         }
     }
 

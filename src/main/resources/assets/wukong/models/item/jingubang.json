@@ -9,83 +9,46 @@
     "thirdperson_righthand": {
       "translation": [
         0,
-        6,
-        1.25
+        7,
+        0
       ],
       "scale": [
-        0.15,
-        0.15,
-        0.15
-      ]
-    },
-    "thirdperson_lefthand": {
-      "translation": [
-        0,
-        6,
-        -2
-      ],
-      "scale": [
-        0.15,
-        0.15,
-        0.15
+        0.13,
+        0.13,
+        0.13
       ]
     },
     "firstperson_righthand": {
-      "rotation": [
-        -1,
-        -21,
-        -6
-      ],
-      "translation": [
-        0,
-        5,
-        0
-      ],
       "scale": [
-        0.15,
-        0.15,
-        0.15
+        0.13,
+        0.13,
+        0.13
       ]
     },
     "firstperson_lefthand": {
-      "rotation": [
-        -1,
-        -21,
-        -6
-      ],
-      "translation": [
-        0,
-        5,
-        0
-      ],
       "scale": [
-        0.15,
-        0.15,
-        0.15
+        0.13,
+        0.13,
+        0.13
       ]
     },
     "ground": {
-      "rotation": [
-        90,
-        0,
-        0
-      ],
       "translation": [
         0,
-        0,
-        9.5
+        34.5,
+        0
       ],
       "scale": [
-        0.15,
-        0.15,
-        0.15
+        0.13,
+        0.13,
+        0.13
       ]
     },
     "gui": {
       "rotation": [
         0,
-        0,
-        -45
+        180,
+        45
       ],
       "translation": [
         2.75,
@@ -93,29 +56,25 @@
         0
       ],
       "scale": [
-        0.06,
-        0.06,
-        0.06
-      ]
-    },
-    "head": {
-      "scale": [
-        0.15,
-        0.15,
-        0.15
+        0.055,
+        0.055,
+        0.055
       ]
     },
     "fixed": {
       "translation": [
         0,
-        10.75,
+        14,
         0
       ],
       "scale": [
-        0.15,
-        0.15,
-        0.15
+        0.2,
+        0.2,
+        0.2
       ]
     }
+  },
+  "textures": {
+    "particle": "item/jingubang"
   }
 }

@@ -114,7 +114,7 @@ public class WukongSkills {
                                 () -> WukongAnimations.THRUST_CHARGED1,
                                 () -> WukongAnimations.THRUST_CHARGED2,
                                 () -> WukongAnimations.THRUST_CHARGED3,
-                                () -> WukongAnimations.THRUST_JUESICK_FENGCHUANHUA)
+                                () -> WukongAnimations.THRUST_CHARGED4)
                         .setDeriveAnimations(
                                 () -> WukongAnimations.THRUST_RETREAT,
                                 () -> WukongAnimations.THRUST_FOOTAGE,
