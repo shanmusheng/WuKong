@@ -34,6 +34,7 @@ import java.util.Set;
 public class WukongKeyMappings {
     public static final MyKeyMapping W = new MyKeyMapping("key.wukong.w", GLFW.GLFW_KEY_W, "key.wukong.category");
     public static final MyKeyMapping JIAO_ZHEN = new MyKeyMapping("key.wukong.jiao_zhen", InputConstants.Type.MOUSE, GLFW.GLFW_MOUSE_BUTTON_1, "key.wukong.category");
+    public static final MyKeyMapping JXSQ = new MyKeyMapping("key.wukong.jxsq", InputConstants.Type.MOUSE, GLFW.GLFW_KEY_2, "key.wukong.category");
     public static final MyKeyMapping HEAVY = new MyKeyMapping("key.wukong.heavy",  InputConstants.Type.MOUSE, GLFW.GLFW_MOUSE_BUTTON_2, "key.wukong.category");
     public static final MyKeyMapping SMASH_STYLE = new MyKeyMapping("key.wukong.smash_stance", GLFW.GLFW_KEY_Z, "key.wukong.category");
     public static final MyKeyMapping PILLAR_STYLE = new MyKeyMapping("key.wukong.pillar_stance", GLFW.GLFW_KEY_X, "key.wukong.category");

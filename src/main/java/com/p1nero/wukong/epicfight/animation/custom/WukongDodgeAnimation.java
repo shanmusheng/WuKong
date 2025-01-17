@@ -30,7 +30,7 @@ public class WukongDodgeAnimation extends DodgeAnimation {
             if(livingEntityPatch instanceof ServerPlayerPatch serverPlayerPatch && WukongWeaponCategories.isWeaponValid(livingEntityPatch)){
                 serverPlayerPatch.getOriginal().getCapability(WKCapabilityProvider.WK_PLAYER).ifPresent(wkPlayer -> {
                     SkillContainer weaponInnate = serverPlayerPatch.getSkill(SkillSlots.WEAPON_INNATE);
-                    //立棍戳棍要进行完美闪避的判断
+                    //立棍要进行完美闪避的判断
                     if(weaponInnate.getDataManager().hasData(SmashHeavyAttack.IS_CHARGING) && weaponInnate.getDataManager().getDataValue(SmashHeavyAttack.IS_CHARGING) && !wkPlayer.isPerfectDodge() && !isPerfect){
                         weaponInnate.getSkill().setConsumptionSynchronize(serverPlayerPatch, 1);
                         weaponInnate.getSkill().setStackSynchronize(serverPlayerPatch, 0);
@@ -38,10 +38,11 @@ public class WukongDodgeAnimation extends DodgeAnimation {
                     if(weaponInnate.getDataManager().hasData(SmashHeavyAttack.IS_CHARGING)){
                         weaponInnate.getDataManager().setDataSync(SmashHeavyAttack.IS_CHARGING, false, serverPlayerPatch.getOriginal());//无论如何都要中断蓄力
                     }
+                    //戳棍中断蓄力
                     if(weaponInnate.getDataManager().hasData(ThrustHeavyAttack.IS_CHARGING) && weaponInnate.getDataManager().getDataValue(ThrustHeavyAttack.IS_CHARGING)){
                         weaponInnate.getSkill().setConsumptionSynchronize(serverPlayerPatch, 1);
                         weaponInnate.getSkill().setStackSynchronize(serverPlayerPatch, 0);
-                        weaponInnate.getDataManager().setDataSync(ThrustHeavyAttack.IS_CHARGING, false, serverPlayerPatch.getOriginal());//无论如何都要中断蓄力
+                        weaponInnate.getDataManager().setDataSync(ThrustHeavyAttack.IS_CHARGING, false, serverPlayerPatch.getOriginal());
                     }
                 });
             }
