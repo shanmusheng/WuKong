@@ -3,7 +3,7 @@ package com.p1nero.wukong.epicfight.animation;
 import com.p1nero.wukong.Config;
 import com.p1nero.wukong.WukongMoveset;
 import com.p1nero.wukong.client.WuKongSounds;
-import com.p1nero.wukong.client.event.CameraAnim;
+import com.p1nero.wukong.client.events.CameraAnim;
 import com.p1nero.wukong.epicfight.animation.custom.*;
 import com.p1nero.wukong.epicfight.skill.custom.PillarHeavyAttack;
 import com.p1nero.wukong.epicfight.skill.custom.RedTideHeavyAttack;
@@ -36,6 +36,7 @@ import yesman.epicfight.api.utils.TimePairList;
 import yesman.epicfight.api.utils.math.ValueModifier;
 import yesman.epicfight.api.utils.math.Vec3f;
 import yesman.epicfight.client.world.capabilites.entitypatch.player.LocalPlayerPatch;
+import yesman.epicfight.gameasset.Animations;
 import yesman.epicfight.gameasset.Armatures;
 import yesman.epicfight.gameasset.EpicFightSounds;
 import yesman.epicfight.model.armature.HumanoidArmature;
@@ -146,6 +147,10 @@ public class WukongAnimations {
 
     //最高点循环， 0同1， 3同4
     public static StaticAnimation PILLAR_LOOP;
+
+    //聚形散气
+    public static StaticAnimation CLOUD_STEP_START;
+    public static StaticAnimation CLOUD_STEP_END;
 
     //赤潮
     public static StaticAnimation RED_TIDE_IDLE;
@@ -943,9 +948,9 @@ public class WukongAnimations {
                         }
                     }
                 }), AnimationEvent.Side.SERVER), AnimationEvent.create(((livingEntityPatch, staticAnimation, objects) -> {
-//                    if (livingEntityPatch.isLogicalClient()) {
-//                        CameraAnim.zoomOut(20);
-//                    }
+                    if (livingEntityPatch.isLogicalClient()) {
+                        CameraAnim.zoomOut(20);
+                    }
                 }), AnimationEvent.Side.CLIENT))
                 .addEvents(AnimationProperty.StaticAnimationProperty.ON_BEGIN_EVENTS, AnimationEvent.create(((livingEntityPatch, staticAnimation, objects) -> {
                     if (livingEntityPatch instanceof LocalPlayerPatch localPlayerPatch && !localPlayerPatch.isTargetLockedOn()) {
@@ -973,6 +978,20 @@ public class WukongAnimations {
                 .addProperty(AnimationProperty.ActionAnimationProperty.CANCELABLE_MOVE, false)
                 .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.8F));
         //戳end
+
+        //聚形散气
+        CLOUD_STEP_START = new ActionAnimation(0.15F, 0.6F, "biped/magicarts/jxsq_start", biped);
+
+        CLOUD_STEP_END = new AttackAnimation(0.15F, 0.6F, 0.15F, 0.8F, 1.6F, WukongColliders.JUMP_ATTACK_LIGHT, biped.toolR, "biped/magicarts/jxsq_end", biped)
+                .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(3.0F))
+                .addProperty(AnimationProperty.AttackPhaseProperty.IMPACT_MODIFIER, ValueModifier.multiplier(4.0F))
+                .addProperty(AnimationProperty.AttackPhaseProperty.MAX_STRIKES_MODIFIER, ValueModifier.setter(1))
+                .addProperty(AnimationProperty.ActionAnimationProperty.MOVE_ON_LINK, false)
+                .addProperty(AnimationProperty.ActionAnimationProperty.COORD_UPDATE_TIME, TimePairList.create(0.0F,0.6F))
+                .addProperty(AnimationProperty.ActionAnimationProperty.COORD_SET_BEGIN, MoveCoordFunctions.TRACE_DEST_LOCATION_BEGIN)
+                .addProperty(AnimationProperty.ActionAnimationProperty.COORD_SET_TICK, MoveCoordFunctions.TRACE_DEST_LOCATION)
+                .addProperty(AnimationProperty.ActionAnimationProperty.COORD_GET, MoveCoordFunctions.WORLD_COORD)
+                .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 0.99F));
 
         //赤潮
         RED_TIDE_IDLE = new StaticAnimation(true, "cc/cc_idle", biped);

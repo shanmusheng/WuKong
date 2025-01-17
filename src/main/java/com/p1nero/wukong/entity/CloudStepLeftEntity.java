@@ -1,0 +1,88 @@
+package com.p1nero.wukong.entity;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.UUID;
+
+import com.p1nero.wukong.epicfight.WukongSkillSlots;
+import com.p1nero.wukong.epicfight.skill.WukongSkills;
+import com.p1nero.wukong.epicfight.skill.custom.magicarts.CloudStepSkill;
+import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.ai.attributes.AttributeInstance;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.ai.targeting.TargetingConditions;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
+import org.jetbrains.annotations.NotNull;
+import yesman.epicfight.world.capabilities.entitypatch.LivingEntityPatch;
+import yesman.epicfight.world.capabilities.entitypatch.player.ServerPlayerPatch;
+import yesman.epicfight.world.entity.EpicFightEntities;
+
+public class CloudStepLeftEntity extends LivingEntity {
+    private static final List<ItemStack> EMPTY_LIST = Collections.emptyList();
+    private LivingEntityPatch<?> entityPatch;
+
+    public CloudStepLeftEntity(EntityType<? extends LivingEntity> type, Level level) {
+        super(type, level);
+    }
+
+    public CloudStepLeftEntity(LivingEntityPatch<?> entityPatch) {
+        this(EpicFightEntities.DODGE_LEFT.get(), entityPatch.getOriginal().level);
+        this.entityPatch = entityPatch;
+        AttributeInstance instance = this.getAttribute(Attributes.MAX_HEALTH);
+        if(instance != null){
+            instance.addPermanentModifier(new AttributeModifier(UUID.randomUUID(), "original health", entityPatch.getOriginal().getMaxHealth(), AttributeModifier.Operation.ADDITION));
+        }
+        Vec3 pos = entityPatch.getOriginal().position();
+        double x = pos.x;
+        double y = pos.y;
+        double z = pos.z;
+        this.setPos(x, y, z);
+        this.setBoundingBox(entityPatch.getOriginal().getBoundingBox().expandTowards(1.0, 0.0, 1.0));
+        if (this.getLevel().isClientSide()) {
+            this.discard();
+        }
+    }
+
+    public void tick() {
+
+        //转移仇恨
+        level.getNearbyEntities(LivingEntity.class, TargetingConditions.forCombat(), entityPatch.getOriginal(), new AABB(this.position().add(-30, -30, -30), this.position().add(30, 30, 30))).forEach(entity -> {
+            if(entityPatch.getOriginal().equals(entity.getLastHurtMob())){
+                entity.setLastHurtMob(this);
+            }
+            if(entity instanceof Mob mob){
+                mob.setTarget(this);
+            }
+        });
+
+        if (entityPatch instanceof ServerPlayerPatch serverPlayerPatch) {
+            if (serverPlayerPatch.getSkill(WukongSkillSlots.SHEN_FA).hasSkill(WukongSkills.JU_XING_SAN_QI)) {
+                if (serverPlayerPatch.getSkill(WukongSkillSlots.SHEN_FA).getDataManager().getDataValue(CloudStepSkill.TRANSPARENT_TIMER) < 10) {
+                    this.discard();
+                }
+            }
+        }
+        if (this.tickCount > CloudStepSkill.MAX_TIME) {
+            this.discard();
+        }
+    }
+
+    public @NotNull Iterable<ItemStack> getArmorSlots() {
+        return EMPTY_LIST;
+    }
+
+    public @NotNull ItemStack getItemBySlot(@NotNull EquipmentSlot slot) {
+        return ItemStack.EMPTY;
+    }
+
+    public void setItemSlot(@NotNull EquipmentSlot slot, @NotNull ItemStack stack) {
+    }
+
+    public @NotNull HumanoidArm getMainArm() {
+        return HumanoidArm.RIGHT;
+    }
+}

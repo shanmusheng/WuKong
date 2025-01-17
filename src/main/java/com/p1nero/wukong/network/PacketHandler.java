@@ -3,6 +3,7 @@ package com.p1nero.wukong.network;
 import com.p1nero.wukong.WukongMoveset;
 import com.p1nero.wukong.network.packet.BasePacket;
 import com.p1nero.wukong.network.packet.client.AddEntityAfterImageParticle;
+import com.p1nero.wukong.network.packet.client.AddEntityAfterImageWithTextureParticle;
 import com.p1nero.wukong.network.packet.client.ClientSyncPlayerCapabilityPacket;
 import com.p1nero.wukong.network.packet.server.PlayStaffFlowerPacket;
 import com.p1nero.wukong.network.packet.server.ServerSyncPlayerCapabilityPacket;
@@ -31,6 +32,7 @@ public class PacketHandler {
 
         //Server
         register(AddEntityAfterImageParticle.class, AddEntityAfterImageParticle::decode);
+        register(AddEntityAfterImageWithTextureParticle.class, AddEntityAfterImageWithTextureParticle::decode);
         register(ClientSyncPlayerCapabilityPacket.class, ClientSyncPlayerCapabilityPacket::decode);
         register(UpdateWeaponInnatePacket.class, UpdateWeaponInnatePacket::decode);
 

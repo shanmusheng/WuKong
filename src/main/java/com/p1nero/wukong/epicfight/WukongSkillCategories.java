@@ -4,8 +4,10 @@ import yesman.epicfight.skill.SkillCategory;
 
 public enum WukongSkillCategories implements SkillCategory
 {
-    //棍势
-    STAFF_STYLE(true, true, true);
+    //棍式
+    STAFF_STYLE(true, true, true),
+    QI_SHU(true, true, true),
+    SHEN_FA(true, true, true);
 
     final boolean save;
     final boolean sync;

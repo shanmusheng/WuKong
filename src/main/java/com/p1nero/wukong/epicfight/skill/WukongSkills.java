@@ -4,21 +4,16 @@ import com.p1nero.wukong.WukongMoveset;
 import com.p1nero.wukong.epicfight.WukongStyles;
 import com.p1nero.wukong.epicfight.animation.WukongAnimations;
 import com.p1nero.wukong.epicfight.skill.custom.*;
+import com.p1nero.wukong.epicfight.skill.custom.magicarts.CloudStepSkill;
 import com.p1nero.wukong.item.WukongItems;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.player.Player;
 import yesman.epicfight.api.data.reloader.SkillManager;
 import yesman.epicfight.api.forgeevent.SkillBuildEvent;
 import yesman.epicfight.skill.Skill;
 import yesman.epicfight.skill.SkillCategories;
-import yesman.epicfight.skill.SkillSlots;
 import yesman.epicfight.skill.dodge.DodgeSkill;
 import yesman.epicfight.skill.dodge.StepSkill;
 import yesman.epicfight.skill.weaponinnate.WeaponInnateSkill;
-import yesman.epicfight.world.capabilities.EpicFightCapabilities;
-import yesman.epicfight.world.capabilities.entitypatch.player.PlayerPatch;
-
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class WukongSkills {
     public static Skill SMASH_STYLE;
@@ -31,17 +26,10 @@ public class WukongSkills {
     public static Skill WUKONG_DODGE;
     public static Skill RED_TIDE_SKILL;
     public static Skill RED_TIDE_DODGE;
-    public static Skill Ding;//定身术
-
-    public static int getCurrentStack(Player player) {
-        AtomicInteger stack = new AtomicInteger(0);
-        player.getCapability(EpicFightCapabilities.CAPABILITY_ENTITY).ifPresent(entityPatch -> {
-            if (entityPatch instanceof PlayerPatch<?> patch) {
-                stack.set(patch.getSkill(SkillSlots.WEAPON_INNATE).getStack());
-            }
-        });
-        return stack.get();
-    }
+    public static Skill DING;
+    public static Skill AN_SHEN_FA;
+    public static Skill JU_XING_SAN_QI;
+    public static Skill TONG_TOU_TIE_BI;
 
     public static void registerSkills() {
 
@@ -127,6 +115,9 @@ public class WukongSkills {
         SkillManager.register(StaffStance::new, StaffStance.createStaffStyle().setStyle(WukongStyles.THRUST).setCreativeTab(WukongItems.CREATIVE_MODE_TAB), WukongMoveset.MOD_ID, "thrust_style");
         SkillManager.register(StaffStance::new, StaffStance.createStaffStyle().setStyle(WukongStyles.PILLAR).setCreativeTab(WukongItems.CREATIVE_MODE_TAB), WukongMoveset.MOD_ID, "pillar_style");
 
+        SkillManager.register(CloudStepSkill::new, CloudStepSkill.createCloudStep().setCreativeTab(WukongItems.CREATIVE_MODE_TAB)
+                .setAnim(() -> WukongAnimations.CLOUD_STEP_START, () -> WukongAnimations.CLOUD_STEP_END), WukongMoveset.MOD_ID, "ju_xing_san_qi");
+
         SkillManager.register(RedTideHeavyAttack::new, WeaponInnateSkill.createWeaponInnateBuilder(), WukongMoveset.MOD_ID, "red_tide_heavy");
         SkillManager.register(StepSkill::new, DodgeSkill.createDodgeBuilder().setAnimations(new ResourceLocation(WukongMoveset.MOD_ID, "cc/cc_dodge"), new ResourceLocation(WukongMoveset.MOD_ID, "cc/cc_dodge_b"), new ResourceLocation(WukongMoveset.MOD_ID, "cc/cc_dodge_l"), new ResourceLocation(WukongMoveset.MOD_ID, "cc/cc_dodge_r")), WukongMoveset.MOD_ID, "red_tide_dodge");
     }
@@ -143,6 +134,8 @@ public class WukongSkills {
         SMASH_STYLE = event.build(WukongMoveset.MOD_ID, "smash_style");
         THRUST_STYLE = event.build(WukongMoveset.MOD_ID, "thrust_style");
         PILLAR_STYLE = event.build(WukongMoveset.MOD_ID, "pillar_style");
+
+        JU_XING_SAN_QI = event.build(WukongMoveset.MOD_ID, "ju_xing_san_qi");
 
         RED_TIDE_SKILL = event.build(WukongMoveset.MOD_ID, "red_tide_heavy");
         RED_TIDE_DODGE = event.build(WukongMoveset.MOD_ID, "red_tide_dodge");

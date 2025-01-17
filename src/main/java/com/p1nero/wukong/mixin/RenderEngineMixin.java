@@ -1,6 +1,6 @@
 package com.p1nero.wukong.mixin;
 
-import com.p1nero.wukong.client.event.CameraAnim;
+import com.p1nero.wukong.client.events.CameraAnim;
 import net.minecraft.client.CameraType;
 import net.minecraftforge.client.event.EntityViewRenderEvent;
 import org.spongepowered.asm.mixin.Mixin;

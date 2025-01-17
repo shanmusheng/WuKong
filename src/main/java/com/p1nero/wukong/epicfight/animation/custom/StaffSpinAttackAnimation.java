@@ -1,6 +1,6 @@
 package com.p1nero.wukong.epicfight.animation.custom;
 
-import com.p1nero.wukong.client.event.CameraAnim;
+import com.p1nero.wukong.client.events.CameraAnim;
 import com.p1nero.wukong.epicfight.skill.custom.StaffPassive;
 import com.p1nero.wukong.epicfight.weapon.WukongWeaponCategories;
 import yesman.epicfight.api.animation.property.AnimationEvent;

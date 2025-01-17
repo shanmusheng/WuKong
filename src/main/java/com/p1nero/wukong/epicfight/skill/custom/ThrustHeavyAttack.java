@@ -13,6 +13,7 @@ import com.p1nero.wukong.epicfight.animation.StaticAnimationProvider;
 import com.p1nero.wukong.epicfight.animation.WukongAnimations;
 import com.p1nero.wukong.epicfight.animation.custom.WukongDodgeAnimation;
 import com.p1nero.wukong.epicfight.skill.SkillDataRegister;
+import com.p1nero.wukong.epicfight.skill.custom.magicarts.CloudStepSkill;
 import com.p1nero.wukong.epicfight.weapon.WukongWeaponCategories;
 import com.p1nero.wukong.network.PacketHandler;
 import com.p1nero.wukong.network.PacketRelay;
@@ -355,6 +356,15 @@ public class ThrustHeavyAttack extends WeaponInnateSkill {
 
         container.getExecuter().getEventListener().addEventListener(
                 PlayerEventListener.EventType.DEALT_DAMAGE_EVENT_PRE, EVENT_UUID, (event -> {
+
+                    //聚形散气加伤（没有暴击率...）
+                    if(manager.hasData(CloudStepSkill.CHARGING_TIMER)){
+                        int chargingTime = manager.getDataValue(CloudStepSkill.CHARGING_TIMER);
+                        if(List.of(animations).contains(event.getDamageSource().getAnimation())){
+                            double damageBoost = 1 + (0.2 * (CloudStepSkill.MAX_TIME - chargingTime) / CloudStepSkill.MAX_TIME);
+                            event.setAttackDamage((float) (damageBoost * event.getAttackDamage()));
+                        }
+                    }
 
                     //根据星数改跳跃重击和进尺伤害
                     int starCnt = container.getDataManager().getDataValue(STARS_CONSUMED);

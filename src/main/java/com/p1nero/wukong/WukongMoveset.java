@@ -3,6 +3,7 @@ package com.p1nero.wukong;
 import com.mojang.logging.LogUtils;
 import com.p1nero.wukong.client.WuKongSounds;
 import com.p1nero.wukong.client.particle.WuKongParticles;
+import com.p1nero.wukong.entity.WukongEntities;
 import com.p1nero.wukong.epicfight.WukongSkillCategories;
 import com.p1nero.wukong.epicfight.WukongSkillSlots;
 import com.p1nero.wukong.epicfight.animation.WukongAnimations;
@@ -43,6 +44,7 @@ public class WukongMoveset{
         WukongItems.ITEMS.register(bus);
         WuKongParticles.PARTICLES.register(bus);
         WuKongSounds.SOUND_EVENTS.register(bus);
+        WukongEntities.ENTITIES.register(bus);
         bus.addListener(SmashHeavyAttack::register);
         PacketHandler.register();
         WukongSkills.registerSkills();
