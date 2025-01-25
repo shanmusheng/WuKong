@@ -13,7 +13,9 @@ import com.p1nero.wukong.epicfight.animation.StaticAnimationProvider;
 import com.p1nero.wukong.epicfight.animation.WukongAnimations;
 import com.p1nero.wukong.epicfight.animation.custom.WukongDodgeAnimation;
 import com.p1nero.wukong.epicfight.skill.SkillDataRegister;
+import com.p1nero.wukong.epicfight.skill.WukongSkills;
 import com.p1nero.wukong.epicfight.skill.custom.magicarts.CloudStepSkill;
+import com.p1nero.wukong.epicfight.skill.custom.magicarts.TTTBSkill;
 import com.p1nero.wukong.epicfight.weapon.WukongWeaponCategories;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiComponent;
@@ -140,9 +142,23 @@ public class SmashHeavyAttack extends WeaponInnateSkill {
             executer.playAnimationSynchronized(jumpAttackHeavy, 0.15F);
             resetConsumption(container, executer, false);
         } else if(player.isOnGround()){
+
+
+            //铜头铁壁成功后的判断，可以马上放蓄力，算彩蛋但是清了棍势
+            SkillContainer tongTouTieBi = executer.getSkill(WukongSkills.TONG_TOU_TIE_BI);
+            if(tongTouTieBi != null){
+                SkillDataManager tDataManager = tongTouTieBi.getDataManager();
+                if(tDataManager.hasData(TTTBSkill.TTTB_TIMER) && tDataManager.getDataValue(TTTBSkill.TTTB_TIMER) > 0 && container.getStack() > 0){
+                    executer.playAnimationSynchronized(animations[container.getStack()], 0.0F);
+                    resetConsumption(container, executer, true);
+                    super.executeOnServer(executer, args);
+                    return;
+                }
+            }
+
             //如果用了星则要强化衍生
             boolean stackConsumed = container.getStack() > 0;
-            if(dataManager.getDataValue(DERIVE_TIMER) > 0 && stackConsumed){//有星才能用破棍式
+            if(dataManager.getDataValue(DERIVE_TIMER) > 0){
                 if(dataManager.getDataValue(CAN_FIRST_DERIVE)){
                     dataManager.setDataSync(CAN_FIRST_DERIVE, false, player);
                     dataManager.setData(PROTECT_NEXT_FALL, true);
@@ -282,7 +298,10 @@ public class SmashHeavyAttack extends WeaponInnateSkill {
                     }
 
                     //释放普攻后重置可衍生时间
-                    if(isLightAttack || event.getAnimation().equals(WukongAnimations.STAFF_AUTO1_DASH) && !isLastLightAttack) {
+                    if(isLastLightAttack){
+                        container.getDataManager().setDataSync(CAN_FIRST_DERIVE, false, player);
+                        container.getDataManager().setDataSync(DERIVE_TIMER, 0, player);
+                    } else if (isLightAttack || event.getAnimation().equals(WukongAnimations.STAFF_AUTO1_DASH)) {
                         container.getDataManager().setDataSync(CAN_FIRST_DERIVE, true, player);
                         container.getDataManager().setDataSync(DERIVE_TIMER, MAX_DERIVE_TIMER, player);
                     }

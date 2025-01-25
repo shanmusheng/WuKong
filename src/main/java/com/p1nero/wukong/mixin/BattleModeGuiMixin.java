@@ -20,12 +20,10 @@ public class BattleModeGuiMixin {
      */
     @Inject(method = "drawWeaponInnateIcon", at = @At(value = "HEAD"), cancellable = true)
     private void modifyTexture(LocalPlayerPatch playerPatch, SkillContainer container, PoseStack matStack, float partialTicks, CallbackInfo ci){
-
         CapabilityItem capabilityItem = EpicFightCapabilities.getItemStackCapability(playerPatch.getOriginal().getMainHandItem());
         if(capabilityItem.getWeaponCategory().equals(WukongWeaponCategories.WK_STAFF)){
             ci.cancel();
         }
-
     }
 
 

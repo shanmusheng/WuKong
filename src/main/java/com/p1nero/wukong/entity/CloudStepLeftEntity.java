@@ -7,6 +7,7 @@ import java.util.UUID;
 import com.p1nero.wukong.epicfight.WukongSkillSlots;
 import com.p1nero.wukong.epicfight.skill.WukongSkills;
 import com.p1nero.wukong.epicfight.skill.custom.magicarts.CloudStepSkill;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
@@ -17,6 +18,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
+import yesman.epicfight.particle.EpicFightParticles;
 import yesman.epicfight.world.capabilities.entitypatch.LivingEntityPatch;
 import yesman.epicfight.world.capabilities.entitypatch.player.ServerPlayerPatch;
 import yesman.epicfight.world.entity.EpicFightEntities;
@@ -34,7 +36,7 @@ public class CloudStepLeftEntity extends LivingEntity {
         this.entityPatch = entityPatch;
         AttributeInstance instance = this.getAttribute(Attributes.MAX_HEALTH);
         if(instance != null){
-            instance.addPermanentModifier(new AttributeModifier(UUID.randomUUID(), "original health", entityPatch.getOriginal().getMaxHealth(), AttributeModifier.Operation.ADDITION));
+            instance.addPermanentModifier(new AttributeModifier(UUID.randomUUID(), "original health", entityPatch.getOriginal().getMaxHealth() * 2, AttributeModifier.Operation.ADDITION));
         }
         Vec3 pos = entityPatch.getOriginal().position();
         double x = pos.x;
@@ -45,6 +47,12 @@ public class CloudStepLeftEntity extends LivingEntity {
         if (this.getLevel().isClientSide()) {
             this.discard();
         }
+    }
+
+    @Override
+    public boolean hurt(@NotNull DamageSource source, float damage) {
+//        level.addParticle(EpicFightParticles.ENTITY_AFTER_IMAGE.get(), getX(), getY(), getZ(), Double.longBitsToDouble(entityPatch.getOriginal().getId()), 0.0, 0.0);
+        return super.hurt(source, damage);
     }
 
     public void tick() {

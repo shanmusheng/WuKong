@@ -5,6 +5,7 @@ import com.p1nero.wukong.epicfight.WukongStyles;
 import com.p1nero.wukong.epicfight.animation.WukongAnimations;
 import com.p1nero.wukong.epicfight.skill.custom.*;
 import com.p1nero.wukong.epicfight.skill.custom.magicarts.CloudStepSkill;
+import com.p1nero.wukong.epicfight.skill.custom.magicarts.TTTBSkill;
 import com.p1nero.wukong.item.WukongItems;
 import net.minecraft.resources.ResourceLocation;
 import yesman.epicfight.api.data.reloader.SkillManager;
@@ -116,10 +117,17 @@ public class WukongSkills {
         SkillManager.register(StaffStance::new, StaffStance.createStaffStyle().setStyle(WukongStyles.PILLAR).setCreativeTab(WukongItems.CREATIVE_MODE_TAB), WukongMoveset.MOD_ID, "pillar_style");
 
         SkillManager.register(CloudStepSkill::new, CloudStepSkill.createCloudStep().setCreativeTab(WukongItems.CREATIVE_MODE_TAB)
-                .setAnim(() -> WukongAnimations.CLOUD_STEP_START, () -> WukongAnimations.CLOUD_STEP_END), WukongMoveset.MOD_ID, "ju_xing_san_qi");
+                .setAnim(() -> WukongAnimations.CLOUD_STEP_START, () -> WukongAnimations.CLOUD_STEP_START_BACKWARD, () -> WukongAnimations.CLOUD_STEP_END_FORWARD, () -> WukongAnimations.CLOUD_STEP_END_STOP), WukongMoveset.MOD_ID, "ju_xing_san_qi");
+        SkillManager.register(TTTBSkill::new, TTTBSkill.createTTTB().setCreativeTab(WukongItems.CREATIVE_MODE_TAB)
+                .setAnim(() -> WukongAnimations.TONG_TOU_TIE_BI, () -> WukongAnimations.TONG_TOU_TIE_BI_FAIL, () -> WukongAnimations.TONG_TOU_TIE_BI_END), WukongMoveset.MOD_ID, "tong_tou_tie_bi");
 
         SkillManager.register(RedTideHeavyAttack::new, WeaponInnateSkill.createWeaponInnateBuilder(), WukongMoveset.MOD_ID, "red_tide_heavy");
-        SkillManager.register(StepSkill::new, DodgeSkill.createDodgeBuilder().setAnimations(new ResourceLocation(WukongMoveset.MOD_ID, "cc/cc_dodge"), new ResourceLocation(WukongMoveset.MOD_ID, "cc/cc_dodge_b"), new ResourceLocation(WukongMoveset.MOD_ID, "cc/cc_dodge_l"), new ResourceLocation(WukongMoveset.MOD_ID, "cc/cc_dodge_r")), WukongMoveset.MOD_ID, "red_tide_dodge");
+        SkillManager.register(StepSkill::new, DodgeSkill.createDodgeBuilder()
+                .setAnimations(new ResourceLocation(WukongMoveset.MOD_ID, "cc/cc_dodge"),
+                        new ResourceLocation(WukongMoveset.MOD_ID, "cc/cc_dodge_b"),
+                        new ResourceLocation(WukongMoveset.MOD_ID, "cc/cc_dodge_l"),
+                        new ResourceLocation(WukongMoveset.MOD_ID, "cc/cc_dodge_r")),
+                WukongMoveset.MOD_ID, "red_tide_dodge");
     }
 
 
@@ -136,6 +144,7 @@ public class WukongSkills {
         PILLAR_STYLE = event.build(WukongMoveset.MOD_ID, "pillar_style");
 
         JU_XING_SAN_QI = event.build(WukongMoveset.MOD_ID, "ju_xing_san_qi");
+        TONG_TOU_TIE_BI = event.build(WukongMoveset.MOD_ID, "tong_tou_tie_bi");
 
         RED_TIDE_SKILL = event.build(WukongMoveset.MOD_ID, "red_tide_heavy");
         RED_TIDE_DODGE = event.build(WukongMoveset.MOD_ID, "red_tide_dodge");

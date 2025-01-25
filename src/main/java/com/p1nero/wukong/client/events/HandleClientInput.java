@@ -7,6 +7,7 @@ import com.p1nero.wukong.epicfight.WukongSkillSlots;
 import com.p1nero.wukong.epicfight.skill.WukongSkills;
 import com.p1nero.wukong.epicfight.skill.custom.ThrustHeavyAttack;
 import com.p1nero.wukong.epicfight.weapon.WukongWeaponCategories;
+import com.p1nero.wukong.mixin.ControlEngineAccessor;
 import com.p1nero.wukong.network.PacketHandler;
 import com.p1nero.wukong.network.PacketRelay;
 import com.p1nero.wukong.network.packet.server.UpdateWeaponInnatePacket;
@@ -133,31 +134,32 @@ public class HandleClientInput {
 
     public static void heavyAttackKeyPressed(int action){
         if(action == 1){
-            LocalPlayer player = Minecraft.getInstance().player;
-            if(player != null && EpicFightCapabilities.getItemStackCapability(player.getMainHandItem()).getWeaponCategory().equals(WukongWeaponCategories.WK_STAFF)){
-                LocalPlayerPatch localPlayerPatch = EpicFightCapabilities.getEntityPatch(player, LocalPlayerPatch.class);
-                localPlayerPatch.getSkill(SkillSlots.WEAPON_INNATE).sendExecuteRequest(localPlayerPatch, ClientEngine.getInstance().controllEngine);
-            }
+            sendSkillPacket(SkillSlots.WEAPON_INNATE, WukongKeyMappings.HEAVY);
         }
     }
 
     public static void qiShuKeyPressed(int action) {
         if (action == 1) {
-            sendSkillPacket(WukongSkillSlots.QI_SHU);
+            sendSkillPacket(WukongSkillSlots.QI_SHU, WukongKeyMappings.QI_SHU);
         }
     }
 
     public static void shenFaKeyPressed(int action){
         if(action == 1){
-            sendSkillPacket(WukongSkillSlots.SHEN_FA);
+            sendSkillPacket(WukongSkillSlots.SHEN_FA, WukongKeyMappings.SHEN_FA);
         }
     }
 
-    public static void sendSkillPacket(SkillSlot slot){
+    public static void sendSkillPacket(SkillSlot slot, KeyMapping key){
         LocalPlayer player = Minecraft.getInstance().player;
         if(player != null && EpicFightCapabilities.getItemStackCapability(player.getMainHandItem()).getWeaponCategory().equals(WukongWeaponCategories.WK_STAFF)){
             LocalPlayerPatch localPlayerPatch = EpicFightCapabilities.getEntityPatch(player, LocalPlayerPatch.class);
-            localPlayerPatch.getSkill(slot).sendExecuteRequest(localPlayerPatch, ClientEngine.getInstance().controllEngine);
+            if(localPlayerPatch.getSkill(slot).sendExecuteRequest(localPlayerPatch, ClientEngine.getInstance().controllEngine).shouldReserverKey()){
+                ControlEngineAccessor controlEngine = (ControlEngineAccessor) ClientEngine.getInstance().controllEngine;
+                controlEngine.setReserveCounter(8);
+                controlEngine.setReservedOrChargingSkillSlot(slot);
+                controlEngine.setReservedKey(key);
+            }
         }
     }
 

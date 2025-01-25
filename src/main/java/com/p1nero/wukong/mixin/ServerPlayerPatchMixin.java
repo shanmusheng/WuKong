@@ -1,30 +1,26 @@
 package com.p1nero.wukong.mixin;
 
-import com.p1nero.wukong.epicfight.animation.custom.WukongScaleStaffAttackAnimation;
-import com.p1nero.wukong.epicfight.skill.custom.SmashHeavyAttack;
+import com.p1nero.wukong.epicfight.skill.custom.ThrustHeavyAttack;
 import net.minecraft.server.level.ServerPlayer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import yesman.epicfight.skill.SkillDataManager;
 import yesman.epicfight.skill.SkillSlots;
 import yesman.epicfight.world.capabilities.entitypatch.player.PlayerPatch;
 import yesman.epicfight.world.capabilities.entitypatch.player.ServerPlayerPatch;
-import yesman.epicfight.world.damagesource.EpicFightDamageSource;
 
 /**
- * 取消耗星后的攻击造成的棍势增加
- * 改用{@link yesman.epicfight.api.animation.types.AttackAnimation#isBasicAttackAnimation()} 来取消
+ * 退寸成功后一段时间内部耗耐力
  */
 @Mixin(value = ServerPlayerPatch.class, remap = false)
 public abstract class ServerPlayerPatchMixin extends PlayerPatch<ServerPlayer> {
-    @Inject(method = "gatherDamageDealt", at = @At(value = "HEAD"), cancellable = true)
-    private void inject(EpicFightDamageSource source, float amount, CallbackInfo ci){
-//        SkillDataManager manager = this.getSkill(SkillSlots.WEAPON_INNATE).getDataManager();
-//        if(manager.hasData(SmashHeavyAttack.CANCEL_NEXT_CONSUMPTION) && manager.getDataValue(SmashHeavyAttack.CANCEL_NEXT_CONSUMPTION)){
-//            manager.setDataSync(SmashHeavyAttack.CANCEL_NEXT_CONSUMPTION, false, this.getOriginal());
-//            ci.cancel();
-//        }
+    @Inject(method = "consumeStamina", at = @At(value = "HEAD"), cancellable = true)
+    private void inject(float amount, CallbackInfoReturnable<Boolean> cir){
+        SkillDataManager manager = this.getSkill(SkillSlots.WEAPON_INNATE).getDataManager();
+        if(manager.hasData(ThrustHeavyAttack.DODGE_SUCCESS_TIMER) && manager.getDataValue(ThrustHeavyAttack.DODGE_SUCCESS_TIMER) > 0){
+            cir.setReturnValue(false);
+        }
     }
 }

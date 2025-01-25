@@ -5,6 +5,7 @@
   "package": "com.p1nero.wukong.mixin",
   "client": [
     "BattleModeGuiMixin",
+    "ControlEngineAccessor",
     "ItemRendererMixin",
     "PatchedLivingEntityRendererMixin",
     "RenderEngineMixin"

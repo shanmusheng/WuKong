@@ -13,7 +13,9 @@ import com.p1nero.wukong.epicfight.animation.StaticAnimationProvider;
 import com.p1nero.wukong.epicfight.animation.WukongAnimations;
 import com.p1nero.wukong.epicfight.animation.custom.WukongDodgeAnimation;
 import com.p1nero.wukong.epicfight.skill.SkillDataRegister;
+import com.p1nero.wukong.epicfight.skill.WukongSkills;
 import com.p1nero.wukong.epicfight.skill.custom.magicarts.CloudStepSkill;
+import com.p1nero.wukong.epicfight.skill.custom.magicarts.TTTBSkill;
 import com.p1nero.wukong.epicfight.weapon.WukongWeaponCategories;
 import com.p1nero.wukong.network.PacketHandler;
 import com.p1nero.wukong.network.PacketRelay;
@@ -35,6 +37,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import yesman.epicfight.api.animation.AnimationPlayer;
 import yesman.epicfight.api.animation.types.DynamicAnimation;
 import yesman.epicfight.api.animation.types.StaticAnimation;
 import yesman.epicfight.api.utils.AttackResult;
@@ -70,12 +73,14 @@ public class ThrustHeavyAttack extends WeaponInnateSkill {
     public static SkillDataManager.SkillDataKey<Boolean> KEY_PRESSING = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.BOOLEAN);//技能键是否按下
     public static SkillDataManager.SkillDataKey<Boolean> IS_ATTACK_KEY_DOWN = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.BOOLEAN);//是否处于长按衍生
     public static final SkillDataManager.SkillDataKey<Boolean> IS_REPEATING_DERIVE = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.BOOLEAN);//是否处于搅棍
-
-    public static SkillDataManager.SkillDataKey<Integer> REPEATING_DERIVE_TIMER = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.INTEGER);//搅棍合法时间计时器
-    public static SkillDataManager.SkillDataKey<Integer> TRANSPARENT_TIMER = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.INTEGER);//虚化计时器
-    public static SkillDataManager.SkillDataKey<Integer> FENGCHUANHUA_TIMER = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.INTEGER);//凤穿花合法时间计时器
+    public static final SkillDataManager.SkillDataKey<Integer> REPEATING_DERIVE_TIMER = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.INTEGER);//搅棍合法时间计时器
+    public static final SkillDataManager.SkillDataKey<Integer> TRANSPARENT_TIMER = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.INTEGER);//虚化计时器
+    public static final SkillDataManager.SkillDataKey<Integer> FENGCHUANHUA_TIMER = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.INTEGER);//凤穿花合法时间计时器
     private static final SkillDataManager.SkillDataKey<Integer> CHARGED4_TIMER = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.INTEGER);//四段棍势持续时间
+    public static final SkillDataManager.SkillDataKey<Integer> DODGE_SUCCESS_TIMER = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.INTEGER);//退寸成功后不耗耐力的持续时间
+    public static SkillDataManager.SkillDataKey<Boolean> DODGE_SUCCESS = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.BOOLEAN);//是否退寸成功，用于进尺无敌帧判断
     public static final int MAX_CHARGED4_TICKS = 300;//15s
+    public static final int MAX_DODGE_SUCCESS_TICKS = 300;//15s
     public static final int MAX_TRANSPARENT_TIMER = 30;
     private static SkillDataManager.SkillDataKey<Integer> RED_TIMER = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.INTEGER);//亮灯时间
     public static final SkillDataManager.SkillDataKey<Integer> LAST_STACK = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.INTEGER);//上一次的层数，用于判断是否加层
@@ -155,6 +160,19 @@ public class ThrustHeavyAttack extends WeaponInnateSkill {
             executer.playAnimationSynchronized(jumpAttackHeavy, 0.15F);
             resetConsumption(container, executer, false);
         } else {
+
+            //铜头铁壁成功后的判断，可以马上放蓄力，算彩蛋但是清了棍势
+            SkillContainer tongTouTieBi = executer.getSkill(WukongSkills.TONG_TOU_TIE_BI);
+            if(tongTouTieBi != null){
+                SkillDataManager tDataManager = tongTouTieBi.getDataManager();
+                if(tDataManager.hasData(TTTBSkill.TTTB_TIMER) && tDataManager.getDataValue(TTTBSkill.TTTB_TIMER) > 0 && container.getStack() > 0){
+                    executer.playAnimationSynchronized(animations[container.getStack()], 0.0F);
+                    resetConsumption(container, executer, true);
+                    super.executeOnServer(executer, args);
+                    return;
+                }
+            }
+
             //凤穿花，具体看闪避动画相关判断
             if (dataManager.getDataValue(FENGCHUANHUA_TIMER) > 10 && container.isFull()) {
                 executer.playAnimationSynchronized(animations[container.getStack()], 0.0F);
@@ -219,6 +237,8 @@ public class ThrustHeavyAttack extends WeaponInnateSkill {
         SkillDataRegister.register(manager, IS_ATTACK_KEY_DOWN, false);
         SkillDataRegister.register(manager, IS_REPEATING_DERIVE, false);
         SkillDataRegister.register(manager, REPEATING_DERIVE_TIMER, 0);
+        SkillDataRegister.register(manager, DODGE_SUCCESS_TIMER, 0);
+        SkillDataRegister.register(manager, DODGE_SUCCESS, false);
         SkillDataRegister.register(manager, TRANSPARENT_TIMER, 0);
         SkillDataRegister.register(manager, FENGCHUANHUA_TIMER, 0);
         SkillDataRegister.register(manager, KEY_PRESSING, false);
@@ -258,14 +278,25 @@ public class ThrustHeavyAttack extends WeaponInnateSkill {
         //退寸成功
         container.getExecuter().getEventListener().addEventListener(PlayerEventListener.EventType.DODGE_SUCCESS_EVENT, EVENT_UUID, (event -> {
             if(event.getPlayerPatch().getAnimator().getPlayerFor(null).getAnimation().equals(deriveAnimation1)){
-                container.getDataManager().setDataSync(TRANSPARENT_TIMER, MAX_TRANSPARENT_TIMER, event.getPlayerPatch().getOriginal());
-                event.getPlayerPatch().playSound(WuKongSounds.PERFECT_DODGE.get(), 0.5F, 0, 0);//TODO 替换
-                PacketRelay.sendToAll(PacketHandler.INSTANCE, new AddEntityAfterImageParticle(event.getPlayerPatch().getOriginal().getId()));
+                this.onDodgeSuccess(container, event.getPlayerPatch());
             }
         }));
 
         //成功识破加棍势，并重置普攻计数器，下次从三段普攻开始
         container.getExecuter().getEventListener().addEventListener(PlayerEventListener.EventType.HURT_EVENT_PRE, EVENT_UUID, (event -> {
+
+
+            AnimationPlayer animationPlayer = event.getPlayerPatch().getAnimator().getPlayerFor(null);
+            DynamicAnimation currentAnim = animationPlayer.getAnimation();
+
+            //退寸成功后进尺无敌
+            //寸退成功在闪避成功事件里判断
+            if(currentAnim.equals(deriveAnimation2) && container.getDataManager().getDataValue(DODGE_SUCCESS)){
+                event.setResult(AttackResult.ResultType.MISSED);
+                event.setAmount(0);
+                event.setCanceled(true);
+                return;
+            }
 
             //隐身无敌
             //寸退成功在闪避成功事件里判断
@@ -276,9 +307,16 @@ public class ThrustHeavyAttack extends WeaponInnateSkill {
                 return;
             }
 
+            //退寸成功则可虚化
+            if(currentAnim.equals(deriveAnimation1) && animationPlayer.getElapsedTime() <= 0.8F){
+                this.onDodgeSuccess(container, event.getPlayerPatch());
+                event.setResult(AttackResult.ResultType.MISSED);
+                event.setAmount(0);
+                event.setCanceled(true);
+            }
+
             //寸退和进尺过程中的霸体
-            DynamicAnimation current = event.getPlayerPatch().getAnimator().getPlayerFor(null).getAnimation();
-            if(current.equals(deriveAnimation1) || current.equals(deriveAnimation2)){
+            if(currentAnim.equals(deriveAnimation1) || currentAnim.equals(deriveAnimation2)){
                 if(event.getDamageSource() instanceof EpicFightDamageSource epicFightDamageSource){
                     epicFightDamageSource.setStunType(StunType.NONE);
                 }
@@ -338,7 +376,10 @@ public class ThrustHeavyAttack extends WeaponInnateSkill {
                     }
 
                     //释放普攻后重置可衍生时间
-                    if (isLightAttack || event.getAnimation().equals(WukongAnimations.STAFF_AUTO1_DASH) && !isLastLightAttack) {
+                    if(isLastLightAttack){
+                        container.getDataManager().setDataSync(CAN_FIRST_DERIVE, false, player);
+                        container.getDataManager().setDataSync(DERIVE_TIMER, 0, player);
+                    } else if (isLightAttack || event.getAnimation().equals(WukongAnimations.STAFF_AUTO1_DASH)) {
                         container.getDataManager().setDataSync(CAN_FIRST_DERIVE, true, player);
                         container.getDataManager().setDataSync(DERIVE_TIMER, MAX_DERIVE_TIMER, player);
                     }
@@ -400,6 +441,17 @@ public class ThrustHeavyAttack extends WeaponInnateSkill {
         super.onInitiate(container);
     }
 
+    /**
+     * 退寸成功
+     */
+    public void onDodgeSuccess(SkillContainer container, ServerPlayerPatch serverPlayerPatch){
+        container.getDataManager().setDataSync(TRANSPARENT_TIMER, MAX_TRANSPARENT_TIMER, serverPlayerPatch.getOriginal());
+        container.getDataManager().setDataSync(DODGE_SUCCESS_TIMER, MAX_DODGE_SUCCESS_TICKS, serverPlayerPatch.getOriginal());//一段时间内不耗耐力
+        container.getDataManager().setDataSync(DODGE_SUCCESS, true, serverPlayerPatch.getOriginal());//下次进尺可以无伤
+        serverPlayerPatch.playSound(WuKongSounds.PERFECT_DODGE.get(), 0.5F, 0, 0);//TODO 替换
+        PacketRelay.sendToAll(PacketHandler.INSTANCE, new AddEntityAfterImageParticle(serverPlayerPatch.getOriginal().getId()));
+    }
+
     public void processDamage(PlayerPatch<?> playerPatch, DamageSource damageSource, AttackResult.ResultType resultType, float amount, @Nullable LivingEntityPatch<?> attackerPatch) {
         AttackResult result = (playerPatch != null && !damageSource.isBypassInvul()) ? new AttackResult(resultType, amount) : AttackResult.success(amount);
         if (attackerPatch != null) {
@@ -437,7 +489,6 @@ public class ThrustHeavyAttack extends WeaponInnateSkill {
             //KEY_PRESSING用于服务端判断是否继续播动画
             dataManager.setDataSync(KEY_PRESSING, WukongKeyMappings.HEAVY.isDownWithoutConflictCheck(), localPlayer);
             //用于搅棍判断
-//            System.out.println(EpicFightKeyMappings.ATTACK.isDown());放弃了，无法获取左键
             if(!WukongKeyMappings.JIAO_ZHEN.getKey().equals(WukongKeyMappings.JIAO_ZHEN.getDefaultKey())){
                 dataManager.setDataSync(IS_ATTACK_KEY_DOWN, WukongKeyMappings.JIAO_ZHEN.isDownWithoutConflictCheck(), localPlayer);
             }
@@ -463,7 +514,8 @@ public class ThrustHeavyAttack extends WeaponInnateSkill {
             dataManager.setDataSync(DERIVE_TIMER, Math.max(dataManager.getDataValue(DERIVE_TIMER) - 1, 0), serverPlayer);//切手技有效时间计算
             dataManager.setDataSync(REPEATING_DERIVE_TIMER, Math.max(dataManager.getDataValue(REPEATING_DERIVE_TIMER) - 1, 0), serverPlayer);//搅棍有效时间计算
             dataManager.setDataSync(FENGCHUANHUA_TIMER, Math.max(dataManager.getDataValue(FENGCHUANHUA_TIMER) - 1, 0), serverPlayer);//凤穿花有效时间计算
-            dataManager.setDataSync(TRANSPARENT_TIMER, Math.max(dataManager.getDataValue(TRANSPARENT_TIMER) - 1, 0), serverPlayer);//凤穿花有效时间计算
+            dataManager.setDataSync(TRANSPARENT_TIMER, Math.max(dataManager.getDataValue(TRANSPARENT_TIMER) - 1, 0), serverPlayer);//透明有效时间计算
+            dataManager.setDataSync(DODGE_SUCCESS_TIMER, Math.max(dataManager.getDataValue(DODGE_SUCCESS_TIMER) - 1, 0), serverPlayer);//不耗耐力有效时间计算
             dataManager.setDataSync(RED_TIMER, Math.max(dataManager.getDataValue(RED_TIMER) - 1, 0), serverPlayer);//使用技能星数显示
             if (dataManager.getDataValue(DERIVE_TIMER) <= 0) {
                 dataManager.setDataSync(CAN_FIRST_DERIVE, false, serverPlayer);
@@ -489,7 +541,6 @@ public class ThrustHeavyAttack extends WeaponInnateSkill {
                 }
                 //松手或没耐力则清空棍势打重击
                 if (!dataManager.getDataValue(KEY_PRESSING) || !serverPlayerPatch.hasStamina(Config.CHARGING_STAMINA_CONSUME.get().floatValue() + 0.1F)) {
-                    dataManager.setData(PROTECT_NEXT_FALL, true);//MAN
                     serverPlayerPatch.playAnimationSynchronized(animations[container.getStack()], 0.0F);//有几星就几星重击
                     dataManager.setDataSync(IS_CHARGING, false, serverPlayer);
                     dataManager.setDataSync(STARS_CONSUMED, container.getStack(), serverPlayer);//设置消耗星数，方便客户端绘制
@@ -510,7 +561,15 @@ public class ThrustHeavyAttack extends WeaponInnateSkill {
                 //扣耐力
                 if (!serverPlayer.isCreative()) {
                     serverPlayerPatch.consumeStamina(Config.CHARGING_STAMINA_CONSUME.get().floatValue());
+                    if(!serverPlayerPatch.hasStamina(0.1F)){
+                        serverPlayerPatch.playAnimationSynchronized(deriveLoopEnd, 0.15F);
+                        dataManager.setDataSync(IS_REPEATING_DERIVE, false, serverPlayer);
+                    }
                 }
+                //重置可退寸时间
+                dataManager.setDataSync(ThrustHeavyAttack.CAN_FIRST_DERIVE, true, serverPlayerPatch.getOriginal());
+                dataManager.setDataSync(ThrustHeavyAttack.DERIVE_TIMER, ThrustHeavyAttack.MAX_DERIVE_TIMER, serverPlayerPatch.getOriginal());
+                //松手了则播end
                 if(!dataManager.getDataValue(IS_ATTACK_KEY_DOWN)){
                     serverPlayerPatch.playAnimationSynchronized(deriveLoopEnd, 0.15F);
                     dataManager.setDataSync(IS_REPEATING_DERIVE, false, serverPlayer);
@@ -598,6 +657,10 @@ public class ThrustHeavyAttack extends WeaponInnateSkill {
             GuiComponent.blit(poseStack, pos.x - 12, pos.y - 12, 48, 48, 0.0F, 0.0F, 2, 2, 2, 2);
         }
 
+        float second = (container.getDataManager().getDataValue(DODGE_SUCCESS_TIMER) / 20.0F);
+        if(second > 0){
+            GuiComponent.drawString(poseStack ,gui.font, String.format("%.1fs", second), (int) (second > 10 ? (x + 3) : (x + 6)), (int) (y + 6), 16777215);
+        }
 
     }
 
