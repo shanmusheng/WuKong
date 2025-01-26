@@ -1,7 +1,6 @@
 package com.p1nero.wukong.network.packet.server;
-import com.p1nero.wukong.capability.WKCapabilityProvider;
+
 import com.p1nero.wukong.network.packet.BasePacket;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
