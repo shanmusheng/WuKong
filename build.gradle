@@ -149,6 +149,7 @@ minecraft {
 sourceSets.main.resources { srcDir 'src/generated/resources' }
 
 repositories {
+    maven { url 'https://maven.fallenbreath.me/releases' }
     maven {
         name = 'GeckoLib'
         url 'https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/'
@@ -165,6 +166,8 @@ dependencies {
     implementation fg.deobf("libs:MmmMmmMmmMmm-1.18.2:1.5.2")
     implementation fg.deobf("libs:SpitItOut-1.18.2:1.0.1")
     implementation fg.deobf('software.bernie.geckolib:geckolib-forge-1.18:3.0.57')
+    implementation fg.deobf("libs:citadel-1.11.3:1.18.2")
+    implementation 'me.fallenbreath:conditional-mixin-forge:0.6.4'
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 }
 

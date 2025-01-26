@@ -4,6 +4,8 @@ import com.p1nero.wukong.Config;
 import com.p1nero.wukong.WukongMoveset;
 import com.p1nero.wukong.client.WuKongSounds;
 import com.p1nero.wukong.client.events.CameraAnim;
+import com.p1nero.wukong.client.particle.WuKongParticles;
+import com.p1nero.wukong.effects.WuKongEffects;
 import com.p1nero.wukong.epicfight.animation.custom.*;
 import com.p1nero.wukong.epicfight.skill.custom.PillarHeavyAttack;
 import com.p1nero.wukong.epicfight.skill.custom.RedTideHeavyAttack;
@@ -16,6 +18,8 @@ import net.minecraft.client.player.Input;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MobSpawnType;
@@ -147,7 +151,8 @@ public class WukongAnimations {
 
     //最高点循环， 0同1， 3同4
     public static StaticAnimation PILLAR_LOOP;
-
+    //定身术
+    public static StaticAnimation DING;
     //聚形散气
     public static StaticAnimation CLOUD_STEP_START;
     public static StaticAnimation CLOUD_STEP_START_BACKWARD;
@@ -997,7 +1002,39 @@ public class WukongAnimations {
                 .addStateRemoveOld(EntityState.CAN_SKILL_EXECUTION, true)
                 .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.8F));
         //戳end
-
+        //定
+        DING = (new SpecialActionAnimation(0.1F, 0.14F, "biped/magicarts/stop", biped))
+                .addProperty(AnimationProperty.ActionAnimationProperty.MOVE_ON_LINK, false)
+                .addProperty(AnimationProperty.ActionAnimationProperty.COORD_SET_BEGIN, MoveCoordFunctions.TRACE_LOCROT_TARGET).addProperty(AnimationProperty.ActionAnimationProperty.COORD_SET_TICK, MoveCoordFunctions.TRACE_LOCROT_TARGET)
+                .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, (self, entitypatch, speed, elapsedTime) -> 0.75f)
+                .addProperty(AnimationProperty.StaticAnimationProperty.TIME_STAMPED_EVENTS, new AnimationEvent.TimeStampedEvent[] {
+                        AnimationEvent.TimeStampedEvent.create(0.0F, (livingEntityPatch, staticAnimation, objects) -> livingEntityPatch.playSound(WuKongSounds.DING.get(),1.0f,1.0f,1.0f), AnimationEvent.TimeStampedEvent.Side.SERVER),
+                        AnimationEvent.TimeStampedEvent.create(0.06F, (livingEntityPatch, staticAnimation, objects) -> {
+                            LivingEntity attackTarget = livingEntityPatch.getTarget();
+                            if (attackTarget != null) {
+                                LivingEntityPatch<?> ep = EpicFightCapabilities.getEntityPatch(attackTarget, LivingEntityPatch.class);
+                                if (ep != null) {
+                                    if ((ep.getAnimator().getPlayerFor(null).getAnimation() instanceof DodgeAnimation | ep.getAnimator().getPlayerFor(null).getAnimation() instanceof LongHitAnimation)) {
+                                        ep.playSound(EpicFightSounds.ROLL,1.0f,0.8f,1.2f);
+                                    }
+                                    //躲定身
+                                    else {
+                                        if (attackTarget.getLevel() instanceof ServerLevel serverLevel) {
+                                            serverLevel.sendParticles(WuKongParticles.DING.get(), attackTarget.getX(), attackTarget.getEyeY() + 1, attackTarget.getZ(), 1, 0, 0, 0, 0);
+                                        }
+                                        attackTarget.addEffect(new MobEffectInstance(WuKongEffects.DING.get(), 120, 0));
+                                        attackTarget.addEffect(new MobEffectInstance(MobEffects.GLOWING, 120, 0));
+                                    }
+                                } else {
+                                    if (attackTarget.getLevel() instanceof ServerLevel serverLevel) {
+                                        serverLevel.sendParticles(WuKongParticles.DING.get(), attackTarget.getX(), attackTarget.getEyeY() + 1, attackTarget.getZ(), 1, 0, 0, 0, 0);
+                                    }
+                                    attackTarget.addEffect(new MobEffectInstance(WuKongEffects.DING.get(), 120, 0));
+                                    attackTarget.addEffect(new MobEffectInstance(MobEffects.GLOWING, 120, 0));
+                                }
+                            }
+                        }, AnimationEvent.TimeStampedEvent.Side.SERVER)
+                });
         //聚形散气
         CLOUD_STEP_START = new ActionAnimation(0.15F, 0.6F, "biped/magicarts/jxsq_start", biped)
                 .newTimePair(0.0F, 0.5F)

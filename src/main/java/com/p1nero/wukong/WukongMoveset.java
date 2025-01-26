@@ -3,6 +3,7 @@ package com.p1nero.wukong;
 import com.mojang.logging.LogUtils;
 import com.p1nero.wukong.client.WuKongSounds;
 import com.p1nero.wukong.client.particle.WuKongParticles;
+import com.p1nero.wukong.effects.WuKongEffects;
 import com.p1nero.wukong.entity.WukongEntities;
 import com.p1nero.wukong.epicfight.WukongSkillCategories;
 import com.p1nero.wukong.epicfight.WukongSkillSlots;
@@ -26,6 +27,7 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.slf4j.Logger;
+import software.bernie.geckolib3.GeckoLib;
 import yesman.epicfight.skill.SkillCategory;
 import yesman.epicfight.skill.SkillSlot;
 import yesman.epicfight.world.capabilities.item.WeaponCategory;
@@ -45,6 +47,7 @@ public class WukongMoveset{
         WuKongParticles.PARTICLES.register(bus);
         WuKongSounds.SOUND_EVENTS.register(bus);
         WukongEntities.ENTITIES.register(bus);
+        WuKongEffects.REGISTRY.register(bus);
         bus.addListener(SmashHeavyAttack::register);
         PacketHandler.register();
         WukongSkills.registerSkills();
@@ -53,6 +56,7 @@ public class WukongMoveset{
         fg_bus.addListener(WukongSkills::BuildSkills);
         fg_bus.addListener(WukongAnimations::onPlayerTick);
         fg_bus.addListener(WukongMoveset::onPlayerLoggedIn);
+        GeckoLib.initialize();
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, Config.SPEC);
     }
 

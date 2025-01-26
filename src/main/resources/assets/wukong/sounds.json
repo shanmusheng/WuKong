@@ -42,5 +42,11 @@
     "sounds": [
       "wukong:start_charge"
     ]
+  },
+  "ding": {
+    "subtitle": "sounds.wukong.ding",
+    "sounds": [
+      "wukong:ding"
+    ]
   }
 }
