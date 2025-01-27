@@ -2,7 +2,9 @@
     "priority":"MIDDLE",
     "trail_effects": [
         {
-            "lifetime": 10,
+            "lifetime": 12,
+            "begin_pos": [0.0, 0.0, 1.6],
+            "end_pos": [0.0, 0.0, -2.65],
             "fade_time": 0.95,
             "start_time": 0.2,
             "end_time": 2.8,

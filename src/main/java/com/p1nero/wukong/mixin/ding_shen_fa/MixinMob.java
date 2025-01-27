@@ -18,7 +18,7 @@ public abstract class MixinMob extends LivingEntity {
         super(null, level);
     }
 
-    @Inject(at = @At("HEAD"), method = "isNoAi", cancellable = true)
+    @Inject(at = @At("HEAD"), method = "isNoAi()Z", cancellable = true)
     public void isNoAi(CallbackInfoReturnable<Boolean> callback) {
         if (hasEffect(WuKongEffects.DING.get())) {
             callback.setReturnValue(true);

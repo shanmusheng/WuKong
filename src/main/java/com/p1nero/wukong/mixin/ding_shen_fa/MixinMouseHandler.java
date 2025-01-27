@@ -12,7 +12,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(value = MouseHandler.class,priority = 999999999)
 public class MixinMouseHandler {
 	//不许动
-	@Inject(at=@At("HEAD"), method = "onPress", cancellable = true)
+	@Inject(at=@At("HEAD"), method = "onPress(JIII)V", cancellable = true)
 	private void onPress(long screen, int button, int action, int mods, CallbackInfo callback) {
 		Minecraft mc = Minecraft.getInstance();
 		if (mc.screen == null) {
@@ -25,7 +25,7 @@ public class MixinMouseHandler {
 				}
 			}
 
-	@Inject(at=@At("HEAD"), method = "onMove", cancellable = true)
+	@Inject(at=@At("HEAD"), method = "onMove(JDD)V", cancellable = true)
 	public void onMove(long p_91562_, double p_91563_, double p_91564_, CallbackInfo callback) {
 		Minecraft mc = Minecraft.getInstance();
 		LocalPlayer player = mc.player;

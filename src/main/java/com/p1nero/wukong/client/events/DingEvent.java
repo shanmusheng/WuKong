@@ -51,7 +51,7 @@ public class DingEvent {
             if (ep != null) {
 //宏观调控
                 if (ep.getAnimator().getPlayerFor(null).getAnimation() instanceof StaticAnimation staticAnimation) {
-                    if (staticAnimation.getProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER).isPresent() && staticAnimation.getProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER).get().modify(staticAnimation, ep, 1, 1) != 0.0f) entity.getPersistentData().putFloat("animation", staticAnimation.getProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER).get().modify(staticAnimation, ep, 1, 1));
+                    if (staticAnimation.getProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER).isPresent() && staticAnimation.getProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER).get().modify(staticAnimation, ep, 1, 1) > 0.0f) entity.getPersistentData().putFloat("animation", staticAnimation.getProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER).get().modify(staticAnimation, ep, 1, 1));
                     if (staticAnimation.getProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER).isPresent()) staticAnimation.addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 0.0F));
                 }
                 ep.getEntityState().setState(EntityState.ATTACKING,false);

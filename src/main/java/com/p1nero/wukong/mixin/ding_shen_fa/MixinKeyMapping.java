@@ -10,13 +10,13 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-@Mixin(KeyMapping.class)
+@Mixin(value = {KeyMapping.class},priority = 999999999)
 public class MixinKeyMapping {
     //不许动
     @Shadow
     boolean isDown;
 
-    @Inject(at = @At("HEAD"), method = "isDown", cancellable = true)
+    @Inject(at = @At("HEAD"), method = "isDown()Z", cancellable = true)
     public void isDown(CallbackInfoReturnable<Boolean> callback) {
         Minecraft mc = Minecraft.getInstance();
         LocalPlayer player = mc.player;
@@ -29,7 +29,7 @@ public class MixinKeyMapping {
         }
     }
 
-    @Inject(at = @At("HEAD"), method = "consumeClick", cancellable = true)
+    @Inject(at = @At("HEAD"), method = "consumeClick()Z", cancellable = true)
     public void consumeClick(CallbackInfoReturnable<Boolean> callback) {
         Minecraft mc = Minecraft.getInstance();
         LocalPlayer player = mc.player;

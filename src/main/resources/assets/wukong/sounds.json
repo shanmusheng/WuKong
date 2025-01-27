@@ -48,5 +48,11 @@
     "sounds": [
       "wukong:ding"
     ]
+  },
+  "break": {
+    "subtitle": "sounds.wukong.break",
+    "sounds": [
+      "wukong:break"
+    ]
   }
 }

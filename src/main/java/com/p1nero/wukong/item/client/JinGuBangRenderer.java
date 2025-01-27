@@ -44,8 +44,13 @@ public class JinGuBangRenderer extends GeoItemRenderer<JinGuBang> {
     @Override
     public void render(GeoModel model, JinGuBang jinGuBang, float partialTicks, RenderType type, PoseStack matrixStackIn, MultiBufferSource renderTypeBuffer, VertexConsumer vertexBuilder, int packedLightIn, int packedOverlayIn, float red, float green, float blue, float alpha) {
         //美化
-        alpha = 250f/255f;
+        alpha = 249f/255f;
         packedLightIn = 0xf000ff;
+        if (lpp.getAnimator().getPlayerFor(null).getAnimation() instanceof StaticAnimation staticAnimation && AnimationJudge.isQie(staticAnimation) && (lpp.getEntityState().getLevel() != 3)) {
+            green = 222f/255f;
+            blue = 200f/255f;
+            red = 1.0f;
+        }
         if ((lpp.getAnimator().getPlayerFor(null).getAnimation() instanceof StaticAnimation staticAnimation && AnimationJudge.isTwo(staticAnimation) && (lpp.getEntityState().getLevel() != 3))
         || (AnimationJudge.isCharging(lpp) && lpp.getSkill(SkillSlots.WEAPON_INNATE).getStack() == 2)) {
             green = 152f/225f;
@@ -54,7 +59,7 @@ public class JinGuBangRenderer extends GeoItemRenderer<JinGuBang> {
         }
         if ((lpp.getAnimator().getPlayerFor(null).getAnimation() instanceof StaticAnimation staticAnimation && AnimationJudge.isThree(staticAnimation) && (lpp.getEntityState().getLevel() != 3))
                 || (AnimationJudge.isCharging(lpp) && lpp.getSkill(SkillSlots.WEAPON_INNATE).getStack() == 3)) {
-            green = 127f/225f;
+            green = 97f/225f;
             blue = 39f/225f;
             red = 1f;
         }

@@ -17,11 +17,16 @@ import java.util.Arrays;
 
 public record AnimationJudge() {
 
+    static final StaticAnimation[] QIE;
     static final StaticAnimation[] TWO_STAGE;
     static final StaticAnimation[] THREE_STAGE;
     static final StaticAnimation[] FOUR_STAGE;
     static {
 
+        QIE = new StaticAnimation[] {
+                WukongAnimations.SMASH_SPECIAL1,
+                WukongAnimations.SMASH_SPECIAL2,
+        };
         TWO_STAGE = new StaticAnimation[] {
                 WukongAnimations.SMASH_CHARGED2,
                 WukongAnimations.THRUST_CHARGED2,
@@ -40,6 +45,9 @@ public record AnimationJudge() {
                 WukongAnimations.PILLAR_CHARGED4,
                 WukongAnimations.PILLAR_PRE4,
         };
+    }
+    public static boolean isQie(StaticAnimation staticAnimation) {
+        return Arrays.asList(QIE).contains(staticAnimation);
     }
     public static boolean isTwo(StaticAnimation staticAnimation) {
         return Arrays.asList(TWO_STAGE).contains(staticAnimation);
