@@ -31,7 +31,8 @@ public class DingEndEvent {
         LivingEntityPatch<?> ep = EpicFightCapabilities.getEntityPatch(entity, LivingEntityPatch.class);
         if (ep != null) {
             if (ep.getAnimator().getPlayerFor(null).getAnimation() instanceof StaticAnimation staticAnimation) {
-                staticAnimation.addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> entity.getPersistentData().getFloat("animation")));
+//                staticAnimation.addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> entity.getPersistentData().getFloat("animation")));
+                staticAnimation.addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.0f));
             }
         }
     }

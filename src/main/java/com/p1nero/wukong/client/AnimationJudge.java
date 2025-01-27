@@ -17,12 +17,32 @@ import java.util.Arrays;
 
 public record AnimationJudge() {
 
+    static final StaticAnimation[] GLOW;
     static final StaticAnimation[] QIE;
     static final StaticAnimation[] TWO_STAGE;
     static final StaticAnimation[] THREE_STAGE;
     static final StaticAnimation[] FOUR_STAGE;
     static {
-
+        GLOW = new StaticAnimation[] {
+                WukongAnimations.SMASH_SPECIAL1,
+                WukongAnimations.SMASH_SPECIAL2,
+                WukongAnimations.SMASH_CHARGED1,
+                WukongAnimations.THRUST_CHARGED1,
+                WukongAnimations.PILLAR_CHARGED1,
+                WukongAnimations.PILLAR_PRE1,
+                WukongAnimations.SMASH_CHARGED2,
+                WukongAnimations.THRUST_CHARGED2,
+                WukongAnimations.PILLAR_CHARGED2,
+                WukongAnimations.PILLAR_PRE2,
+                WukongAnimations.SMASH_CHARGED3,
+                WukongAnimations.THRUST_CHARGED3,
+                WukongAnimations.PILLAR_CHARGED3,
+                WukongAnimations.PILLAR_PRE3,
+                WukongAnimations.SMASH_CHARGED4,
+                WukongAnimations.THRUST_CHARGED4,
+                WukongAnimations.PILLAR_CHARGED4,
+                WukongAnimations.PILLAR_PRE4,
+        };
         QIE = new StaticAnimation[] {
                 WukongAnimations.SMASH_SPECIAL1,
                 WukongAnimations.SMASH_SPECIAL2,
@@ -45,6 +65,9 @@ public record AnimationJudge() {
                 WukongAnimations.PILLAR_CHARGED4,
                 WukongAnimations.PILLAR_PRE4,
         };
+    }
+    public static boolean isGlow(StaticAnimation staticAnimation) {
+        return Arrays.asList(GLOW).contains(staticAnimation);
     }
     public static boolean isQie(StaticAnimation staticAnimation) {
         return Arrays.asList(QIE).contains(staticAnimation);
