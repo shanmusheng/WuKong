@@ -1,0 +1,32 @@
+{
+	"format_version": "1.8.0",
+	"animations": {
+		"idle": {
+			"loop": true,
+			"animation_length": 0.125,
+			"bones": {
+				"6": {
+					"position": {
+						"0.0": {
+							"vector": [4, 0, 0],
+							"easing": "linear"
+						},
+						"0.0417": {
+							"vector": [-4, 10, 4],
+							"easing": "easeInSine"
+						},
+						"0.0833": {
+							"vector": [0, -10, 4],
+							"easing": "easeOutSine"
+						},
+						"0.125": {
+							"vector": [-4, 0, 0],
+							"easing": "easeInSine"
+						}
+					}
+				}
+			}
+		}
+	},
+	"geckolib_format_version": 2
+}

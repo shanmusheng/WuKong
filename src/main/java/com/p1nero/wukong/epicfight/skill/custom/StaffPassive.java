@@ -15,19 +15,28 @@ import com.p1nero.wukong.network.packet.server.PlayStaffFlowerPacket;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.Input;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.registries.ForgeRegistries;
+import reascer.wom.world.item.WOMItems;
+import yesman.epicfight.api.animation.LivingMotions;
 import yesman.epicfight.api.animation.types.DynamicAnimation;
 import yesman.epicfight.api.animation.types.EntityState;
 import yesman.epicfight.api.animation.types.StaticAnimation;
 import yesman.epicfight.api.data.reloader.SkillManager;
+import yesman.epicfight.api.model.Armature;
 import yesman.epicfight.api.utils.AttackResult;
+import yesman.epicfight.api.utils.math.OpenMatrix4f;
+import yesman.epicfight.api.utils.math.Vec3f;
 import yesman.epicfight.client.ClientEngine;
 import yesman.epicfight.client.world.capabilites.entitypatch.player.LocalPlayerPatch;
+import yesman.epicfight.gameasset.Armatures;
 import yesman.epicfight.gameasset.EpicFightSounds;
 import yesman.epicfight.network.EpicFightNetworkManager;
 import yesman.epicfight.network.client.CPChangeSkill;
@@ -43,6 +52,7 @@ import yesman.epicfight.world.damagesource.SourceTags;
 import yesman.epicfight.world.entity.eventlistener.PlayerEventListener;
 
 import java.util.Objects;
+import java.util.Random;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -52,6 +62,7 @@ import java.util.stream.Collectors;
 public class StaffPassive extends Skill {
 
     public static final SkillDataManager.SkillDataKey<Boolean> PLAYING_STAFF_SPIN = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.BOOLEAN);
+    public static final SkillDataManager.SkillDataKey<Integer> TICK = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.INTEGER);
     private static final UUID EVENT_UUID = UUID.fromString("d2d057cc-f30f-11ed-a05b-0242ac191981");
 
     public StaffPassive(Builder<? extends Skill> builder) {
@@ -63,10 +74,11 @@ public class StaffPassive extends Skill {
         super.onInitiate(container);
         SkillDataManager manager = container.getDataManager();
         SkillDataRegister.register(manager, PLAYING_STAFF_SPIN, false);
+        SkillDataRegister.register(manager, TICK, 0);
 
         //自动学闪避
         Skill dodge = container.getExecuter().getSkill(SkillSlots.DODGE).getSkill();
-        if(dodge != WukongSkills.WUKONG_DODGE){
+        if (dodge != WukongSkills.WUKONG_DODGE) {
             container.getExecuter().getSkill(SkillSlots.DODGE).setSkill(WukongSkills.WUKONG_DODGE);
             container.getExecuter().getOriginal().getCapability(WKCapabilityProvider.WK_PLAYER).ifPresent(wkPlayer -> wkPlayer.setLastDodgeSkill(dodge == null ? "" : dodge.toString()));
         }
@@ -92,34 +104,34 @@ public class StaffPassive extends Skill {
         }));
 
         container.getExecuter().getEventListener().addEventListener(PlayerEventListener.EventType.HURT_EVENT_PRE, EVENT_UUID, (event -> {
-            if(event.getPlayerPatch().getOriginal().getMainHandItem().is(WukongItems.KANG_JIN.get()) && event.getDamageSource().equals(DamageSource.LIGHTNING_BOLT)){
+            if (event.getPlayerPatch().getOriginal().getMainHandItem().is(WukongItems.KANG_JIN.get()) && event.getDamageSource().equals(DamageSource.LIGHTNING_BOLT)) {
                 DynamicAnimation animation = event.getPlayerPatch().getAnimator().getPlayerFor(null).getAnimation();
-                if(animation.equals(WukongAnimations.STAFF_AUTO4)){
+                if (animation.equals(WukongAnimations.STAFF_AUTO4)) {
                     event.setResult(AttackResult.ResultType.MISSED);
                     event.setCanceled(true);
                     return;
                 }
             }
 
-            if(container.getDataManager().getDataValue(PLAYING_STAFF_SPIN) && (canBeBlocked(event.getDamageSource().getDirectEntity()) || event.getDamageSource().isProjectile())){
-                if(!isBlocked(event.getDamageSource(), event.getPlayerPatch().getOriginal())){
+            if (container.getDataManager().getDataValue(PLAYING_STAFF_SPIN) && (canBeBlocked(event.getDamageSource().getDirectEntity()) || event.getDamageSource().isProjectile())) {
+                if (!isBlocked(event.getDamageSource(), event.getPlayerPatch().getOriginal())) {
                     return;
                 }
                 event.setCanceled(true);
                 event.setResult(AttackResult.ResultType.BLOCKED);
-                LivingEntityPatch<?> attackerPatch = (LivingEntityPatch<?>)EpicFightCapabilities.getEntityPatch(event.getDamageSource().getEntity(), LivingEntityPatch.class);
+                LivingEntityPatch<?> attackerPatch = (LivingEntityPatch<?>) EpicFightCapabilities.getEntityPatch(event.getDamageSource().getEntity(), LivingEntityPatch.class);
                 if (attackerPatch != null) {
                     attackerPatch.setLastAttackEntity(event.getPlayerPatch().getOriginal());
                 }
                 Entity directEntity = event.getDamageSource().getDirectEntity();
-                LivingEntityPatch<?> entityPatch = (LivingEntityPatch<?>)EpicFightCapabilities.getEntityPatch(directEntity, LivingEntityPatch.class);
+                LivingEntityPatch<?> entityPatch = (LivingEntityPatch<?>) EpicFightCapabilities.getEntityPatch(directEntity, LivingEntityPatch.class);
                 if (entityPatch != null) {
                     entityPatch.onAttackBlocked(event.getDamageSource(), event.getPlayerPatch());
                 }
                 showBlockedEffect(event.getPlayerPatch(), event.getDamageSource().getDirectEntity());
                 SkillContainer skillContainer = event.getPlayerPatch().getSkill(SkillSlots.WEAPON_INNATE);
                 Skill skill = skillContainer.getSkill();
-                if(skill != null){
+                if (skill != null) {
                     //成功格挡回能量
                     skillContainer.getSkill().setConsumptionSynchronize(event.getPlayerPatch(), skillContainer.getResource() + Config.CHARGING_SPEED.get().floatValue());
                 }
@@ -128,11 +140,11 @@ public class StaffPassive extends Skill {
 
         container.getExecuter().getEventListener().addEventListener(PlayerEventListener.EventType.DEALT_DAMAGE_EVENT_POST, EVENT_UUID, (dealtDamageEvent -> {
             StaticAnimation animation = dealtDamageEvent.getDamageSource().getAnimation();
-            if(animation.equals(WukongAnimations.STAFF_SPIN_ONE_HAND_LOOP) || animation.equals(WukongAnimations.STAFF_SPIN_TWO_HAND_LOOP)){
+            if (animation.equals(WukongAnimations.STAFF_SPIN_ONE_HAND_LOOP) || animation.equals(WukongAnimations.STAFF_SPIN_TWO_HAND_LOOP)) {
                 //打中加棍势（因为加的要比造成的伤害多）
                 SkillContainer skillContainer = dealtDamageEvent.getPlayerPatch().getSkill(SkillSlots.WEAPON_INNATE);
                 Skill skill = skillContainer.getSkill();
-                if(skill != null){
+                if (skill != null) {
                     skillContainer.getSkill().setConsumptionSynchronize(dealtDamageEvent.getPlayerPatch(), skillContainer.getResource() + Config.CHARGING_SPEED.get().floatValue() * 4.5F);
                 }
             }
@@ -142,13 +154,13 @@ public class StaffPassive extends Skill {
         container.getExecuter().getEventListener().addEventListener(PlayerEventListener.EventType.SKILL_EXECUTE_EVENT, EVENT_UUID, (event -> {
             PlayerPatch<?> executer = event.getPlayerPatch();
             Skill ordinalSkill = event.getSkillContainer().getSkill();
-            if(!ordinalSkill.getCategory().equals(SkillCategories.DODGE)){
+            if (!ordinalSkill.getCategory().equals(SkillCategories.DODGE)) {
                 return;
             }
             int dodgeId = event.getSkillContainer().getSlotId();
-            if(executer.isLogicalClient()){
+            if (executer.isLogicalClient()) {
                 //临时替换为悟空闪避
-                if(!ordinalSkill.equals(WukongSkills.WUKONG_DODGE) && executer.hasStamina(this.getConsumption())){
+                if (!ordinalSkill.equals(WukongSkills.WUKONG_DODGE) && executer.hasStamina(this.getConsumption())) {
                     executer.getSkill(SkillSlots.DODGE).setSkill(WukongSkills.WUKONG_DODGE);
                     EpicFightNetworkManager.sendToServer(new CPChangeSkill(dodgeId, -1, WukongSkills.WUKONG_DODGE.toString(), false));
                     executer.getSkill(SkillSlots.DODGE).sendExecuteRequest((LocalPlayerPatch) executer, ClientEngine.getInstance().controllEngine);
@@ -171,11 +183,11 @@ public class StaffPassive extends Skill {
         container.getExecuter().getEventListener().removeListener(PlayerEventListener.EventType.DEALT_DAMAGE_EVENT_POST, EVENT_UUID);
         container.getExecuter().getEventListener().removeListener(PlayerEventListener.EventType.SKILL_EXECUTE_EVENT, EVENT_UUID);
         //把技能还原回去
-        if(!container.getExecuter().isLogicalClient()){
+        if (!container.getExecuter().isLogicalClient()) {
             PacketRelay.syncPlayer(((ServerPlayer) container.getExecuter().getOriginal()));
         }
         container.getExecuter().getOriginal().getCapability(WKCapabilityProvider.WK_PLAYER).ifPresent(wkPlayer -> {
-            if(wkPlayer.getLastDodgeSkill().isEmpty()){
+            if (wkPlayer.getLastDodgeSkill().isEmpty()) {
                 container.getExecuter().getSkill(SkillSlots.DODGE).setSkill(null);
             } else {
                 container.getExecuter().getSkill(SkillSlots.DODGE).setSkill(SkillManager.getSkill(wkPlayer.getLastDodgeSkill()));
@@ -183,13 +195,13 @@ public class StaffPassive extends Skill {
         });
     }
 
-    public static boolean canBeBlocked(Entity entity){
-        if(entity == null){
+    public static boolean canBeBlocked(Entity entity) {
+        if (entity == null) {
             return false;
         }
-        if(Config.entities_can_be_blocked.isEmpty()){
+        if (Config.entities_can_be_blocked.isEmpty()) {
             Config.entities_can_be_blocked = Config.ENTITIES_CAN_BE_BLOCKED_BY_STAFF_FLOWER.get().stream()
-                    .map( entityName -> ForgeRegistries.ENTITIES.getValue(new ResourceLocation(entityName)))
+                    .map(entityName -> ForgeRegistries.ENTITIES.getValue(new ResourceLocation(entityName)))
                     .collect(Collectors.toSet());
         }
         return Config.entities_can_be_blocked.contains(entity.getType());
@@ -198,7 +210,7 @@ public class StaffPassive extends Skill {
     /**
      * 判断是否是正面且可被格挡
      */
-    private boolean isBlocked(DamageSource damageSource, ServerPlayer player){
+    private boolean isBlocked(DamageSource damageSource, ServerPlayer player) {
         Vec3 sourceLocation = damageSource.getSourcePosition();
         if (sourceLocation != null) {
             Vec3 viewVector = player.getViewVector(1.0F);
@@ -212,7 +224,7 @@ public class StaffPassive extends Skill {
         return false;
     }
 
-    public static void showBlockedEffect(ServerPlayerPatch playerPatch, Entity directEntity){
+    public static void showBlockedEffect(ServerPlayerPatch playerPatch, Entity directEntity) {
         playerPatch.playSound(EpicFightSounds.CLASH, -0.05F, 0.1F);
         ServerPlayer serverPlayer = playerPatch.getOriginal();
         EpicFightParticles.HIT_BLUNT.get().spawnParticleWithArgument(serverPlayer.getLevel(), HitParticleType.FRONT_OF_EYES, HitParticleType.ZERO, serverPlayer, directEntity);
@@ -221,15 +233,32 @@ public class StaffPassive extends Skill {
     @Override
     public void updateContainer(SkillContainer container) {
         super.updateContainer(container);
-        if(!container.getExecuter().isLogicalClient() || !WukongWeaponCategories.isWeaponValid(container.getExecuter()) || !container.getExecuter().isBattleMode() || !container.getExecuter().getOriginal().isOnGround()){
+        if (!container.getExecuter().isLogicalClient() || !WukongWeaponCategories.isWeaponValid(container.getExecuter()) || !container.getExecuter().isBattleMode() || !container.getExecuter().getOriginal().isOnGround()) {
             return;
         }
 
-        if(WukongKeyMappings.STAFF_FLOWER.isDown() && container.getExecuter().hasStamina(Config.STAFF_FLOWER_STAMINA_CONSUME.get().floatValue()) && !container.getExecuter().getEntityState().knockDown()){
-            if(!container.getDataManager().getDataValue(PLAYING_STAFF_SPIN) && Minecraft.getInstance().player != null){
+        if (WukongKeyMappings.STAFF_FLOWER.isDown() && container.getExecuter().hasStamina(Config.STAFF_FLOWER_STAMINA_CONSUME.get().floatValue()) && !container.getExecuter().getEntityState().knockDown()) {
+            if (!container.getDataManager().getDataValue(PLAYING_STAFF_SPIN) && Minecraft.getInstance().player != null) {
                 PacketRelay.sendToServer(PacketHandler.INSTANCE, new PlayStaffFlowerPacket(WukongKeyMappings.W.isDown()));//按w可变双手棍花
                 container.getDataManager().setDataSync(PLAYING_STAFF_SPIN, true, ((LocalPlayer) container.getExecuter().getOriginal()));
             }
         }
+        //现在加入动态贴图计时
+        container.getDataManager().setDataSync(TICK, container.getDataManager().getDataValue(TICK) + 1, ((LocalPlayer) container.getExecuter().getOriginal()));
+        if (container.getDataManager().getDataValue(TICK) >= 4) {
+            container.getDataManager().setDataSync(TICK, 0, ((LocalPlayer) container.getExecuter().getOriginal()));
+        }
+//        float interpolation = 0.0F;
+//        OpenMatrix4f transformMatrix = container.getExecuter().getArmature().getBindedTransformFor(container.getExecuter().getArmature().getPose(interpolation), Armatures.BIPED.toolR);
+//        transformMatrix.translate(new Vec3f(0.0F, 0.0F, 0.0F));
+//        OpenMatrix4f.mul((new OpenMatrix4f()).rotate(-((float) Math.toRadians(container.getExecuter().getOriginal().yBodyRotO + 180.0F)), new Vec3f(0.0F, 1.0F, 0.0F)), transformMatrix, transformMatrix);
+//
+//        double particleX = (double) transformMatrix.m30 + container.getExecuter().getOriginal().getX();
+//        double particleY = (double) transformMatrix.m31 + container.getExecuter().getOriginal().getY();
+//        double particleZ = (double) transformMatrix.m32 + container.getExecuter().getOriginal().getZ();
+//
+//// 添加粒子效果
+//        container.getExecuter().getOriginal().level.addParticle(ParticleTypes.SMOKE, particleX, particleY, particleZ, 0.0, 0.0, 0.0);
+//
     }
 }

@@ -4,6 +4,8 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.p1nero.wukong.WukongMoveset;
 import com.p1nero.wukong.client.AnimationJudge;
+import com.p1nero.wukong.epicfight.skill.WukongSkills;
+import com.p1nero.wukong.epicfight.skill.custom.StaffPassive;
 import com.p1nero.wukong.item.JinGuBang;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -30,12 +32,36 @@ public class JinGuBangRenderer extends GeoItemRenderer<JinGuBang> {
 
             @Override
             public ResourceLocation getTextureLocation(JinGuBang jinGuBang) {
-                return new ResourceLocation(WukongMoveset.MOD_ID, "textures/item/jingubang.png");
+                final Minecraft mc = Minecraft.getInstance();
+                final ResourceLocation[] textures = {
+                        new ResourceLocation(WukongMoveset.MOD_ID, "textures/item/jingubang/jingubang1.png"),
+                        new ResourceLocation(WukongMoveset.MOD_ID, "textures/item/jingubang/jingubang2.png"),
+                        new ResourceLocation(WukongMoveset.MOD_ID, "textures/item/jingubang/jingubang3.png"),
+                        new ResourceLocation(WukongMoveset.MOD_ID, "textures/item/jingubang/jingubang4.png")
+                };
+                int currentFrame;
+                LocalPlayerPatch lpp = EpicFightCapabilities.getEntityPatch(mc.player, LocalPlayerPatch.class);
+                if (lpp.getSkill(WukongSkills.STAFF_SPIN) != null && lpp.getSkill(WukongSkills.STAFF_SPIN).getDataManager().getDataValue(StaffPassive.TICK) != null) {
+                    currentFrame = lpp.getSkill(WukongSkills.STAFF_SPIN).getDataManager().getDataValue(StaffPassive.TICK);
+                }
+                else {
+                    currentFrame = 0;
+                }
+                return textures[currentFrame];
+
             }
+
 
             @Override
             public ResourceLocation getAnimationFileLocation(JinGuBang jinGuBang) {
-                return new ResourceLocation(WukongMoveset.MOD_ID, "animations/item/jingubang.animation.json");
+                final Minecraft mc = Minecraft.getInstance();
+                LocalPlayerPatch lpp = EpicFightCapabilities.getEntityPatch(mc.player, LocalPlayerPatch.class);
+                if ((lpp.getAnimator().getPlayerFor(null).getAnimation() instanceof StaticAnimation staticAnimation && AnimationJudge.isGlow(staticAnimation)) && (lpp.getEntityState().getLevel() != 3) || (AnimationJudge.isCharging(lpp) && lpp.getSkill(SkillSlots.WEAPON_INNATE).getStack() >= 1)) {
+                    return new ResourceLocation(WukongMoveset.MOD_ID, "animations/item/jingubang_charge.animation.json");
+                }
+                else {
+                    return new ResourceLocation(WukongMoveset.MOD_ID, "animations/item/jingubang.animation.json");
+                }
             }
         });
 
@@ -44,7 +70,7 @@ public class JinGuBangRenderer extends GeoItemRenderer<JinGuBang> {
     @Override
     public void render(GeoModel model, JinGuBang jinGuBang, float partialTicks, RenderType type, PoseStack matrixStackIn, MultiBufferSource renderTypeBuffer, VertexConsumer vertexBuilder, int packedLightIn, int packedOverlayIn, float red, float green, float blue, float alpha) {
         //美化
-        alpha = 248f/255f;
+        alpha = 200f/255f;
         if ((lpp.getAnimator().getPlayerFor(null).getAnimation() instanceof StaticAnimation staticAnimation && AnimationJudge.isGlow(staticAnimation)) && (lpp.getEntityState().getLevel() != 3) || (AnimationJudge.isCharging(lpp) && lpp.getSkill(SkillSlots.WEAPON_INNATE).getStack() >= 1)) packedLightIn = 0xf000ff;
         if (lpp.getAnimator().getPlayerFor(null).getAnimation() instanceof StaticAnimation staticAnimation && AnimationJudge.isQie(staticAnimation) && (lpp.getEntityState().getLevel() != 3)) {
             green = 222f/255f;

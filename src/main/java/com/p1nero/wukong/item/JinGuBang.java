@@ -1,9 +1,7 @@
 package com.p1nero.wukong.item;
 
-import com.p1nero.wukong.client.AnimationJudge;
 import com.p1nero.wukong.item.client.JinGuBangRenderer;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
@@ -21,9 +19,6 @@ import software.bernie.geckolib3.core.controller.AnimationController;
 import software.bernie.geckolib3.core.manager.AnimationData;
 import software.bernie.geckolib3.core.manager.AnimationFactory;
 import software.bernie.geckolib3.util.GeckoLibUtil;
-import yesman.epicfight.api.animation.types.StaticAnimation;
-import yesman.epicfight.client.world.capabilites.entitypatch.player.LocalPlayerPatch;
-import yesman.epicfight.world.capabilities.EpicFightCapabilities;
 import yesman.epicfight.world.item.WeaponItem;
 
 import java.util.List;
@@ -31,8 +26,7 @@ import java.util.function.Consumer;
 
 public class JinGuBang extends WeaponItem implements IAnimatable {
     public final AnimationFactory factory = GeckoLibUtil.createFactory(this);
-    private final Minecraft mc = Minecraft.getInstance();
-    LocalPlayerPatch lpp = EpicFightCapabilities.getEntityPatch(mc.player, LocalPlayerPatch.class);
+
     public JinGuBang(Tier tier, int damageIn, float speedIn, Properties builder) {
         super(tier, damageIn, speedIn, builder);
     }
@@ -64,13 +58,8 @@ public class JinGuBang extends WeaponItem implements IAnimatable {
 
     @Override
     public void registerControllers(AnimationData animationData) {
-        animationData.addAnimationController(new AnimationController<>(this, "stackController", 0, animationEvent -> {
-            if (lpp != null && lpp.getAnimator().getPlayerFor(null).getAnimation() instanceof StaticAnimation staticAnimation && AnimationJudge.changemode(staticAnimation,lpp)) {
-                animationEvent.getController().setAnimation(new AnimationBuilder().addAnimation("change", ILoopType.EDefaultLoopTypes.LOOP));
-            }
-            else {
-                animationEvent.getController().setAnimation(new AnimationBuilder().addAnimation("idle", ILoopType.EDefaultLoopTypes.LOOP));
-            }
+        animationData.addAnimationController(new AnimationController<>(this, "stackController", 1, animationEvent -> {
+            animationEvent.getController().setAnimation(new AnimationBuilder().addAnimation("idle", ILoopType.EDefaultLoopTypes.LOOP));
             return PlayState.CONTINUE;
         }));
     }
