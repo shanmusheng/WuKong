@@ -21,6 +21,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -57,7 +58,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
- * 棍花和闪避
+ * 棍花和闪避+特效
  */
 public class StaffPassive extends Skill {
 
@@ -248,17 +249,28 @@ public class StaffPassive extends Skill {
         if (container.getDataManager().getDataValue(TICK) >= 4) {
             container.getDataManager().setDataSync(TICK, 0, ((LocalPlayer) container.getExecuter().getOriginal()));
         }
-//        float interpolation = 0.0F;
-//        OpenMatrix4f transformMatrix = container.getExecuter().getArmature().getBindedTransformFor(container.getExecuter().getArmature().getPose(interpolation), Armatures.BIPED.toolR);
-//        transformMatrix.translate(new Vec3f(0.0F, 0.0F, 0.0F));
-//        OpenMatrix4f.mul((new OpenMatrix4f()).rotate(-((float) Math.toRadians(container.getExecuter().getOriginal().yBodyRotO + 180.0F)), new Vec3f(0.0F, 1.0F, 0.0F)), transformMatrix, transformMatrix);
 //
-//        double particleX = (double) transformMatrix.m30 + container.getExecuter().getOriginal().getX();
-//        double particleY = (double) transformMatrix.m31 + container.getExecuter().getOriginal().getY();
-//        double particleZ = (double) transformMatrix.m32 + container.getExecuter().getOriginal().getZ();
+//        int nnL =4;
+//        float min = -5f;
+//        float max = 5f;
+//        int nL = 5;
+//        for (int iiL = 0;iiL < nnL; ++iiL){
+//            float rz = min +(max- min)* new Random().nextFloat();
+//            OpenMatrix4f transformMatrix = container.getExecuter().getArmature().getBindedTransformFor(container.getExecuter().getArmature().getPose(0.0F), Armatures.BIPED.handR);
+//            transformMatrix.translate(new Vec3f(0.0F,0.0F,-rz));
+//            OpenMatrix4f.mul(
+//                    new OpenMatrix4f().rotate(-(float)Math.toRadians(container.getExecuter().getOriginal().yBodyRotO) + 180.0F, new Vec3f(0.0F,1.0F, 0.0F)),
+//                    transformMatrix,transformMatrix);
+//            for(int iL=0;iL<nL; ++iL) {
+//                container.getExecuter().getOriginal().getLevel().addParticle(
+//                        ParticleTypes.DRIPPING_DRIPSTONE_LAVA, //粒子类型
+//                        transformMatrix.m30 + container.getExecuter().getOriginal().getX(), // X 坐标
+//// Y 坐标
+//                        transformMatrix.m31 + container.getExecuter().getOriginal().getY(),
+//                        transformMatrix.m32 + container.getExecuter().getOriginal().getZ(), //2 坐标
+//                        (float) 0.0, (float) -0.01, (float) 0.0);
+//            }
 //
-//// 添加粒子效果
-//        container.getExecuter().getOriginal().level.addParticle(ParticleTypes.SMOKE, particleX, particleY, particleZ, 0.0, 0.0, 0.0);
-//
+//        }
     }
 }

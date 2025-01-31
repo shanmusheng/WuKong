@@ -16,7 +16,7 @@ public class Ding extends MobEffect {
 
     @Override
     public @NotNull String getDescriptionId() {
-        return "effect.star.ding";
+        return "effect.wukong.ding";
     }
 
     @Override
