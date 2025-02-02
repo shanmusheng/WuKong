@@ -20,9 +20,6 @@ import yesman.epicfight.skill.SkillSlots;
 import yesman.epicfight.world.capabilities.EpicFightCapabilities;
 
 public class JinGuBangRenderer extends GeoItemRenderer<JinGuBang> {
-    private final Minecraft mc = Minecraft.getInstance();
-    LocalPlayerPatch lpp = EpicFightCapabilities.getEntityPatch(mc.player, LocalPlayerPatch.class);
-
     public JinGuBangRenderer() {
         super(new AnimatedGeoModel<>() {
             @Override
@@ -41,10 +38,9 @@ public class JinGuBangRenderer extends GeoItemRenderer<JinGuBang> {
                 };
                 int currentFrame;
                 LocalPlayerPatch lpp = EpicFightCapabilities.getEntityPatch(mc.player, LocalPlayerPatch.class);
-                if (lpp.getSkill(WukongSkills.STAFF_SPIN) != null && lpp.getSkill(WukongSkills.STAFF_SPIN).getDataManager().getDataValue(StaffPassive.TICK) != null) {
+                if (lpp != null && (lpp.getSkill(WukongSkills.STAFF_SPIN) != null && lpp.getSkill(WukongSkills.STAFF_SPIN).getDataManager().getDataValue(StaffPassive.TICK) != null)) {
                     currentFrame = lpp.getSkill(WukongSkills.STAFF_SPIN).getDataManager().getDataValue(StaffPassive.TICK);
-                }
-                else {
+                } else {
                     currentFrame = 0;
                 }
                 return textures[currentFrame];
@@ -56,7 +52,7 @@ public class JinGuBangRenderer extends GeoItemRenderer<JinGuBang> {
             public ResourceLocation getAnimationFileLocation(JinGuBang jinGuBang) {
                 final Minecraft mc = Minecraft.getInstance();
                 LocalPlayerPatch lpp = EpicFightCapabilities.getEntityPatch(mc.player, LocalPlayerPatch.class);
-                if ((lpp.getAnimator().getPlayerFor(null).getAnimation() instanceof StaticAnimation staticAnimation && AnimationJudge.isGlow(staticAnimation)) && (lpp.getEntityState().getLevel() != 3) || (AnimationJudge.isCharging(lpp) && lpp.getSkill(SkillSlots.WEAPON_INNATE).getStack() >= 1)) {
+                if (lpp != null && ((lpp.getAnimator().getPlayerFor(null).getAnimation() instanceof StaticAnimation staticAnimation && AnimationJudge.isGlow(staticAnimation)) && ((lpp.getEntityState().getLevel() != 3) || (AnimationJudge.isCharging(lpp) && lpp.getSkill(SkillSlots.WEAPON_INNATE).getStack() >= 1)))) {
                     return new ResourceLocation(WukongMoveset.MOD_ID, "animations/item/jingubang_charge.animation.json");
                 }
                 else {
@@ -70,27 +66,28 @@ public class JinGuBangRenderer extends GeoItemRenderer<JinGuBang> {
     @Override
     public void render(GeoModel model, JinGuBang jinGuBang, float partialTicks, RenderType type, PoseStack matrixStackIn, MultiBufferSource renderTypeBuffer, VertexConsumer vertexBuilder, int packedLightIn, int packedOverlayIn, float red, float green, float blue, float alpha) {
         //美化
-        alpha = 200f/255f;
-        if ((lpp.getAnimator().getPlayerFor(null).getAnimation() instanceof StaticAnimation staticAnimation && AnimationJudge.isGlow(staticAnimation)) && (lpp.getEntityState().getLevel() != 3) || (AnimationJudge.isCharging(lpp) && lpp.getSkill(SkillSlots.WEAPON_INNATE).getStack() >= 1)) packedLightIn = 0xf000ff;
-        if (lpp.getAnimator().getPlayerFor(null).getAnimation() instanceof StaticAnimation staticAnimation && AnimationJudge.isQie(staticAnimation) && (lpp.getEntityState().getLevel() != 3)) {
+        final Minecraft mc = Minecraft.getInstance();
+        LocalPlayerPatch lpp = EpicFightCapabilities.getEntityPatch(mc.player, LocalPlayerPatch.class);
+        if (lpp != null && ((lpp.getAnimator().getPlayerFor(null).getAnimation() instanceof StaticAnimation staticAnimation && AnimationJudge.isGlow(staticAnimation)) && (lpp.getEntityState().getLevel() != 3) || (AnimationJudge.isCharging(lpp) && lpp.getSkill(SkillSlots.WEAPON_INNATE).getStack() >= 1))) packedLightIn = 0xf000ff;
+        if (lpp != null && (lpp.getAnimator().getPlayerFor(null).getAnimation() instanceof StaticAnimation staticAnimation && AnimationJudge.isQie(staticAnimation) && (lpp.getEntityState().getLevel() != 3))) {
             green = 222f/255f;
             blue = 200f/255f;
             red = 1.0f;
         }
-        if ((lpp.getAnimator().getPlayerFor(null).getAnimation() instanceof StaticAnimation staticAnimation && AnimationJudge.isTwo(staticAnimation) && (lpp.getEntityState().getLevel() != 3))
-        || (AnimationJudge.isCharging(lpp) && lpp.getSkill(SkillSlots.WEAPON_INNATE).getStack() == 2)) {
+        if (lpp != null && ((lpp.getAnimator().getPlayerFor(null).getAnimation() instanceof StaticAnimation staticAnimation && AnimationJudge.isTwo(staticAnimation) && (lpp.getEntityState().getLevel() != 3))
+        || (AnimationJudge.isCharging(lpp) && lpp.getSkill(SkillSlots.WEAPON_INNATE).getStack() == 2))) {
             green = 152f/225f;
             blue = 24f/225f;
             red = 1f;
         }
-        if ((lpp.getAnimator().getPlayerFor(null).getAnimation() instanceof StaticAnimation staticAnimation && AnimationJudge.isThree(staticAnimation) && (lpp.getEntityState().getLevel() != 3))
-                || (AnimationJudge.isCharging(lpp) && lpp.getSkill(SkillSlots.WEAPON_INNATE).getStack() == 3)) {
+        if (lpp != null && ((lpp.getAnimator().getPlayerFor(null).getAnimation() instanceof StaticAnimation staticAnimation && AnimationJudge.isThree(staticAnimation) && (lpp.getEntityState().getLevel() != 3))
+                || (AnimationJudge.isCharging(lpp) && lpp.getSkill(SkillSlots.WEAPON_INNATE).getStack() == 3))) {
             green = 97f/225f;
             blue = 39f/225f;
             red = 1f;
         }
-        if ((lpp.getAnimator().getPlayerFor(null).getAnimation() instanceof StaticAnimation staticAnimation && AnimationJudge.isFour(staticAnimation) && (lpp.getEntityState().getLevel() != 3))
-                || (AnimationJudge.isCharging(lpp) && lpp.getSkill(SkillSlots.WEAPON_INNATE).getStack() == 4)) {
+        if (lpp != null && ((lpp.getAnimator().getPlayerFor(null).getAnimation() instanceof StaticAnimation staticAnimation && AnimationJudge.isFour(staticAnimation) && (lpp.getEntityState().getLevel() != 3))
+                || (AnimationJudge.isCharging(lpp) && lpp.getSkill(SkillSlots.WEAPON_INNATE).getStack() == 4))) {
             green = 48/225f;
             blue = 33/225f;
             red = 1f;

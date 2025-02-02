@@ -19,14 +19,14 @@ public abstract class LivingEntityMixin extends Entity {
     }
 
     @Inject(at = @At("HEAD"), method = "hurt", cancellable = true)
-    private void hurt(DamageSource p_21016_, float p_21017_, CallbackInfoReturnable<Boolean> cir) {
+    private void wukong$hurt(DamageSource p_21016_, float p_21017_, CallbackInfoReturnable<Boolean> cir) {
         if (p_21016_.getDirectEntity() instanceof LivingEntity livingEntity) {
             if ((livingEntity.hasEffect(WuKongEffects.DING.get()))) cir.setReturnValue(false);
         }
     }
 
     @Inject(at = @At("HEAD"),method = "getSpeed",cancellable = true)
-    public void getSpeed(CallbackInfoReturnable<Float> cir) {
+    public void wukong$getSpeed(CallbackInfoReturnable<Float> cir) {
         if (level.getEntity(getId()) instanceof LivingEntity livingEntity && livingEntity.hasEffect(WuKongEffects.DING.get())) cir.setReturnValue(0.0f);
     }
 

@@ -13,8 +13,7 @@ public class DingStartEvent {
         if (ep != null) {
             if (ep.getAnimator().getPlayerFor(null).getAnimation() instanceof StaticAnimation staticAnimation && staticAnimation.getProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER).isPresent()) {
 //                entity.getPersistentData().putFloat("animation", staticAnimation.getProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER).get().modify(staticAnimation, ep, 1, 1));
-
-                staticAnimation.addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 0.0F));
+//                staticAnimation.addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 0.0F));
 
             }
         }

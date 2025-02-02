@@ -17,7 +17,7 @@ public class MixinKeyMapping {
     boolean isDown;
 
     @Inject(at = @At("HEAD"), method = "isDown()Z", cancellable = true)
-    public void isDown(CallbackInfoReturnable<Boolean> callback) {
+    public void wukong$isDown(CallbackInfoReturnable<Boolean> callback) {
         Minecraft mc = Minecraft.getInstance();
         LocalPlayer player = mc.player;
         if (player != null) {
@@ -30,7 +30,7 @@ public class MixinKeyMapping {
     }
 
     @Inject(at = @At("HEAD"), method = "consumeClick()Z", cancellable = true)
-    public void consumeClick(CallbackInfoReturnable<Boolean> callback) {
+    public void wukong$consumeClick(CallbackInfoReturnable<Boolean> callback) {
         Minecraft mc = Minecraft.getInstance();
         LocalPlayer player = mc.player;
         if (player != null) {
@@ -42,7 +42,7 @@ public class MixinKeyMapping {
     }
 
     @Inject(at = @At("HEAD"), method = "matches", cancellable = true)
-    public void matches(int key, int scancode, CallbackInfoReturnable<Boolean> callback) {
+    public void wukong$matches(int key, int scancode, CallbackInfoReturnable<Boolean> callback) {
         Minecraft mc = Minecraft.getInstance();
         LocalPlayer player = mc.player;
         if (player != null) {
@@ -54,7 +54,7 @@ public class MixinKeyMapping {
     }
 
     @Inject(at = @At("HEAD"), method = "matchesMouse", cancellable = true)
-    public void matchesMouse(int button, CallbackInfoReturnable<Boolean> callback) {
+    public void wukong$matchesMouse(int button, CallbackInfoReturnable<Boolean> callback) {
         Minecraft mc = Minecraft.getInstance();
         LocalPlayer player = mc.player;
         if (player != null) {

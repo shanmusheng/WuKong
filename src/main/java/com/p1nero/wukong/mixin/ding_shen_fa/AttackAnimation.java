@@ -21,7 +21,7 @@ import yesman.epicfight.world.capabilities.entitypatch.LivingEntityPatch;
 public class AttackAnimation {
     //不许动
     @Inject(method = "getPlaySpeed",at = @At("HEAD"), cancellable = true)
-    public void getPlaySpeed(LivingEntityPatch<?> entitypatch, CallbackInfoReturnable<Float> cir) {
+    public void wukong$getPlaySpeed(LivingEntityPatch<?> entitypatch, CallbackInfoReturnable<Float> cir) {
         if (entitypatch.getOriginal().hasEffect(WuKongEffects.DING.get())) cir.setReturnValue(0.0f);
     }
 }

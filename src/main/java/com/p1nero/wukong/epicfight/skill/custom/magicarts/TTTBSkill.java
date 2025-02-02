@@ -83,7 +83,7 @@ public class TTTBSkill extends Skill {
                             entity.hurt(DamageSource.playerAttack(serverPlayer), event.getAmount() * 0.3F);//反弹伤害
                             LivingEntityPatch<?> patch = EpicFightCapabilities.getEntityPatch(entity, LivingEntityPatch.class);
                             if (patch != null) {
-                                patch.applyStun(StunType.NEUTRALIZE, 1.0F);
+                                patch.applyStun(StunType.HOLD, 1.5F);
                             }
                         }
                         event.getPlayerPatch().playAnimationSynchronized(end, 0.15F);

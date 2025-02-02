@@ -18,7 +18,7 @@ public abstract class PlayerMixin extends LivingEntity {
     }
 
     @Inject(at = @At("HEAD"),method = "getSpeed",cancellable = true)
-    public void getSpeed(CallbackInfoReturnable<Float> cir) {
+    public void wukong$getSpeed(CallbackInfoReturnable<Float> cir) {
         if (level.getEntity(getId()) instanceof LivingEntity livingEntity && livingEntity.hasEffect(WuKongEffects.DING.get())) cir.setReturnValue(0.0f);
     }
 }

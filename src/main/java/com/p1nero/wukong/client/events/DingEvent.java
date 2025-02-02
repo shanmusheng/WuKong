@@ -7,6 +7,8 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -59,6 +61,10 @@ public class DingEvent {
             livingEntity.xxa = 0.0f;
             livingEntity.yya = 0.0f;
             livingEntity.zza = 0.0f;
+//            livingEntity.setPos(new Vec3(livingEntity.getX(),livingEntity.getY(),livingEntity.getZ()));
+//            if (livingEntity instanceof Player player) {
+//                player.teleportTo(player.getX(),player.getY(),player.getZ());
+//            }
             if (ep != null) {
 //宏观调控
 //                if (ep.getAnimator().getPlayerFor(null).getAnimation() instanceof StaticAnimation staticAnimation) {

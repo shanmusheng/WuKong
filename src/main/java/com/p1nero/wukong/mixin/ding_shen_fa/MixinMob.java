@@ -19,21 +19,21 @@ public abstract class MixinMob extends LivingEntity {
     }
 
     @Inject(at = @At("HEAD"), method = "isNoAi()Z", cancellable = true)
-    public void isNoAi(CallbackInfoReturnable<Boolean> callback) {
+    public void wukong$isNoAi(CallbackInfoReturnable<Boolean> callback) {
         if (hasEffect(WuKongEffects.DING.get())) {
             callback.setReturnValue(true);
             callback.cancel();
         }
     }
     @Inject(at = @At("HEAD"), method = "tickHeadTurn", cancellable = true)
-    private void tickHeadTurn(float p_21538_, float p_21539_, CallbackInfoReturnable<Float> callback) {
+    private void wukong$tickHeadTurn(float p_21538_, float p_21539_, CallbackInfoReturnable<Float> callback) {
         if (hasEffect(WuKongEffects.DING.get())) {
             callback.setReturnValue(0.0f);
             callback.cancel();
         }
     }
     @Inject(at = @At("HEAD"), method = "createBodyControl", cancellable = true)
-    protected void createBodyControl(CallbackInfoReturnable<BodyRotationControl> cir) {
+    protected void wukong$createBodyControl(CallbackInfoReturnable<BodyRotationControl> cir) {
         if (hasEffect(WuKongEffects.DING.get())) {
             cir.setReturnValue(null);
             cir.cancel();

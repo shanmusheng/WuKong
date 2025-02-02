@@ -18,6 +18,8 @@
     "EntityStateMixin",
     "OpenMatrix4fMixin",
     "ServerPlayerPatchMixin",
+    "ding_shen_fa.ActionAnimationMixin",
+    "ding_shen_fa.AnimationPlayerMixin",
     "ding_shen_fa.AttackAnimation",
     "ding_shen_fa.ConcurrentLinkAnimationMixin",
     "ding_shen_fa.DynamicAnimationMixin",

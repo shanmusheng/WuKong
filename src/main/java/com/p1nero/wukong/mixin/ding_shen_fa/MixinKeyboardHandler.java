@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class MixinKeyboardHandler {
     //不许动
     @Inject(at = @At("HEAD"), method = "keyPress(JIIII)V", cancellable = true)
-    public void keyPress(long screen, int key, int scanCode, int action, int modifier, CallbackInfo callback) {
+    public void wukong$keyPress(long screen, int key, int scanCode, int action, int modifier, CallbackInfo callback) {
         Minecraft mc = Minecraft.getInstance();
         if (mc.screen == null) {
             LocalPlayer player = mc.player;
