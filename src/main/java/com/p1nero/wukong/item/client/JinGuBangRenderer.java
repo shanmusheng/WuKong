@@ -52,7 +52,7 @@ public class JinGuBangRenderer extends GeoItemRenderer<JinGuBang> {
             public ResourceLocation getAnimationFileLocation(JinGuBang jinGuBang) {
                 final Minecraft mc = Minecraft.getInstance();
                 LocalPlayerPatch lpp = EpicFightCapabilities.getEntityPatch(mc.player, LocalPlayerPatch.class);
-                if (lpp != null && ((lpp.getAnimator().getPlayerFor(null).getAnimation() instanceof StaticAnimation staticAnimation && AnimationJudge.isGlow(staticAnimation)) && ((lpp.getEntityState().getLevel() != 3) || (AnimationJudge.isCharging(lpp) && lpp.getSkill(SkillSlots.WEAPON_INNATE).getStack() >= 1)))) {
+                if (lpp != null && (((lpp.getAnimator().getPlayerFor(null).getAnimation() instanceof StaticAnimation staticAnimation && AnimationJudge.isGlow(staticAnimation)) && (lpp.getEntityState().getLevel() != 3)) || (AnimationJudge.isCharging(lpp) && lpp.getSkill(SkillSlots.WEAPON_INNATE).getStack() >= 1))) {
                     return new ResourceLocation(WukongMoveset.MOD_ID, "animations/item/jingubang_charge.animation.json");
                 }
                 else {
