@@ -29,24 +29,15 @@ public class DingEvent {
     }
 
     private static void execute(@Nullable Event event, Entity entity) {
-        if (entity == null)
+        if (entity == null) {
             return;
-//        if (entity instanceof LivingEntity livingEntity && !livingEntity.hasEffect(WuKongEffects.DING.get())) {
-//            LivingEntityPatch<?> ep = EpicFightCapabilities.getEntityPatch(livingEntity, LivingEntityPatch.class);
-//            if (ep != null) {
-////宏观调控
-//                if (ep.getAnimator().getPlayerFor(null).getAnimation() instanceof StaticAnimation staticAnimation && staticAnimation.getProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER).isPresent()) {
-//                    entity.getPersistentData().putFloat("animation", staticAnimation.getProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER).get().modify(staticAnimation, ep, 1, 1));
-//                    staticAnimation.addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> entity.getPersistentData().getFloat("animation")));
-//                }
-//            }
-//        }
-        //不许动
+        }
+        //原版生物不许动
         if (entity instanceof LivingEntity livingEntity && livingEntity.hasEffect(WuKongEffects.DING.get())) {
-            if (entity.getLevel() instanceof ServerLevel serverLevel)
+            if (entity.getLevel() instanceof ServerLevel serverLevel) {
                 serverLevel.sendParticles(ParticleTypes.GLOW, entity.getX(), entity.getY() + 1, entity.getZ(), 1, 0, 0, 0, 10);
-            if (entity.getLevel() instanceof ServerLevel serverLevel)
                 serverLevel.sendParticles(ParticleTypes.WAX_OFF, entity.getX(), entity.getY() + 1, entity.getZ(), 1, 0, 0, 0, 10);
+            }
             if (livingEntity.getHealth() <= 0.0f) livingEntity.removeEffect(WuKongEffects.DING.get());
             LivingEntityPatch<?> ep = EpicFightCapabilities.getEntityPatch(livingEntity, LivingEntityPatch.class);
             livingEntity.setDeltaMovement(0, 0, 0);
@@ -56,16 +47,7 @@ public class DingEvent {
             livingEntity.xxa = 0.0f;
             livingEntity.yya = 0.0f;
             livingEntity.zza = 0.0f;
-//            livingEntity.setPos(new Vec3(livingEntity.getX(),livingEntity.getY(),livingEntity.getZ()));
-//            if (livingEntity instanceof Player player) {
-//                player.teleportTo(player.getX(),player.getY(),player.getZ());
-//            }
             if (ep != null) {
-//宏观调控
-//                if (ep.getAnimator().getPlayerFor(null).getAnimation() instanceof StaticAnimation staticAnimation) {
-//                    if (staticAnimation.getProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER).isPresent())
-//                        staticAnimation.addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 0.0F));
-//                }
                 ep.getEntityState().setState(EntityState.ATTACKING, false);
                 ep.getEntityState().setState(EntityState.LOCKON_ROTATE, true);
                 ep.getEntityState().setState(EntityState.MOVEMENT_LOCKED, true);
@@ -77,12 +59,12 @@ public class DingEvent {
                 ep.getAnimator().getEntityState().setState(EntityState.TURNING_LOCKED, true);
                 ep.getAnimator().getEntityState().setState(EntityState.UPDATE_LIVING_MOTION, false);
             }
+            //炎魔你也跑不了
             if (ModList.get().isLoaded("citadel")) {
                 if (entity instanceof IAnimatedEntity iAnimatedEntity) {
                     iAnimatedEntity.setAnimationTick(iAnimatedEntity.getAnimationTick() - 1);
                 }
             }
-
         }
     }
 }

@@ -9,5 +9,5 @@ import static com.p1nero.wukong.WukongMoveset.MOD_ID;
 
 public class WuKongEffects {
     public static final DeferredRegister<MobEffect> REGISTRY = DeferredRegister.create(ForgeRegistries.MOB_EFFECTS, MOD_ID);
-    public static final RegistryObject<MobEffect> DING = REGISTRY.register("ding", Ding::new);
+    public static final RegistryObject<MobEffect> DING = REGISTRY.register("ding", DingEffect::new);
 }

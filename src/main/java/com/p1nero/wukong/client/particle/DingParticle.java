@@ -2,7 +2,6 @@ package com.p1nero.wukong.client.particle;
 
 
 import com.p1nero.wukong.api.ParticleRenderTypeN;
-import com.p1nero.wukong.effects.Ding;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.*;
 import net.minecraft.core.particles.SimpleParticleType;
