@@ -66,7 +66,7 @@ import java.util.UUID;
 /**
  * 劈棍重击
  */
-public class ThrustHeavyAttack extends WeaponInnateSkill {
+public class ThrustHeavyAttack extends WeaponInnateSkill implements HeavyAttack {
 
     private static final UUID EVENT_UUID = UUID.fromString("d2d057cc-f30f-11ed-a05b-0242ac114514");
     public static final int MAX_DERIVE_TIMER = Config.DERIVE_CHECK_TIME.get().intValue();//在此期间内再按才被视为衍生
@@ -667,6 +667,13 @@ public class ThrustHeavyAttack extends WeaponInnateSkill {
     @Override
     public WeaponInnateSkill registerPropertiesToAnimation() {
         return null;
+    }
+
+    @Override
+    public List<StaticAnimation> getHeavyAttacks() {
+        List<StaticAnimation> staticAnimations = new java.util.ArrayList<>(List.of(animations));
+        staticAnimations.add(deriveAnimation2);
+        return staticAnimations;
     }
 
     public static class Builder extends Skill.Builder<ThrustHeavyAttack> {

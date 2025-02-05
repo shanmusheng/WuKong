@@ -36,6 +36,7 @@ public class WukongKeyMappings {
     public static final MyKeyMapping JIAO_ZHEN = new MyKeyMapping("key.wukong.jiao_zhen", InputConstants.Type.MOUSE, GLFW.GLFW_MOUSE_BUTTON_1, "key.wukong.category");
     public static final MyKeyMapping QI_SHU = new MyKeyMapping("key.wukong.qi_shu", InputConstants.Type.MOUSE, GLFW.GLFW_KEY_1, "key.wukong.category");
     public static final MyKeyMapping SHEN_FA = new MyKeyMapping("key.wukong.shen_fa", InputConstants.Type.MOUSE, GLFW.GLFW_KEY_2, "key.wukong.category");
+    public static final MyKeyMapping HAO_MAO = new MyKeyMapping("key.wukong.hao_mao", InputConstants.Type.MOUSE, GLFW.GLFW_KEY_3, "key.wukong.category");
     public static final MyKeyMapping HEAVY = new MyKeyMapping("key.wukong.heavy",  InputConstants.Type.MOUSE, GLFW.GLFW_MOUSE_BUTTON_2, "key.wukong.category");
     public static final MyKeyMapping SMASH_STYLE = new MyKeyMapping("key.wukong.smash_stance", GLFW.GLFW_KEY_Z, "key.wukong.category");
     public static final MyKeyMapping PILLAR_STYLE = new MyKeyMapping("key.wukong.pillar_stance", GLFW.GLFW_KEY_X, "key.wukong.category");
@@ -52,6 +53,7 @@ public class WukongKeyMappings {
         ClientRegistry.registerKeyBinding(STAFF_FLOWER);
         ClientRegistry.registerKeyBinding(QI_SHU);
         ClientRegistry.registerKeyBinding(SHEN_FA);
+        ClientRegistry.registerKeyBinding(HAO_MAO);
     }
 
 }

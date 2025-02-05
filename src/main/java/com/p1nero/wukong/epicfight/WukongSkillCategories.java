@@ -7,7 +7,8 @@ public enum WukongSkillCategories implements SkillCategory
     //棍式
     STAFF_STYLE(true, true, true),
     QI_SHU(true, true, true),
-    SHEN_FA(true, true, true);
+    SHEN_FA(true, true, true),
+    HAO_MAO(true, true, true);
 
     final boolean save;
     final boolean sync;

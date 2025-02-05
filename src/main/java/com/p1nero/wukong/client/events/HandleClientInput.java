@@ -128,6 +128,11 @@ public class HandleClientInput {
                 shenFaKeyPressed(event.getAction());
             }
 
+            //身法
+            if(event.getKey() == WukongKeyMappings.HAO_MAO.getKey().getValue()){
+                haoMaoKeyPressed(event.getAction());
+            }
+
         }
 
     }
@@ -147,6 +152,12 @@ public class HandleClientInput {
     public static void shenFaKeyPressed(int action){
         if(action == 1){
             sendSkillPacket(WukongSkillSlots.SHEN_FA, WukongKeyMappings.SHEN_FA);
+        }
+    }
+
+    public static void haoMaoKeyPressed(int action){
+        if(action == 1){
+            sendSkillPacket(WukongSkillSlots.HAO_MAO, WukongKeyMappings.HAO_MAO);
         }
     }
 

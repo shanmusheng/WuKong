@@ -2,10 +2,12 @@ package com.p1nero.wukong.epicfight.animation;
 
 import com.p1nero.wukong.Config;
 import com.p1nero.wukong.WukongMoveset;
+import com.p1nero.wukong.capability.WKCapabilityProvider;
 import com.p1nero.wukong.client.WuKongSounds;
 import com.p1nero.wukong.client.events.CameraAnim;
 import com.p1nero.wukong.client.particle.WuKongParticles;
 import com.p1nero.wukong.effects.WuKongEffects;
+import com.p1nero.wukong.entity.FakeWukongEntity;
 import com.p1nero.wukong.epicfight.animation.custom.*;
 import com.p1nero.wukong.epicfight.skill.custom.PillarHeavyAttack;
 import com.p1nero.wukong.epicfight.skill.custom.RedTideHeavyAttack;
@@ -15,9 +17,11 @@ import com.p1nero.wukong.epicfight.weapon.WukongColliders;
 import com.p1nero.wukong.epicfight.weapon.WukongWeaponCategories;
 import com.p1nero.wukong.item.WukongItems;
 import net.minecraft.client.player.Input;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EntityType;
@@ -166,6 +170,8 @@ public class WukongAnimations {
     public static StaticAnimation TONG_TOU_TIE_BI;
     public static StaticAnimation TONG_TOU_TIE_BI_END;
     public static StaticAnimation TONG_TOU_TIE_BI_FAIL;
+    //身外身法
+    public static StaticAnimation SHEN_WAI_SHEN_FA;
 
     //赤潮
     public static StaticAnimation RED_TIDE_IDLE;
@@ -1077,6 +1083,31 @@ public class WukongAnimations {
         TONG_TOU_TIE_BI_END = new ActionAnimation(0.15F, "biped/magicarts/tttb_end", biped);
 
         TONG_TOU_TIE_BI_FAIL = new LongHitAnimation(0.15F, "biped/magicarts/tttb_fail", biped);
+        //身外身法
+        SHEN_WAI_SHEN_FA = new ActionAnimation(0.15F, 3.3F, "biped/magicarts/haomao_fenshen", biped)
+                .addEvents(AnimationEvent.TimeStampedEvent.create(3.2F, ((livingEntityPatch, staticAnimation, objects) -> {
+                    Vec3 startPos = livingEntityPatch.getTarget() == null ? livingEntityPatch.getOriginal().position() : livingEntityPatch.getTarget().position();
+                    Vec3 particleOrigin = startPos.subtract(0, 1, 0);
+                    if(livingEntityPatch.getOriginal() instanceof ServerPlayer serverPlayer){
+                    ServerLevel serverLevel = serverPlayer.getLevel();
+                    int particleCount = 7;
+                    float radius = 3F;
+                        for (int i = 0; i < particleCount; i++) {
+                            float angle = (float) i / particleCount * (float) Math.PI * 2;
+                            float xOffset = radius * (float) Math.cos(angle);
+                            float zOffset = radius * (float) Math.sin(angle);
+                            Vec3 particlePos = particleOrigin.add(xOffset, 0, zOffset);
+                            serverLevel.sendParticles(ParticleTypes.POOF, particlePos.x, particlePos.y + 2, particlePos.z, 20, 0, 0, 0, 0.1);
+                            livingEntityPatch.playSound(SoundEvents.GENERIC_EXPLODE, 0.5F, 0.0F, 0.0F);
+                            FakeWukongEntity fakeWukongEntity = new FakeWukongEntity(serverPlayer);
+                            fakeWukongEntity.setPos(particleOrigin.add(xOffset, 1, zOffset));
+                            serverPlayer.getLevel().addFreshEntity(fakeWukongEntity);
+                            serverPlayer.getCapability(WKCapabilityProvider.WK_PLAYER).ifPresent(wkPlayer -> wkPlayer.addFakeWukongId(fakeWukongEntity.getId()));
+
+                        }
+                    }
+                }), AnimationEvent.Side.SERVER))
+                .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.5F));
 
         //赤潮
         RED_TIDE_IDLE = new StaticAnimation(true, "cc/cc_idle", biped);

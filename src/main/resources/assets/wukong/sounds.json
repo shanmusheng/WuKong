@@ -60,5 +60,11 @@
     "sounds": [
       "wukong:an_shen"
     ]
+  },
+  "fen_shen": {
+    "subtitle": "sounds.wukong.fen_shen",
+    "sounds": [
+      "wukong:fen_shen"
+    ]
   }
 }

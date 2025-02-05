@@ -2,10 +2,22 @@ package com.p1nero.wukong.capability;
 
 import net.minecraft.nbt.CompoundTag;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class WKPlayer {
     private String lastSkill = "";//用于恢复闪避技能
     private boolean perfectDodge;
     private float damageReduce = -1;
+    private final List<Integer> fakeWukongIds = new ArrayList<>();
+
+    public void addFakeWukongId(int id){
+        fakeWukongIds.add(id);
+    }
+
+    public List<Integer> getFakeWukongIds() {
+        return fakeWukongIds;
+    }
 
     public void setDamageReduce(float damageReduce) {
         this.damageReduce = damageReduce;

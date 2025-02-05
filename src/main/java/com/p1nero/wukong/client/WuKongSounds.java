@@ -24,6 +24,7 @@ public class WuKongSounds {
     public static RegistryObject<SoundEvent> DING = registerSoundEvent("ding");
     public static RegistryObject<SoundEvent> BREAK = registerSoundEvent("break");
     public static RegistryObject<SoundEvent> AN_SHEN = registerSoundEvent("an_shen");
+    public static RegistryObject<SoundEvent> FEN_SHEN = registerSoundEvent("fen_shen");
     public static List<RegistryObject<SoundEvent>> stackSounds = new ArrayList<>();
     static {
         stackSounds.add(STACK1);

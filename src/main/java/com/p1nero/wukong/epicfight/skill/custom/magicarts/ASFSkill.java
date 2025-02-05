@@ -43,7 +43,7 @@ public class ASFSkill extends Skill {
         super(builder);
     }
 
-    public static ASFSkill.Builder createAN_SHEN_FA() {
+    public static ASFSkill.Builder create() {
         return new ASFSkill.Builder().setCategory(WukongSkillCategories.QI_SHU).setResource(Skill.Resource.NONE);
     }
 

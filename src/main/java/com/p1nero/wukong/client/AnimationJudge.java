@@ -11,10 +11,9 @@ import yesman.epicfight.skill.SkillSlots;
 
 import java.util.Arrays;
 
-/*
-用来判断动画方便一些
+/**
+ * 用来判断动画方便一些
  */
-
 public record AnimationJudge() {
 
     static final StaticAnimation[] GLOW;
@@ -22,8 +21,9 @@ public record AnimationJudge() {
     static final StaticAnimation[] TWO_STAGE;
     static final StaticAnimation[] THREE_STAGE;
     static final StaticAnimation[] FOUR_STAGE;
+
     static {
-        GLOW = new StaticAnimation[] {
+        GLOW = new StaticAnimation[]{
                 WukongAnimations.SMASH_SPECIAL1,
                 WukongAnimations.SMASH_SPECIAL2,
                 WukongAnimations.SMASH_CHARGED1,
@@ -43,11 +43,11 @@ public record AnimationJudge() {
                 WukongAnimations.PILLAR_CHARGED4,
                 WukongAnimations.PILLAR_PRE4,
         };
-        QIE = new StaticAnimation[] {
+        QIE = new StaticAnimation[]{
                 WukongAnimations.SMASH_SPECIAL1,
                 WukongAnimations.SMASH_SPECIAL2,
         };
-        TWO_STAGE = new StaticAnimation[] {
+        TWO_STAGE = new StaticAnimation[]{
                 WukongAnimations.SMASH_CHARGED2,
                 WukongAnimations.THRUST_CHARGED2,
                 WukongAnimations.PILLAR_CHARGED2,
@@ -66,18 +66,23 @@ public record AnimationJudge() {
                 WukongAnimations.PILLAR_PRE4,
         };
     }
+
     public static boolean isGlow(StaticAnimation staticAnimation) {
         return Arrays.asList(GLOW).contains(staticAnimation);
     }
+
     public static boolean isQie(StaticAnimation staticAnimation) {
         return Arrays.asList(QIE).contains(staticAnimation);
     }
+
     public static boolean isTwo(StaticAnimation staticAnimation) {
         return Arrays.asList(TWO_STAGE).contains(staticAnimation);
     }
+
     public static boolean isThree(StaticAnimation staticAnimation) {
         return Arrays.asList(THREE_STAGE).contains(staticAnimation);
     }
+
     public static boolean isFour(StaticAnimation staticAnimation) {
         return Arrays.asList(FOUR_STAGE).contains(staticAnimation);
     }
@@ -86,12 +91,12 @@ public record AnimationJudge() {
         return lpp.getSkill(SkillSlots.WEAPON_INNATE) != null && (
                 (lpp.getSkill(SkillSlots.WEAPON_INNATE).getDataManager().hasData(SmashHeavyAttack.IS_CHARGING) && lpp.getSkill(SkillSlots.WEAPON_INNATE).getDataManager().getDataValue(SmashHeavyAttack.IS_CHARGING))
                         || (lpp.getSkill(SkillSlots.WEAPON_INNATE).getDataManager().hasData(ThrustHeavyAttack.IS_CHARGING) && (lpp.getSkill(SkillSlots.WEAPON_INNATE).getDataManager().getDataValue(ThrustHeavyAttack.IS_CHARGING)))
-                        || (lpp.getSkill(SkillSlots.WEAPON_INNATE).getDataManager().hasData(HeavyAttack.IS_CHARGING) && (lpp.getSkill(SkillSlots.WEAPON_INNATE).getDataManager().getDataValue(HeavyAttack.IS_CHARGING)))
                         || (lpp.getSkill(SkillSlots.WEAPON_INNATE).getDataManager().hasData(PillarHeavyAttack.IS_CHARGING) && (lpp.getSkill(SkillSlots.WEAPON_INNATE).getDataManager().getDataValue(PillarHeavyAttack.IS_CHARGING))));
     }
 
-    public static boolean changemode(StaticAnimation staticAnimation, LocalPlayerPatch lpp) {
-        if ((Arrays.asList(FOUR_STAGE).contains(staticAnimation) || Arrays.asList(THREE_STAGE).contains(staticAnimation) || Arrays.asList(TWO_STAGE).contains(staticAnimation)) && (lpp.getEntityState().getLevel() != 3)) return true;
+    public static boolean changeMode(StaticAnimation staticAnimation, LocalPlayerPatch lpp) {
+        if ((Arrays.asList(FOUR_STAGE).contains(staticAnimation) || Arrays.asList(THREE_STAGE).contains(staticAnimation) || Arrays.asList(TWO_STAGE).contains(staticAnimation)) && (lpp.getEntityState().getLevel() != 3))
+            return true;
         else return isCharging(lpp);
     }
 }

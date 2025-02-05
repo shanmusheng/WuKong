@@ -6,7 +6,8 @@ import yesman.epicfight.skill.SkillSlot;
 public enum WukongSkillSlots implements SkillSlot {
     STAFF_STYLE(WukongSkillCategories.STAFF_STYLE),
     QI_SHU(WukongSkillCategories.QI_SHU),
-    SHEN_FA(WukongSkillCategories.SHEN_FA);
+    SHEN_FA(WukongSkillCategories.SHEN_FA),
+    HAO_MAO(WukongSkillCategories.HAO_MAO);
     final SkillCategory category;
     final int id;
 
