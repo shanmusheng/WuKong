@@ -54,5 +54,11 @@
     "sounds": [
       "wukong:break"
     ]
+  },
+  "an_shen": {
+    "subtitle": "sounds.wukong.an_shen",
+    "sounds": [
+      "wukong:an_shen"
+    ]
   }
 }

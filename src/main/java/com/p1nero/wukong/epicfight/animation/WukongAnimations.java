@@ -153,6 +153,8 @@ public class WukongAnimations {
     public static StaticAnimation PILLAR_LOOP;
     //定身术
     public static StaticAnimation DING;
+    //安身法
+    public static StaticAnimation AN_SHEN_FA;
     //聚形散气
     public static StaticAnimation CLOUD_STEP_START;
     public static StaticAnimation CLOUD_STEP_START_BACKWARD;
@@ -1035,6 +1037,10 @@ public class WukongAnimations {
                             }
                         }, AnimationEvent.TimeStampedEvent.Side.SERVER)
                 });
+        //安身法
+        AN_SHEN_FA = new ActionAnimation(0.0F, "biped/magicarts/asf", biped)
+                .addProperty(AnimationProperty.ActionAnimationProperty.MOVE_VERTICAL,true)
+                .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 2.0F));
         //聚形散气
         CLOUD_STEP_START = new ActionAnimation(0.15F, 0.6F, "biped/magicarts/jxsq_start", biped)
                 .newTimePair(0.0F, 0.5F)

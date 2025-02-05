@@ -4,6 +4,7 @@ import com.p1nero.wukong.WukongMoveset;
 import com.p1nero.wukong.epicfight.WukongStyles;
 import com.p1nero.wukong.epicfight.animation.WukongAnimations;
 import com.p1nero.wukong.epicfight.skill.custom.*;
+import com.p1nero.wukong.epicfight.skill.custom.magicarts.ASFSkill;
 import com.p1nero.wukong.epicfight.skill.custom.magicarts.CloudStepSkill;
 import com.p1nero.wukong.epicfight.skill.custom.magicarts.DingSkill;
 import com.p1nero.wukong.epicfight.skill.custom.magicarts.TTTBSkill;
@@ -32,7 +33,6 @@ public class WukongSkills {
     public static Skill AN_SHEN_FA;
     public static Skill JU_XING_SAN_QI;
     public static Skill TONG_TOU_TIE_BI;
-    public static Skill DING_SHEN_FA;
 
     public static void registerSkills() {
 
@@ -123,7 +123,7 @@ public class WukongSkills {
         SkillManager.register(TTTBSkill::new, TTTBSkill.createTTTB().setCreativeTab(WukongItems.CREATIVE_MODE_TAB)
                 .setAnim(() -> WukongAnimations.TONG_TOU_TIE_BI, () -> WukongAnimations.TONG_TOU_TIE_BI_FAIL, () -> WukongAnimations.TONG_TOU_TIE_BI_END), WukongMoveset.MOD_ID, "tong_tou_tie_bi");
         SkillManager.register(DingSkill::new, DingSkill.createDing().setCreativeTab(WukongItems.CREATIVE_MODE_TAB),WukongMoveset.MOD_ID, "ding_shen_fa");
-
+        SkillManager.register(ASFSkill::new, ASFSkill.createAN_SHEN_FA().setCreativeTab(WukongItems.CREATIVE_MODE_TAB),WukongMoveset.MOD_ID, "an_shen_fa");   //安身法
 
         SkillManager.register(RedTideHeavyAttack::new, WeaponInnateSkill.createWeaponInnateBuilder(), WukongMoveset.MOD_ID, "red_tide_heavy");
         SkillManager.register(StepSkill::new, DodgeSkill.createDodgeBuilder()
@@ -150,6 +150,7 @@ public class WukongSkills {
         JU_XING_SAN_QI = event.build(WukongMoveset.MOD_ID, "ju_xing_san_qi");
         TONG_TOU_TIE_BI = event.build(WukongMoveset.MOD_ID, "tong_tou_tie_bi");
         DING = event.build(WukongMoveset.MOD_ID, "ding_shen_fa");
+        AN_SHEN_FA = event.build(WukongMoveset.MOD_ID, "an_shen_fa");
 
         RED_TIDE_SKILL = event.build(WukongMoveset.MOD_ID, "red_tide_heavy");
         RED_TIDE_DODGE = event.build(WukongMoveset.MOD_ID, "red_tide_dodge");
