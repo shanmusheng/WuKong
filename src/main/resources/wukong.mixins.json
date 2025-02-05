@@ -20,14 +20,9 @@
     "ServerPlayerPatchMixin",
     "ding_shen_fa.ActionAnimationMixin",
     "ding_shen_fa.AnimationPlayerMixin",
-    "ding_shen_fa.AttackAnimation",
-    "ding_shen_fa.ConcurrentLinkAnimationMixin",
-    "ding_shen_fa.DynamicAnimationMixin",
     "ding_shen_fa.LivingEntityMixin",
     "ding_shen_fa.MixinMob",
-    "ding_shen_fa.MovementAnimationMixin",
-    "ding_shen_fa.PlayerMixin",
-    "ding_shen_fa.StaticAnimationMixin"
+    "ding_shen_fa.PlayerMixin"
   ],
   "injectors": {
     "defaultRequire": 1
