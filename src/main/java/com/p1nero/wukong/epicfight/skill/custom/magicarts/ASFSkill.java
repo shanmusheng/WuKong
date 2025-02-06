@@ -157,7 +157,7 @@ public class ASFSkill extends Skill {
             return;
         }
         double radius = 4.7;
-        int particleCount = 360;
+        int particleCount = 90;
         for (int i = 0; i < particleCount; i++) {
             if (dataManager.getDataValue(EXIST_TIMER) <= 0) {
                 break;
@@ -165,8 +165,8 @@ public class ASFSkill extends Skill {
             double angle = i * (Math.PI * 2 / particleCount);
             double x = position.x + radius * Math.cos(angle);
             double z = position.z + radius * Math.sin(angle);
-            double y = position.y + 0;
-            level.sendParticles(ParticleTypes.FLAME, x, y, z, 10, 0, 0, 0, 0);
+            double y = position.y + 0.2;
+            level.sendParticles(ParticleTypes.FLAME, x, y, z, 1, 0, 0, 0, 0);
 
         }
     }
