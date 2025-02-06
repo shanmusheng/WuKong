@@ -1044,9 +1044,11 @@ public class WukongAnimations {
                         }, AnimationEvent.TimeStampedEvent.Side.SERVER)
                 });
         //安身法
-        AN_SHEN_FA = new ActionAnimation(0.0F, "biped/magicarts/asf", biped)
+        AN_SHEN_FA = new ActionAnimation(0.01F, "biped/magicarts/asf", biped)
                 .addProperty(AnimationProperty.ActionAnimationProperty.MOVE_VERTICAL,true)
-                .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 2.0F));
+                .addProperty(AnimationProperty.ActionAnimationProperty.CANCELABLE_MOVE,true)
+                .addProperty(AnimationProperty.ActionAnimationProperty.STOP_MOVEMENT,true)
+                .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 2.1F));
         //聚形散气
         CLOUD_STEP_START = new ActionAnimation(0.15F, 0.6F, "biped/magicarts/jxsq_start", biped)
                 .newTimePair(0.0F, 0.5F)

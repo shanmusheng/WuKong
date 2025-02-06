@@ -12,16 +12,23 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.phys.Vec3;
+import yesman.epicfight.api.animation.types.DynamicAnimation;
+import yesman.epicfight.api.animation.types.StaticAnimation;
+import yesman.epicfight.api.utils.AttackResult;
 import yesman.epicfight.client.gui.BattleModeGui;
 import yesman.epicfight.skill.*;
 import yesman.epicfight.world.capabilities.EpicFightCapabilities;
+import yesman.epicfight.world.capabilities.entitypatch.LivingEntityPatch;
 import yesman.epicfight.world.capabilities.entitypatch.player.PlayerPatch;
 import yesman.epicfight.world.capabilities.entitypatch.player.ServerPlayerPatch;
+import yesman.epicfight.world.entity.eventlistener.PlayerEventListener;
 
 import java.util.List;
 import java.util.UUID;
@@ -71,9 +78,17 @@ public class ASFSkill extends Skill {
         dataManager.setDataSync(X, (float)executer.getOriginal().getX(), executer.getOriginal());
         dataManager.setDataSync(Y, (float)executer.getOriginal().getY(), executer.getOriginal());
         dataManager.setDataSync(Z, (float)executer.getOriginal().getZ(), executer.getOriginal());
-
+        container.getExecuter().getEventListener().addEventListener(PlayerEventListener.EventType.HURT_EVENT_PRE, EVENT_UUID, (event) -> {
+                if (event.getPlayerPatch().getAnimator().getPlayerFor(null).getAnimation() == WukongAnimations.AN_SHEN_FA) {
+                    event.setResult(AttackResult.ResultType.MISSED);
+                }
+        });
     }
-
+    @Override
+    public void onRemoved(SkillContainer container) {
+        super.onRemoved(container);
+        container.getExecuter().getEventListener().removeListener(PlayerEventListener.EventType.HURT_EVENT_PRE, EVENT_UUID);
+    }
     @Override
     public void updateContainer(SkillContainer container) {
         super.updateContainer(container);

@@ -1,10 +1,15 @@
 package com.p1nero.wukong.mixin;
 
+import com.p1nero.wukong.entity.FakeWukongEntity;
 import com.p1nero.wukong.epicfight.skill.custom.ThrustHeavyAttack;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraftforge.event.entity.living.LivingEvent;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import yesman.epicfight.skill.SkillDataManager;
 import yesman.epicfight.skill.SkillSlots;
@@ -21,6 +26,14 @@ public abstract class ServerPlayerPatchMixin extends PlayerPatch<ServerPlayer> {
         SkillDataManager manager = this.getSkill(SkillSlots.WEAPON_INNATE).getDataManager();
         if(manager.hasData(ThrustHeavyAttack.DODGE_SUCCESS_TIMER) && manager.getDataValue(ThrustHeavyAttack.DODGE_SUCCESS_TIMER) > 0){
             cir.setReturnValue(false);
+        }
+    }
+    @Shadow
+    private LivingEntity attackTarget;
+    @Inject(method = "setAttackTarget",at = @At("TAIL"))
+    public void tick(LivingEntity entity, CallbackInfo ci) {
+        if (entity instanceof FakeWukongEntity) {
+            attackTarget = null;
         }
     }
 }

@@ -21,6 +21,7 @@
     "ding_shen_fa.ActionAnimationMixin",
     "ding_shen_fa.AnimationPlayerMixin",
     "ding_shen_fa.LivingEntityMixin",
+    "LocalPlayerPatchMixin",
     "ding_shen_fa.MixinMob",
     "ding_shen_fa.PlayerMixin"
   ],

@@ -60,7 +60,7 @@ public class ShenWaiShenFaSkill extends Skill {
                 hurtEvent.setResult(AttackResult.ResultType.MISSED);
                 hurtEvent.setCanceled(true);
             }
-        }));
+        }),-1);
         container.getExecuter().getEventListener().addEventListener(PlayerEventListener.EventType.ACTION_EVENT_SERVER, EVENT_UUID, (actionEvent -> {
             StaticAnimation animation = actionEvent.getAnimation();
             ServerPlayerPatch executor = actionEvent.getPlayerPatch();
