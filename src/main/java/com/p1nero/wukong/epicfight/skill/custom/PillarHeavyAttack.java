@@ -95,7 +95,7 @@ public class PillarHeavyAttack extends WeaponInnateSkill {
         super(builder);
         this.pres = new StaticAnimation[builder.pres.length];
         for (int i = 0; i < builder.pres.length; i++) {
-            WukongMoveset.LOGGER.info("loading heavy attack animations: {}", builder.pres[i].get());
+            WukongMoveset.LOGGER.info("loading heavy attack pre animations: {}", builder.pres[i].get());
             this.pres[i] = builder.pres[i].get();
         }
 

@@ -26,7 +26,7 @@ public record PlayStaffFlowerPacket(boolean isTwoHand) implements BasePacket {
     public void execute(Player player) {
         if(player != null){
             player.getCapability(EpicFightCapabilities.CAPABILITY_ENTITY).ifPresent((entityPatch -> {
-                if(entityPatch instanceof ServerPlayerPatch playerPatch){
+                if(entityPatch instanceof ServerPlayerPatch playerPatch && !playerPatch.getEntityState().inaction()){
                     playerPatch.playAnimationSynchronized((isTwoHand)
                             ? WukongAnimations.STAFF_SPIN_TWO_HAND_LOOP : WukongAnimations.STAFF_SPIN_ONE_HAND_LOOP, 0);
                     playerPatch.consumeStamina(player.isCreative() ? 0 : Config.STAFF_FLOWER_STAMINA_CONSUME.get().floatValue());
