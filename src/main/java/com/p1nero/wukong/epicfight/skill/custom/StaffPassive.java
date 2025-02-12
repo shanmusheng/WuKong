@@ -8,36 +8,24 @@ import com.p1nero.wukong.epicfight.skill.SkillDataRegister;
 import com.p1nero.wukong.epicfight.skill.WukongSkills;
 import com.p1nero.wukong.epicfight.weapon.WukongWeaponCategories;
 import com.p1nero.wukong.item.WukongItems;
-import com.p1nero.wukong.item.client.KangJinStaff;
 import com.p1nero.wukong.network.PacketHandler;
 import com.p1nero.wukong.network.PacketRelay;
 import com.p1nero.wukong.network.packet.server.PlayStaffFlowerPacket;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.Input;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.registries.ForgeRegistries;
-import reascer.wom.world.item.WOMItems;
-import yesman.epicfight.api.animation.LivingMotions;
 import yesman.epicfight.api.animation.types.DynamicAnimation;
-import yesman.epicfight.api.animation.types.EntityState;
 import yesman.epicfight.api.animation.types.StaticAnimation;
 import yesman.epicfight.api.data.reloader.SkillManager;
-import yesman.epicfight.api.model.Armature;
 import yesman.epicfight.api.utils.AttackResult;
-import yesman.epicfight.api.utils.math.OpenMatrix4f;
-import yesman.epicfight.api.utils.math.Vec3f;
 import yesman.epicfight.client.ClientEngine;
 import yesman.epicfight.client.world.capabilites.entitypatch.player.LocalPlayerPatch;
-import yesman.epicfight.gameasset.Armatures;
 import yesman.epicfight.gameasset.EpicFightSounds;
 import yesman.epicfight.network.EpicFightNetworkManager;
 import yesman.epicfight.network.client.CPChangeSkill;
@@ -52,8 +40,6 @@ import yesman.epicfight.world.damagesource.EpicFightDamageSource;
 import yesman.epicfight.world.damagesource.SourceTags;
 import yesman.epicfight.world.entity.eventlistener.PlayerEventListener;
 
-import java.util.Objects;
-import java.util.Random;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -200,12 +186,12 @@ public class StaffPassive extends Skill {
         if (entity == null) {
             return false;
         }
-        if (Config.entities_can_be_blocked.isEmpty()) {
-            Config.entities_can_be_blocked = Config.ENTITIES_CAN_BE_BLOCKED_BY_STAFF_FLOWER.get().stream()
+        if (Config.entitiesCanBeBlocked.isEmpty()) {
+            Config.entitiesCanBeBlocked = Config.ENTITIES_CAN_BE_BLOCKED_BY_STAFF_FLOWER.get().stream()
                     .map(entityName -> ForgeRegistries.ENTITIES.getValue(new ResourceLocation(entityName)))
                     .collect(Collectors.toSet());
         }
-        return Config.entities_can_be_blocked.contains(entity.getType());
+        return Config.entitiesCanBeBlocked.contains(entity.getType());
     }
 
     /**
@@ -249,28 +235,5 @@ public class StaffPassive extends Skill {
         if (container.getDataManager().getDataValue(TICK) >= 4) {
             container.getDataManager().setDataSync(TICK, 0, ((LocalPlayer) container.getExecuter().getOriginal()));
         }
-//
-//        int nnL =4;
-//        float min = -5f;
-//        float max = 5f;
-//        int nL = 5;
-//        for (int iiL = 0;iiL < nnL; ++iiL){
-//            float rz = min +(max- min)* new Random().nextFloat();
-//            OpenMatrix4f transformMatrix = container.getExecuter().getArmature().getBindedTransformFor(container.getExecuter().getArmature().getPose(0.0F), Armatures.BIPED.handR);
-//            transformMatrix.translate(new Vec3f(0.0F,0.0F,-rz));
-//            OpenMatrix4f.mul(
-//                    new OpenMatrix4f().rotate(-(float)Math.toRadians(container.getExecuter().getOriginal().yBodyRotO) + 180.0F, new Vec3f(0.0F,1.0F, 0.0F)),
-//                    transformMatrix,transformMatrix);
-//            for(int iL=0;iL<nL; ++iL) {
-//                container.getExecuter().getOriginal().getLevel().addParticle(
-//                        ParticleTypes.DRIPPING_DRIPSTONE_LAVA, //粒子类型
-//                        transformMatrix.m30 + container.getExecuter().getOriginal().getX(), // X 坐标
-//// Y 坐标
-//                        transformMatrix.m31 + container.getExecuter().getOriginal().getY(),
-//                        transformMatrix.m32 + container.getExecuter().getOriginal().getZ(), //2 坐标
-//                        (float) 0.0, (float) -0.01, (float) 0.0);
-//            }
-//
-//        }
     }
 }

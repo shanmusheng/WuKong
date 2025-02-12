@@ -95,8 +95,15 @@ public class FakeWukongEntity extends TamableAnimal {
     @Override
     public void tick() {
         super.tick();
+        if(getOwner() == null){
+            this.discard();
+        }
+        //防止打假身
+        if(getTarget() instanceof CloudStepLeftEntity){
+            setTarget(null);
+        }
         if (this.tickCount >= 500) {
-            this.remove(Entity.RemovalReason.DISCARDED);
+            this.discard();
             level.addParticle(ParticleTypes.POOF, getX(), getY() + 2, getZ(), 0, 0, 0);
             level.playSound(null, getX(), getY(), getZ(), SoundEvents.GENERIC_EXPLODE, getSoundSource(), 1.0F, 1.0F);
         }

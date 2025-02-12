@@ -165,7 +165,7 @@ public class HandleClientInput {
         LocalPlayer player = Minecraft.getInstance().player;
         if(player != null && EpicFightCapabilities.getItemStackCapability(player.getMainHandItem()).getWeaponCategory().equals(WukongWeaponCategories.WK_STAFF)){
             LocalPlayerPatch localPlayerPatch = EpicFightCapabilities.getEntityPatch(player, LocalPlayerPatch.class);
-            if(localPlayerPatch != null && localPlayerPatch.getSkill(slot) != null && localPlayerPatch.getSkill(slot).sendExecuteRequest(localPlayerPatch, ClientEngine.getInstance().controllEngine).shouldReserverKey()){
+            if(localPlayerPatch != null && localPlayerPatch.isBattleMode() && localPlayerPatch.getSkill(slot) != null && localPlayerPatch.getSkill(slot).sendExecuteRequest(localPlayerPatch, ClientEngine.getInstance().controllEngine).shouldReserverKey()){
                 ControlEngineAccessor controlEngine = (ControlEngineAccessor) ClientEngine.getInstance().controllEngine;
                 controlEngine.setReserveCounter(8);
                 controlEngine.setReservedOrChargingSkillSlot(slot);

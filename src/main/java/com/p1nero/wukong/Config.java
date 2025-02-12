@@ -30,7 +30,7 @@ public class Config
     public static final ForgeConfigSpec.ConfigValue<List<? extends String>> ENTITIES_CAN_BE_BLOCKED_BY_STAFF_FLOWER;
     public static final ForgeConfigSpec SPEC;
 
-    public static Set<? extends EntityType<?>> entities_can_be_blocked = new HashSet<>();
+    public static Set<? extends EntityType<?>> entitiesCanBeBlocked = new HashSet<>();
 
     static {
         GET_GUILD_BOOK = createBool("给第一个进游戏的玩家玩法说明。", "get_guild_book", true);
