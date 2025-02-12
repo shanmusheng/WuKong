@@ -59,7 +59,7 @@ public class StaffSpinAttackAnimation extends BasicAttackAnimation {
             SkillContainer passiveContainer = serverPlayerPatch.getSkill(SkillSlots.WEAPON_PASSIVE);
             passiveContainer.getDataManager().setData(StaffPassive.PLAYING_STAFF_SPIN, false);
         }
-        if(entityPatch instanceof LocalPlayerPatch && CameraAnim.isAiming()){
+        if(entityPatch.isLogicalClient() && entityPatch instanceof LocalPlayerPatch && CameraAnim.isAiming()){
             CameraAnim.zoomOut(20);//保险
         }
     }
