@@ -17,6 +17,8 @@ import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.phys.Vec3;
+import yesman.epicfight.api.animation.types.DynamicAnimation;
+import yesman.epicfight.api.animation.types.EntityState;
 import yesman.epicfight.api.utils.AttackResult;
 import yesman.epicfight.client.gui.BattleModeGui;
 import yesman.epicfight.skill.*;
@@ -59,7 +61,10 @@ public class ASFSkill extends Skill {
         SkillDataRegister.register(manager, Y, 0.0f);
         SkillDataRegister.register(manager, Z, 0.0f);
     }
-
+    @Override
+    public boolean checkExecuteCondition(PlayerPatch<?> executer) {
+        return  !executer.getOriginal().isInWater();
+    }
     @Override
     public void executeOnServer(ServerPlayerPatch executer, FriendlyByteBuf args) {
         super.executeOnServer(executer, args);
