@@ -6,7 +6,9 @@ import yesman.epicfight.api.animation.types.ActionAnimation;
 import yesman.epicfight.api.animation.types.EntityState;
 import yesman.epicfight.api.model.Armature;
 
-//实现只有上半身播放Action动画不影响其他
+/**
+ * 实现只有上半身播放Action动画不影响其他
+ */
 public class SpecialActionAnimation extends ActionAnimation {
     public SpecialActionAnimation(float convertTime, String path, Armature armature) {
         this(convertTime, Float.MAX_VALUE, path, armature);

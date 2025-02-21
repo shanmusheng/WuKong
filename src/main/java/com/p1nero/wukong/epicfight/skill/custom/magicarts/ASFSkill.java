@@ -31,14 +31,13 @@ import java.util.UUID;
 /**
  * 安身法
  */
-public class ASFSkill extends Skill {
-    public static SkillDataManager.SkillDataKey<Integer> COOLDOWN_TIMER = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.INTEGER);//冷却计时器
+public class ASFSkill extends QiShuSkill {
     public static SkillDataManager.SkillDataKey<Integer> EXIST_TIMER = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.INTEGER);//存在计时器
     public static SkillDataManager.SkillDataKey<Float> X = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.FLOAT);
     public static SkillDataManager.SkillDataKey<Float> Y = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.FLOAT);
     public static SkillDataManager.SkillDataKey<Float> Z = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.FLOAT);
     public static final int MAX_COOLDOWN_TIME = 1000;//50s
-    public static final int MAX_EXIST_TIME = 510;//25.5s
+    public static final int MAX_EXIST_TIME = 410;//20.5s
     private static final UUID EVENT_UUID = UUID.fromString("d2d057cc-f30f-11ed-a05b-0198ac114510");
 
     public ASFSkill(Builder builder) {
@@ -53,7 +52,6 @@ public class ASFSkill extends Skill {
     public void onInitiate(SkillContainer container) {
         super.onInitiate(container);
         SkillDataManager manager = container.getDataManager();
-        SkillDataRegister.register(manager, COOLDOWN_TIMER, 0);
         SkillDataRegister.register(manager, EXIST_TIMER, 0);
         SkillDataRegister.register(manager, X, 0.0f);
         SkillDataRegister.register(manager, Y, 0.0f);
@@ -68,7 +66,6 @@ public class ASFSkill extends Skill {
         executer.getOriginal().setHealth((float) (executer.getOriginal().getMaxHealth() * 0.25 + executer.getOriginal().getHealth()));
         SkillContainer container = executer.getSkill(this);
         SkillDataManager dataManager = container.getDataManager();
-        dataManager.setDataSync(COOLDOWN_TIMER, MAX_COOLDOWN_TIME, executer.getOriginal());
         dataManager.setDataSync(EXIST_TIMER, MAX_EXIST_TIME, executer.getOriginal());
         dataManager.setDataSync(X, (float)executer.getOriginal().getX(), executer.getOriginal());
         dataManager.setDataSync(Y, (float)executer.getOriginal().getY(), executer.getOriginal());
@@ -79,11 +76,13 @@ public class ASFSkill extends Skill {
                 }
         });
     }
+
     @Override
     public void onRemoved(SkillContainer container) {
         super.onRemoved(container);
         container.getExecuter().getEventListener().removeListener(PlayerEventListener.EventType.HURT_EVENT_PRE, EVENT_UUID);
     }
+
     @Override
     public void updateContainer(SkillContainer container) {
         super.updateContainer(container);
@@ -92,9 +91,6 @@ public class ASFSkill extends Skill {
         if (!container.getExecuter().isLogicalClient()) {
             ServerPlayerPatch serverPlayerPatch = ((ServerPlayerPatch) container.getExecuter());
             ServerPlayer serverPlayer = serverPlayerPatch.getOriginal();
-            if(manager.getDataValue(COOLDOWN_TIMER) > 0){
-                manager.setDataSync(COOLDOWN_TIMER, manager.getDataValue(COOLDOWN_TIMER) - 1, serverPlayer);
-            }
             if(manager.getDataValue(EXIST_TIMER) > 0){
                 manager.setDataSync(EXIST_TIMER, manager.getDataValue(EXIST_TIMER) - 1, serverPlayer);
             }
@@ -104,27 +100,13 @@ public class ASFSkill extends Skill {
             }
         }
     }
+
     @Override
-    public boolean shouldDraw(SkillContainer container) {
-        return container.getDataManager().getDataValue(COOLDOWN_TIMER) > 0;
-    }
-    @Override
-    public void drawOnGui(BattleModeGui gui, SkillContainer container, PoseStack poseStack, float x, float y) {
-        poseStack.pushPose();
-        poseStack.translate(0, (float)gui.getSlidingProgression(), 0);
-        RenderSystem.setShaderTexture(0, getSkillTexture());
-        GuiComponent.blit(poseStack, (int)x, (int)y, 24, 24, 0.0F, 0.0F, 1, 1, 1, 1);
-        float second = (container.getDataManager().getDataValue(COOLDOWN_TIMER) / 20.0F);
-        GuiComponent.drawString(poseStack ,gui.font, String.format("%.1f", second), (int) (second > 10 ? (x + 3) : (x + 6)), (int) (y + 6), 16777215);
-    }
-    @Override
-    public boolean canExecute(PlayerPatch<?> executer) {
-        return super.canExecute(executer) && (executer.getOriginal().isCreative() || executer.getSkill(this).getDataManager().getDataValue(COOLDOWN_TIMER) <= 0);
+    public int getMaxCooldown() {
+        return MAX_COOLDOWN_TIME;
     }
 
     public static class Builder extends Skill.Builder<ASFSkill> {
-
-        protected StaticAnimationProvider preF, preB, postF, post;
 
         public ASFSkill.Builder setCategory(SkillCategory category) {
             this.category = category;

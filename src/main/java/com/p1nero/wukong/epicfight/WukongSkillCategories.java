@@ -1,10 +1,10 @@
 package com.p1nero.wukong.epicfight;
 
+import yesman.epicfight.gameasset.EpicFightSkills;
 import yesman.epicfight.skill.SkillCategory;
 
 public enum WukongSkillCategories implements SkillCategory
 {
-    //棍式
     STAFF_STYLE(true, true, true),
     QI_SHU(true, true, true),
     SHEN_FA(true, true, true),

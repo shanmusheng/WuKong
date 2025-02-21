@@ -9,7 +9,12 @@ import com.p1nero.wukong.epicfight.WukongSkillCategories;
 import com.p1nero.wukong.epicfight.WukongSkillSlots;
 import com.p1nero.wukong.epicfight.animation.WukongAnimations;
 import com.p1nero.wukong.epicfight.skill.WukongSkills;
+import com.p1nero.wukong.epicfight.skill.custom.CoolDownSkill;
 import com.p1nero.wukong.epicfight.skill.custom.SmashHeavyAttack;
+import com.p1nero.wukong.epicfight.skill.custom.StaffPassive;
+import com.p1nero.wukong.epicfight.skill.custom.ThrustHeavyAttack;
+import com.p1nero.wukong.epicfight.skill.custom.magicarts.CloudStepSkill;
+import com.p1nero.wukong.epicfight.skill.custom.magicarts.ShenWaiShenFaSkill;
 import com.p1nero.wukong.epicfight.weapon.WukongWeaponCategories;
 import com.p1nero.wukong.item.WukongItems;
 import com.p1nero.wukong.network.PacketHandler;
@@ -49,6 +54,11 @@ public class WukongMoveset{
         WukongEntities.ENTITIES.register(bus);
         WuKongEffects.REGISTRY.register(bus);
         bus.addListener(SmashHeavyAttack::register);
+        bus.addListener(ThrustHeavyAttack::register);
+        bus.addListener(CoolDownSkill::register);
+        bus.addListener(ShenWaiShenFaSkill::register);
+        bus.addListener(CloudStepSkill::register);
+        bus.addListener(StaffPassive::register);
         PacketHandler.register();
         WukongSkills.registerSkills();
 

@@ -105,7 +105,6 @@ public class WukongWeaponCapabilityPresets {
                     WukongAnimations.STAFF_AUTO1_DASH,
                     WukongAnimations.JUMP_ATTACK_LIGHT)
 //            .innateSkill(WukongStyles.PILLAR, (itemstack) -> WukongSkills.PILLAR_HEAVY_ATTACK)
-            .innateSkill(WukongStyles.PILLAR, (itemstack) -> WukongSkills.PILLAR_HEAVY_ATTACK)
                     .livingMotionModifier(WukongStyles.PILLAR,
                             LivingMotions.IDLE,
                             WukongAnimations.IDLE)
@@ -124,36 +123,6 @@ public class WukongWeaponCapabilityPresets {
                     .livingMotionModifier(WukongStyles.PILLAR,
                             LivingMotions.FALL,
                             WukongAnimations.FALL);
-
-
-    public static final Function<Item, CapabilityItem.Builder> RED_TIDE = (item) ->
-            (CapabilityItem.Builder) WeaponCapability.builder().category(WukongWeaponCategories.RED_TIDE)
-                    .styleProvider((livingEntityPatch) -> CapabilityItem.Styles.TWO_HAND).collider(WukongColliders.RED_TIDE)
-                    .hitSound(EpicFightSounds.BLADE_HIT)
-                    .hitParticle(EpicFightParticles.HIT_BLADE.get())
-                    .canBePlacedOffhand(true)
-                    .comboCancel((style) -> false)
-                    //劈棍
-                    .newStyleCombo(CapabilityItem.Styles.TWO_HAND,
-                            WukongAnimations.RED_TIDE_AUTO1,
-                            WukongAnimations.RED_TIDE_AUTO2,
-                            WukongAnimations.RED_TIDE_AUTO3,
-                            WukongAnimations.RED_TIDE_AUTO4,
-                            WukongAnimations.RED_TIDE_DODGE,
-                            WukongAnimations.RED_TIDE_AUTO1)
-                    .innateSkill(CapabilityItem.Styles.TWO_HAND, (itemstack) -> WukongSkills.RED_TIDE_SKILL)
-                    .livingMotionModifier(CapabilityItem.Styles.TWO_HAND,
-                            LivingMotions.IDLE,
-                            WukongAnimations.RED_TIDE_IDLE)
-                    .livingMotionModifier(CapabilityItem.Styles.TWO_HAND,
-                            LivingMotions.WALK,
-                            WukongAnimations.RED_TIDE_WALK)
-                    .livingMotionModifier(CapabilityItem.Styles.TWO_HAND,
-                            LivingMotions.CHASE,
-                            WukongAnimations.RED_TIDE_RUN)
-                    .livingMotionModifier(CapabilityItem.Styles.TWO_HAND,
-                            LivingMotions.RUN,
-                            WukongAnimations.RED_TIDE_RUN);
 
     public static final Function<Item, CapabilityItem.Builder> SMASH_ONLY = (item) ->
             (CapabilityItem.Builder) WeaponCapability.builder().category(WukongWeaponCategories.WK_STAFF)
@@ -224,45 +193,11 @@ public class WukongWeaponCapabilityPresets {
                             LivingMotions.RUN,
                             WukongAnimations.RUN);
 
-    public static final Function<Item, CapabilityItem.Builder> PILLAR_ONLY = (item) ->
-            (CapabilityItem.Builder) WeaponCapability.builder().category(WukongWeaponCategories.WK_STAFF)
-                    .styleProvider((entityPatch) -> WukongStyles.PILLAR)
-                    .collider(WukongColliders.WK_STAFF)
-                    .hitSound(EpicFightSounds.BLUNT_HIT)
-                    .hitParticle(EpicFightParticles.HIT_BLUNT.get())
-                    .canBePlacedOffhand(false)
-                    .comboCancel((style) -> false)
-
-                    //立棍
-                    .newStyleCombo(WukongStyles.PILLAR,
-                            WukongAnimations.STAFF_AUTO1,
-                            WukongAnimations.STAFF_AUTO2,
-                            WukongAnimations.STAFF_AUTO3,
-                            WukongAnimations.STAFF_AUTO4,
-                            WukongAnimations.STAFF_AUTO5,
-                            WukongAnimations.STAFF_AUTO1,
-                            WukongAnimations.STAFF_AUTO1)//空中
-                    .innateSkill(WukongStyles.PILLAR, (itemstack) -> WukongSkills.PILLAR_HEAVY_ATTACK)
-                    .livingMotionModifier(WukongStyles.PILLAR,
-                            LivingMotions.IDLE,
-                            WukongAnimations.IDLE)
-                    .livingMotionModifier(WukongStyles.PILLAR,
-                            LivingMotions.WALK,
-                            WukongAnimations.WALK)
-                    .livingMotionModifier(WukongStyles.PILLAR,
-                            LivingMotions.CHASE,
-                            WukongAnimations.RUN)
-                    .livingMotionModifier(WukongStyles.PILLAR,
-                            LivingMotions.RUN,
-                            WukongAnimations.RUN);
-
     @SubscribeEvent
     public static void register(WeaponCapabilityPresetRegistryEvent event) {
         event.getTypeEntry().put("wk_staff", STAFF);
         event.getTypeEntry().put("smash_only", SMASH_ONLY);
         event.getTypeEntry().put("thrust_only", THRUST_ONLY);
-        event.getTypeEntry().put("pillar_only", PILLAR_ONLY);
-        event.getTypeEntry().put("red_tide", RED_TIDE);
     }
 
 }

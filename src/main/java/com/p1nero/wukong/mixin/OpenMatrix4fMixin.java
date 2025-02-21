@@ -10,7 +10,7 @@ import yesman.epicfight.api.utils.math.OpenMatrix4f;
 import yesman.epicfight.api.utils.math.Vec3f;
 
 /**
- * 修复缩放问题
+ * 修复缩放问题（然并卵）
  */
 @Mixin(value = OpenMatrix4f.class, remap = false)
 public class OpenMatrix4fMixin {

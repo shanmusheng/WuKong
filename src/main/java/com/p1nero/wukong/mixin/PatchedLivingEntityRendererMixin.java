@@ -21,38 +21,6 @@ import yesman.epicfight.world.capabilities.EpicFightCapabilities;
 @Mixin(value = PatchedLivingEntityRenderer.class, remap = false)
 public class PatchedLivingEntityRendererMixin {
 
-//    @ModifyArg(method = "render(Lnet/minecraft/world/entity/LivingEntity;Lyesman/epicfight/world/capabilities/entitypatch/LivingEntityPatch;Lnet/minecraft/client/renderer/entity/LivingEntityRenderer;Lnet/minecraft/client/renderer/MultiBufferSource;Lcom/mojang/blaze3d/vertex/PoseStack;IF)V", at = @At(value = "INVOKE", target = "Lyesman/epicfight/api/client/model/AnimatedMesh;drawModelWithPose(Lcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;IFFFFILyesman/epicfight/api/model/Armature;[Lyesman/epicfight/api/utils/math/OpenMatrix4f;)V"), index = 3)
-//    private float modifyR(float r) {
-//        return wukong$check(r);
-//    }
-//
-//    @ModifyArg(method = "render(Lnet/minecraft/world/entity/LivingEntity;Lyesman/epicfight/world/capabilities/entitypatch/LivingEntityPatch;Lnet/minecraft/client/renderer/entity/LivingEntityRenderer;Lnet/minecraft/client/renderer/MultiBufferSource;Lcom/mojang/blaze3d/vertex/PoseStack;IF)V", at = @At(value = "INVOKE", target = "Lyesman/epicfight/api/client/model/AnimatedMesh;drawModelWithPose(Lcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;IFFFFILyesman/epicfight/api/model/Armature;[Lyesman/epicfight/api/utils/math/OpenMatrix4f;)V"), index = 4)
-//    private float modifyG(float g) {
-//        return wukong$check(g);
-//    }
-//
-//    @ModifyArg(method = "render(Lnet/minecraft/world/entity/LivingEntity;Lyesman/epicfight/world/capabilities/entitypatch/LivingEntityPatch;Lnet/minecraft/client/renderer/entity/LivingEntityRenderer;Lnet/minecraft/client/renderer/MultiBufferSource;Lcom/mojang/blaze3d/vertex/PoseStack;IF)V", at = @At(value = "INVOKE", target = "Lyesman/epicfight/api/client/model/AnimatedMesh;drawModelWithPose(Lcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;IFFFFILyesman/epicfight/api/model/Armature;[Lyesman/epicfight/api/utils/math/OpenMatrix4f;)V"), index = 5)
-//    private float modifyB(float b) {
-//        return wukong$check(b);
-//    }
-//
-//    @Unique
-//    private float wukong$check(float ordinal){
-//        if (Minecraft.getInstance().player != null) {
-//            LocalPlayerPatch patch = EpicFightCapabilities.getEntityPatch(Minecraft.getInstance().player, LocalPlayerPatch.class);
-//            if (patch != null) {
-//                SkillContainer shenFa = patch.getSkill(WukongSkillSlots.SHEN_FA);
-//                if(shenFa != null) {
-//                    SkillDataManager manager = shenFa.getDataManager();
-//                    if (manager.hasData(CloudStepSkill.TRANSPARENT_TIMER) && manager.getDataValue(CloudStepSkill.TRANSPARENT_TIMER) > 10 && manager.getDataValue(CloudStepSkill.TRANSPARENT_TIMER) < CloudStepSkill.MAX_TIME - 10) {
-//                        return 235;
-//                    }
-//                }
-//            }
-//        }
-//        return ordinal;
-//    }
-
     @ModifyArg(method = "render(Lnet/minecraft/world/entity/LivingEntity;Lyesman/epicfight/world/capabilities/entitypatch/LivingEntityPatch;Lnet/minecraft/client/renderer/entity/LivingEntityRenderer;Lnet/minecraft/client/renderer/MultiBufferSource;Lcom/mojang/blaze3d/vertex/PoseStack;IF)V", at = @At(value = "INVOKE", target = "Lyesman/epicfight/api/client/model/AnimatedMesh;drawModelWithPose(Lcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;IFFFFILyesman/epicfight/api/model/Armature;[Lyesman/epicfight/api/utils/math/OpenMatrix4f;)V"), index = 6)
     private float modifyAlpha(float alpha) {
         if (Minecraft.getInstance().player != null) {

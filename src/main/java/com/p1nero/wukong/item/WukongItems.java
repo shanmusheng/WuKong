@@ -14,21 +14,12 @@ public class WukongItems {
 
     public static final CreativeModeTab CREATIVE_MODE_TAB = new CreativeModeTab("wukong.items") {
         public @NotNull ItemStack makeIcon() {
-            return new ItemStack(WukongItems.STAFF.get());
+            return new ItemStack(WukongItems.JIN_GU_BANG.get());
         }
     };
 
     public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, WukongMoveset.MOD_ID);
     public static final RegistryObject<Item> RED_TIDE = ITEMS.register("red_tide", () -> new RedTide(Tiers.NETHERITE, 7, -3, (new Item.Properties()).defaultDurability(1427).rarity(Rarity.UNCOMMON)));
-    public static final RegistryObject<Item> STAFF = ITEMS.register("staff", () -> new TestStaff(Tiers.NETHERITE, 4, -3, (new Item.Properties()).defaultDurability(208).rarity(Rarity.COMMON)));
-    public static final RegistryObject<Item> KANG_JIN = ITEMS.register("kang_jin", () -> new KangJinStaff(Tiers.NETHERITE, 7, -3, (new Item.Properties()).defaultDurability(2777).rarity(Rarity.UNCOMMON)));
-//    public static final RegistryObject<Item> RED_TIDE = ITEMS.register("red_tide", () -> new RedTide(Tiers.NETHERITE, 1, -3, (new Item.Properties()).defaultDurability(2777).rarity(Rarity.UNCOMMON)));
-    public static final RegistryObject<Item> JIN_GU_BANG;
-    static {
-        if(ModList.get().isLoaded("geckolib3")){//damage In 83
-            JIN_GU_BANG = ITEMS.register("jingubang", () -> new JinGuBang(Tiers.NETHERITE, 11, -3, (new Item.Properties()).defaultDurability(2777).rarity(StaffRarity.SHEN_ZHEN).tab(CREATIVE_MODE_TAB)));
-        } else {
-            JIN_GU_BANG = STAFF;
-        }
-    }
+    public static final RegistryObject<Item> JIN_GU_BANG = ITEMS.register("jingubang", () -> new JinGuBang(Tiers.NETHERITE, 11, -3, (new Item.Properties()).defaultDurability(2777).rarity(StaffRarity.SHEN_ZHEN).tab(CREATIVE_MODE_TAB)));
+
 }

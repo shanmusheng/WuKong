@@ -20,6 +20,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import yesman.epicfight.api.animation.types.StaticAnimation;
 import yesman.epicfight.client.events.engine.ControllEngine;
 import yesman.epicfight.client.gui.BattleModeGui;
@@ -35,12 +36,11 @@ import java.util.UUID;
 /**
  * 聚形散气，隐身越久伤害越高
  */
-public class CloudStepSkill extends Skill {
+public class CloudStepSkill extends ShenFaSkill {
 
     private static final UUID EVENT_UUID = UUID.fromString("d2d191cc-f98f-10ed-a05b-0242ac114514");
-    public static SkillDataManager.SkillDataKey<Integer> TRANSPARENT_TIMER = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.INTEGER);//隐身计时器
+    public static SkillDataManager.SkillDataKey<Integer> TRANSPARENT_TIMER = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.INTEGER, true);//隐身计时器
     public static SkillDataManager.SkillDataKey<Integer> CHARGING_TIMER = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.INTEGER);//加伤计时器
-    public static SkillDataManager.SkillDataKey<Integer> COOLDOWN_TIMER = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.INTEGER);//冷却计时器
     public static final int MAX_TIME = 200;//10s
     public static final int MAX_COOLDOWN_TIME = 600;//30s
 
@@ -58,13 +58,17 @@ public class CloudStepSkill extends Skill {
         post = builder.post.get();
     }
 
+    public static void register(final FMLCommonSetupEvent event) {
+        event.enqueueWork(() -> {
+            TRANSPARENT_TIMER = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.INTEGER, true);//冷却计时器
+        });
+    }
     @Override
     public void onInitiate(SkillContainer container) {
         super.onInitiate(container);
         SkillDataManager manager = container.getDataManager();
         SkillDataRegister.register(manager, TRANSPARENT_TIMER, 0);
         SkillDataRegister.register(manager, CHARGING_TIMER, 0);
-        SkillDataRegister.register(manager, COOLDOWN_TIMER, 0);
 
         //不能拦截普攻事件，普攻事件已经滞后了
         container.getExecuter().getEventListener().addEventListener(PlayerEventListener.EventType.SKILL_EXECUTE_EVENT, EVENT_UUID, (event) -> {
@@ -114,6 +118,11 @@ public class CloudStepSkill extends Skill {
     }
 
     @Override
+    public int getMaxCooldown() {
+        return MAX_COOLDOWN_TIME;
+    }
+
+    @Override
     public void onRemoved(SkillContainer container) {
         super.onRemoved(container);
         container.getExecuter().getEventListener().removeListener(PlayerEventListener.EventType.SKILL_EXECUTE_EVENT, EVENT_UUID);
@@ -141,30 +150,7 @@ public class CloudStepSkill extends Skill {
             if(manager.getDataValue(CHARGING_TIMER) > 0){
                 manager.setDataSync(CHARGING_TIMER, manager.getDataValue(CHARGING_TIMER) - 1, serverPlayer);
             }
-            if(manager.getDataValue(COOLDOWN_TIMER) > 0){
-                manager.setDataSync(COOLDOWN_TIMER, manager.getDataValue(COOLDOWN_TIMER) - 1, serverPlayer);
-            }
         }
-    }
-
-    @Override
-    public boolean shouldDraw(SkillContainer container) {
-        return container.getDataManager().getDataValue(COOLDOWN_TIMER) > 0;
-    }
-
-    @Override
-    public void drawOnGui(BattleModeGui gui, SkillContainer container, PoseStack poseStack, float x, float y) {
-        poseStack.pushPose();
-        poseStack.translate(0, (float)gui.getSlidingProgression(), 0);
-        RenderSystem.setShaderTexture(0, getSkillTexture());
-        GuiComponent.blit(poseStack, (int)x, (int)y, 24, 24, 0.0F, 0.0F, 1, 1, 1, 1);
-        float second = (container.getDataManager().getDataValue(COOLDOWN_TIMER) / 20.0F);
-        GuiComponent.drawString(poseStack ,gui.font, String.format("%.1f", second), (int) (second > 10 ? (x + 3) : (x + 6)), (int) (y + 6), 16777215);
-    }
-
-    @Override
-    public boolean canExecute(PlayerPatch<?> executer) {
-        return super.canExecute(executer) && (executer.getOriginal().isCreative() || executer.getSkill(this).getDataManager().getDataValue(COOLDOWN_TIMER) <= 0);
     }
 
     /**
@@ -191,7 +177,6 @@ public class CloudStepSkill extends Skill {
         SkillContainer container = executer.getSkill(this);
         SkillDataManager dataManager = container.getDataManager();
         dataManager.setDataSync(TRANSPARENT_TIMER, MAX_TIME, executer.getOriginal());
-        dataManager.setDataSync(COOLDOWN_TIMER, MAX_COOLDOWN_TIME, executer.getOriginal());
         PacketRelay.sendToAll(PacketHandler.INSTANCE, new AddEntityAfterImageParticle(executer.getOriginal().getId()));
         executer.getOriginal().getLevel().addFreshEntity(new CloudStepLeftEntity(executer));//召唤假身
     }

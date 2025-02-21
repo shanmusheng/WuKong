@@ -10,6 +10,31 @@ public class WKPlayer {
     private boolean perfectDodge;
     private float damageReduce = -1;
     private final List<Integer> fakeWukongIds = new ArrayList<>();
+    private int cooldownQiShu, cooldownShenFa, cooldownHaoMao;
+
+    public int getCooldownQiShu() {
+        return cooldownQiShu;
+    }
+
+    public void setCooldownQiShu(int cooldownQiShu) {
+        this.cooldownQiShu = cooldownQiShu;
+    }
+
+    public int getCooldownShenFa() {
+        return cooldownShenFa;
+    }
+
+    public void setCooldownShenFa(int cooldownShenFa) {
+        this.cooldownShenFa = cooldownShenFa;
+    }
+
+    public int getCooldownHaoMao() {
+        return cooldownHaoMao;
+    }
+
+    public void setCooldownHaoMao(int cooldownHaoMao) {
+        this.cooldownHaoMao = cooldownHaoMao;
+    }
 
     public void addFakeWukongId(int id){
         fakeWukongIds.add(id);
@@ -53,6 +78,12 @@ public class WKPlayer {
 
     public void copyFrom(WKPlayer old){
         lastSkill = old.lastSkill;
+    }
+
+    public void copyCooldown(WKPlayer old){
+        cooldownQiShu = old.cooldownQiShu;
+        cooldownShenFa = old.cooldownShenFa;
+        cooldownHaoMao = old.cooldownHaoMao;
     }
 
 }

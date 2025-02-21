@@ -36,12 +36,11 @@ import java.util.UUID;
 /**
  * 铜头铁臂
  */
-public class TTTBSkill extends Skill {
+public class TTTBSkill extends ShenFaSkill{
 
     private static final UUID EVENT_UUID = UUID.fromString("d2d114cc-f98f-10ed-a05b-0242ac114514");
     public static SkillDataManager.SkillDataKey<Integer> TTTB_TIMER = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.INTEGER);//特效计时器 TODO
     public static SkillDataManager.SkillDataKey<Integer> SUCCESS_TIMER = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.INTEGER);//成功弹反后瞬放蓄力的计时器
-    public static SkillDataManager.SkillDataKey<Integer> COOLDOWN_TIMER = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.INTEGER);//冷却计时器
     public StaticAnimation anim, fail, end;
     public static final int MAX_COOLDOWN = 300;//15s
 
@@ -63,7 +62,6 @@ public class TTTBSkill extends Skill {
         SkillDataManager manager = container.getDataManager();
         SkillDataRegister.register(manager, TTTB_TIMER, 0);
         SkillDataRegister.register(manager, SUCCESS_TIMER, 0);
-        SkillDataRegister.register(manager, COOLDOWN_TIMER, 0);
         container.getExecuter().getEventListener().addEventListener(PlayerEventListener.EventType.HURT_EVENT_PRE, EVENT_UUID, (event) -> {
             //完美弹反判断
             AnimationPlayer animationPlayer = event.getPlayerPatch().getAnimator().getPlayerFor(null);
@@ -72,7 +70,7 @@ public class TTTBSkill extends Skill {
                     Entity entity = event.getDamageSource().getEntity();
                     ServerPlayer serverPlayer = event.getPlayerPatch().getOriginal();
                     serverPlayer.level.playSound(null, serverPlayer.getX(), serverPlayer.getY(), serverPlayer.getZ(), EpicFightSounds.CLASH, serverPlayer.getSoundSource(), 1.0F, 1.0F);
-                    if(animationPlayer.getElapsedTime() >= 0.5F && animationPlayer.getElapsedTime() <= 1.0F){
+                    if(animationPlayer.getElapsedTime() >= 0.25F && animationPlayer.getElapsedTime() <= 1.0F){
                         serverPlayer.level.playSound(null, serverPlayer.getX(), serverPlayer.getY(), serverPlayer.getZ(), EpicFightSounds.NEUTRALIZE_MOBS, serverPlayer.getSoundSource(), 1.0F, 1.0F);
                         manager.setDataSync(SUCCESS_TIMER, 20, serverPlayer);//此期间内可以秒放蓄力，具体在各个棍法里判断
                         if(entity != null){
@@ -89,7 +87,6 @@ public class TTTBSkill extends Skill {
                         event.getPlayerPatch().playAnimationSynchronized(end, 0.15F);
                         serverPlayer.removeEffect(MobEffects.GLOWING);
                         serverPlayer.getLevel().sendParticles(EpicFightParticles.GROUND_SLAM.get(), serverPlayer.getX(), serverPlayer.getY(), serverPlayer.getZ(), 0, 1.0, 20.0, 0.5, 1);
-//                    manager.setDataSync(TTTB_TIMER, 0, serverPlayer);
                     }
                 } else {
                     event.getPlayerPatch().playAnimationSynchronized(fail, 0.15F);
@@ -113,10 +110,12 @@ public class TTTBSkill extends Skill {
             if(manager.getDataValue(SUCCESS_TIMER) > 0){
                 manager.setDataSync(SUCCESS_TIMER, manager.getDataValue(SUCCESS_TIMER) - 1, serverPlayer);
             }
-            if(manager.getDataValue(COOLDOWN_TIMER) > 0){
-                manager.setDataSync(COOLDOWN_TIMER, manager.getDataValue(COOLDOWN_TIMER) - 1, serverPlayer);
-            }
         }
+    }
+
+    @Override
+    public int getMaxCooldown() {
+        return MAX_COOLDOWN;
     }
 
     @Override
@@ -135,25 +134,7 @@ public class TTTBSkill extends Skill {
         super.executeOnServer(executer, args);
         executer.playAnimationSynchronized(anim, 0.15F);
         executer.playSound(WuKongSounds.PERFECT_DODGE.get(), 0.0F, 0.0F);
-        SkillContainer container = executer.getSkill(this);
-        SkillDataManager dataManager = container.getDataManager();
-        dataManager.setDataSync(COOLDOWN_TIMER, MAX_COOLDOWN, executer.getOriginal());
         executer.getOriginal().addEffect(new MobEffectInstance(MobEffects.GLOWING, 30));
-    }
-
-    @Override
-    public boolean shouldDraw(SkillContainer container) {
-        return container.getDataManager().getDataValue(COOLDOWN_TIMER) > 0;
-    }
-
-    @Override
-    public void drawOnGui(BattleModeGui gui, SkillContainer container, PoseStack poseStack, float x, float y) {
-        poseStack.pushPose();
-        poseStack.translate(0, (float)gui.getSlidingProgression(), 0);
-        RenderSystem.setShaderTexture(0, getSkillTexture());
-        GuiComponent.blit(poseStack, (int)x, (int)y, 24, 24, 0.0F, 0.0F, 1, 1, 1, 1);
-        float second = (container.getDataManager().getDataValue(COOLDOWN_TIMER) / 20.0F);
-        GuiComponent.drawString(poseStack ,gui.font, String.format("%.1f", second), (int) (second > 10 ? (x + 3) : (x + 6)), (int) (y + 6), 16777215);
     }
 
     public static class Builder extends Skill.Builder<TTTBSkill> {

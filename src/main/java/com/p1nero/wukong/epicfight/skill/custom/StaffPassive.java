@@ -7,7 +7,6 @@ import com.p1nero.wukong.epicfight.animation.WukongAnimations;
 import com.p1nero.wukong.epicfight.skill.SkillDataRegister;
 import com.p1nero.wukong.epicfight.skill.WukongSkills;
 import com.p1nero.wukong.epicfight.weapon.WukongWeaponCategories;
-import com.p1nero.wukong.item.WukongItems;
 import com.p1nero.wukong.network.PacketHandler;
 import com.p1nero.wukong.network.PacketRelay;
 import com.p1nero.wukong.network.packet.server.PlayStaffFlowerPacket;
@@ -19,8 +18,8 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.registries.ForgeRegistries;
-import yesman.epicfight.api.animation.types.DynamicAnimation;
 import yesman.epicfight.api.animation.types.StaticAnimation;
 import yesman.epicfight.api.data.reloader.SkillManager;
 import yesman.epicfight.api.utils.AttackResult;
@@ -48,10 +47,14 @@ import java.util.stream.Collectors;
  */
 public class StaffPassive extends Skill {
 
-    public static final SkillDataManager.SkillDataKey<Boolean> PLAYING_STAFF_SPIN = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.BOOLEAN);
+    public static SkillDataManager.SkillDataKey<Boolean> PLAYING_STAFF_SPIN = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.BOOLEAN);
     public static final SkillDataManager.SkillDataKey<Integer> TICK = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.INTEGER);
     private static final UUID EVENT_UUID = UUID.fromString("d2d057cc-f30f-11ed-a05b-0242ac191981");
-
+    public static void register(final FMLCommonSetupEvent event) {
+        event.enqueueWork(() -> {
+            PLAYING_STAFF_SPIN = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.BOOLEAN);
+        });
+    }
     public StaffPassive(Builder<? extends Skill> builder) {
         super(builder);
     }
@@ -91,14 +94,6 @@ public class StaffPassive extends Skill {
         }));
 
         container.getExecuter().getEventListener().addEventListener(PlayerEventListener.EventType.HURT_EVENT_PRE, EVENT_UUID, (event -> {
-            if (event.getPlayerPatch().getOriginal().getMainHandItem().is(WukongItems.KANG_JIN.get()) && event.getDamageSource().equals(DamageSource.LIGHTNING_BOLT)) {
-                DynamicAnimation animation = event.getPlayerPatch().getAnimator().getPlayerFor(null).getAnimation();
-                if (animation.equals(WukongAnimations.STAFF_AUTO4)) {
-                    event.setResult(AttackResult.ResultType.MISSED);
-                    event.setCanceled(true);
-                    return;
-                }
-            }
 
             if (container.getDataManager().getDataValue(PLAYING_STAFF_SPIN) && (canBeBlocked(event.getDamageSource().getDirectEntity()) || event.getDamageSource().isProjectile())) {
                 if (!isBlocked(event.getDamageSource(), event.getPlayerPatch().getOriginal())) {

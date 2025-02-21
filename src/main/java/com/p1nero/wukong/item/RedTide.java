@@ -12,7 +12,8 @@ public class RedTide extends WeaponItem {
     }
 
     @Override
-    public boolean hurtEnemy(@NotNull ItemStack itemStack, @NotNull LivingEntity p_43279_, @NotNull LivingEntity p_43280_) {
-        return super.hurtEnemy(itemStack, p_43279_, p_43280_);
+    public boolean hurtEnemy(@NotNull ItemStack itemStack, @NotNull LivingEntity target, @NotNull LivingEntity attacker) {
+        target.setSecondsOnFire(5);
+        return super.hurtEnemy(itemStack, target, attacker);
     }
 }

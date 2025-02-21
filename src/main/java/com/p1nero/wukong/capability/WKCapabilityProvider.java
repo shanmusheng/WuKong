@@ -4,6 +4,7 @@ import com.p1nero.wukong.WukongMoveset;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.common.capabilities.*;
@@ -72,6 +73,10 @@ public class WKCapabilityProvider implements ICapabilityProvider, INBTSerializab
                 event.getOriginal().getCapability(WKCapabilityProvider.WK_PLAYER).ifPresent(oldStore -> {
                     event.getEntity().getCapability(WKCapabilityProvider.WK_PLAYER).ifPresent(newStore -> {
                         newStore.copyFrom(oldStore);
+                        //多人保留冷却
+                        if(event.getEntity().getLevel() instanceof ServerLevel serverLevel && serverLevel.getServer().getPlayerCount() > 1){
+                            newStore.copyCooldown(oldStore);
+                        }
                     });
                 });
             }

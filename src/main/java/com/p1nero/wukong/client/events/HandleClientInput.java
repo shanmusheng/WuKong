@@ -73,7 +73,7 @@ public class HandleClientInput {
     @SubscribeEvent
     public static void onMouseInput(InputEvent.MouseInputEvent event) {
 
-        if(Minecraft.getInstance().player != null){
+        if(Minecraft.getInstance().player != null && Minecraft.getInstance().screen == null){
 
             //重击按下
             if(event.getButton() == WukongKeyMappings.HEAVY.getKey().getValue()){
@@ -113,7 +113,7 @@ public class HandleClientInput {
     @SubscribeEvent
     public static void onKeyInput(InputEvent.KeyInputEvent event){
 
-        if(Minecraft.getInstance().player != null){
+        if(Minecraft.getInstance().player != null && Minecraft.getInstance().screen == null){
             if(event.getKey() == WukongKeyMappings.HEAVY.getKey().getValue()){
                 heavyAttackKeyPressed(event.getAction());
             }

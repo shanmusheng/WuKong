@@ -6,13 +6,16 @@ import com.p1nero.wukong.entity.FakeWukongEntity;
 import com.p1nero.wukong.epicfight.WukongStyles;
 import com.p1nero.wukong.epicfight.animation.WukongAnimations;
 import com.p1nero.wukong.epicfight.weapon.WukongWeaponCategories;
+import net.minecraft.world.InteractionHand;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import yesman.epicfight.api.animation.LivingMotions;
+import yesman.epicfight.api.animation.types.StaticAnimation;
 import yesman.epicfight.api.client.animation.ClientAnimator;
 import yesman.epicfight.gameasset.Animations;
 import yesman.epicfight.world.capabilities.entitypatch.Faction;
 import yesman.epicfight.world.capabilities.entitypatch.HumanoidMobPatch;
+import yesman.epicfight.world.damagesource.EpicFightDamageSource;
 import yesman.epicfight.world.entity.ai.goal.CombatBehaviors;
 
 public class FakeWukongEntityPatch extends HumanoidMobPatch<FakeWukongEntity> {
@@ -47,6 +50,21 @@ public class FakeWukongEntityPatch extends HumanoidMobPatch<FakeWukongEntity> {
     protected void setWeaponMotions() {
         this.weaponAttackMotions = Maps.newHashMap();
         this.weaponAttackMotions.put(WukongWeaponCategories.WK_STAFF, ImmutableMap.of(WukongStyles.SMASH, WK_STAFF));
+    }
+
+    /**
+     * 伤害源应来自主人
+     */
+    @Override
+    public EpicFightDamageSource getDamageSource(StaticAnimation animation, InteractionHand hand) {
+        if(this.getOriginal().getOwner() != null){
+            EpicFightDamageSource damageSource = EpicFightDamageSource.commonEntityDamageSource("player", this.original.getOwner(), animation);
+            damageSource.setImpact(this.getImpact(hand));
+            damageSource.setArmorNegation(this.getArmorNegation(hand));
+            damageSource.setHurtItem(this.getOriginal().getOwner().getItemInHand(hand));
+            return damageSource;
+        }
+        return super.getDamageSource(animation, hand);
     }
 
     @Override

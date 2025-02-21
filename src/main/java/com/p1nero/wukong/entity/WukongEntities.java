@@ -21,7 +21,7 @@ public class WukongEntities {
     public static final DeferredRegister<EntityType<?>> ENTITIES = DeferredRegister.create(ForgeRegistries.ENTITIES, WukongMoveset.MOD_ID);
     public static final RegistryObject<EntityType<CloudStepLeftEntity>> CLOUD_STEP_LEFT_ENTITY = ENTITIES.register("cloud_step_left_entity", () -> EntityType.Builder.<CloudStepLeftEntity>of(CloudStepLeftEntity::new, MobCategory.MISC).sized(1.0F, 1.0F).clientTrackingRange(6).updateInterval(1).noSummon().noSave().build("cloud_step_left_entity"));
 
-    public static final RegistryObject<EntityType<FakeWukongEntity>> FAKE_WUKONG_ENTITY = ENTITIES.register("fake_wukong_entity", () -> EntityType.Builder.<FakeWukongEntity>of(FakeWukongEntity::new, MobCategory.MONSTER).fireImmune().sized(0.9F, 3.5F).clientTrackingRange(10).noSave().build("fake_wukong_entity"));
+    public static final RegistryObject<EntityType<FakeWukongEntity>> FAKE_WUKONG_ENTITY = ENTITIES.register("fake_wukong_entity", () -> EntityType.Builder.<FakeWukongEntity>of(FakeWukongEntity::new, MobCategory.MONSTER).fireImmune().sized(0.6F, 1.8F).clientTrackingRange(10).noSave().build("fake_wukong_entity"));
 
     @SubscribeEvent
     public static void entityAttributeCreationEvent(EntityAttributeCreationEvent event) {

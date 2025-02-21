@@ -22,9 +22,13 @@ import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import yesman.epicfight.api.animation.types.StaticAnimation;
 import yesman.epicfight.api.utils.AttackResult;
 import yesman.epicfight.client.gui.BattleModeGui;
+import yesman.epicfight.client.world.capabilites.entitypatch.player.LocalPlayerPatch;
 import yesman.epicfight.skill.*;
 import yesman.epicfight.world.capabilities.EpicFightCapabilities;
 import yesman.epicfight.world.capabilities.entitypatch.player.PlayerPatch;
@@ -49,18 +53,24 @@ public class ShenWaiShenFaSkill extends Skill {
         return new ShenWaiShenFaSkill.Builder().setCategory(WukongSkillCategories.HAO_MAO).setResource(Resource.NONE);
     }
 
+    public static void register(final FMLCommonSetupEvent event) {
+        event.enqueueWork(() -> {
+            COOLDOWN_TIMER = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.INTEGER, true);//冷却计时器
+        });
+    }
+
     @Override
     public void onInitiate(SkillContainer container) {
         super.onInitiate(container);
         SkillDataManager manager = container.getDataManager();
         SkillDataRegister.register(manager, COOLDOWN_TIMER, 0);
         container.getExecuter().getEventListener().addEventListener(PlayerEventListener.EventType.HURT_EVENT_PRE, EVENT_UUID, (hurtEvent -> {
-            if(hurtEvent.getDamageSource().getEntity() instanceof FakeWukongEntity fakeWukongEntity && fakeWukongEntity.getOwner() != null && hurtEvent.getPlayerPatch().getOriginal().is(fakeWukongEntity.getOwner())){
+            if(hurtEvent.getPlayerPatch().getOriginal() == hurtEvent.getDamageSource().getEntity() || (hurtEvent.getDamageSource().getEntity() instanceof FakeWukongEntity fakeWukongEntity && fakeWukongEntity.getOwner() != null && hurtEvent.getPlayerPatch().getOriginal().getId() == fakeWukongEntity.getOwner().getId())){
                 hurtEvent.setAmount(0);
                 hurtEvent.setResult(AttackResult.ResultType.MISSED);
                 hurtEvent.setCanceled(true);
             }
-        }),-1);
+        }),10);
         container.getExecuter().getEventListener().addEventListener(PlayerEventListener.EventType.ACTION_EVENT_SERVER, EVENT_UUID, (actionEvent -> {
             StaticAnimation animation = actionEvent.getAnimation();
             ServerPlayerPatch executor = actionEvent.getPlayerPatch();
@@ -118,11 +128,13 @@ public class ShenWaiShenFaSkill extends Skill {
     }
 
     @Override
+    @OnlyIn(Dist.CLIENT)
     public boolean shouldDraw(SkillContainer container) {
         return container.getDataManager().getDataValue(COOLDOWN_TIMER) > 0;
     }
 
     @Override
+    @OnlyIn(Dist.CLIENT)
     public void drawOnGui(BattleModeGui gui, SkillContainer container, PoseStack poseStack, float x, float y) {
         poseStack.pushPose();
         poseStack.translate(0, (float)gui.getSlidingProgression(), 0);

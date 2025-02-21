@@ -1,6 +1,5 @@
 package com.p1nero.wukong.epicfight.animation;
 
-import com.p1nero.wukong.Config;
 import com.p1nero.wukong.WukongMoveset;
 import com.p1nero.wukong.capability.WKCapabilityProvider;
 import com.p1nero.wukong.client.WuKongSounds;
@@ -9,13 +8,10 @@ import com.p1nero.wukong.client.particle.WuKongParticles;
 import com.p1nero.wukong.effects.WuKongEffects;
 import com.p1nero.wukong.entity.FakeWukongEntity;
 import com.p1nero.wukong.epicfight.animation.custom.*;
-import com.p1nero.wukong.epicfight.skill.custom.PillarHeavyAttack;
-import com.p1nero.wukong.epicfight.skill.custom.RedTideHeavyAttack;
 import com.p1nero.wukong.epicfight.skill.custom.SmashHeavyAttack;
 import com.p1nero.wukong.epicfight.skill.custom.ThrustHeavyAttack;
 import com.p1nero.wukong.epicfight.weapon.WukongColliders;
 import com.p1nero.wukong.epicfight.weapon.WukongWeaponCategories;
-import com.p1nero.wukong.item.WukongItems;
 import net.minecraft.client.player.Input;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
@@ -24,11 +20,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.MobSpawnType;
-import net.minecraft.world.item.enchantment.EnchantmentHelper;
-import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -44,7 +36,6 @@ import yesman.epicfight.api.utils.TimePairList;
 import yesman.epicfight.api.utils.math.ValueModifier;
 import yesman.epicfight.api.utils.math.Vec3f;
 import yesman.epicfight.client.world.capabilites.entitypatch.player.LocalPlayerPatch;
-import yesman.epicfight.gameasset.Animations;
 import yesman.epicfight.gameasset.Armatures;
 import yesman.epicfight.gameasset.EpicFightSounds;
 import yesman.epicfight.model.armature.HumanoidArmature;
@@ -53,7 +44,6 @@ import yesman.epicfight.skill.SkillDataManager;
 import yesman.epicfight.skill.SkillSlots;
 import yesman.epicfight.world.capabilities.EpicFightCapabilities;
 import yesman.epicfight.world.capabilities.entitypatch.LivingEntityPatch;
-import yesman.epicfight.world.capabilities.entitypatch.player.PlayerPatch;
 import yesman.epicfight.world.capabilities.entitypatch.player.ServerPlayerPatch;
 import yesman.epicfight.world.damagesource.SourceTags;
 import yesman.epicfight.world.damagesource.StunType;
@@ -134,27 +124,6 @@ public class WukongAnimations {
     public static StaticAnimation THRUST_FOOTAGE;//进尺
     public static StaticAnimation THRUST_RETREAT;//退寸
 
-    //立棍
-    //衍生 1 2
-    public static StaticAnimation PILLAR_DERIVE1_PRE;
-    public static StaticAnimation PILLAR_DERIVE1_LOOP;
-    public static StaticAnimation PILLAR_DERIVE1_POST;
-    public static StaticAnimation PILLAR_DERIVE2;
-    //劈下去
-    public static StaticAnimation PILLAR_CHARGED0;
-    public static StaticAnimation PILLAR_CHARGED1;
-    public static StaticAnimation PILLAR_CHARGED2;
-    public static StaticAnimation PILLAR_CHARGED3;
-    public static StaticAnimation PILLAR_CHARGED4;
-    //升起来
-    public static StaticAnimation PILLAR_PRE0;
-    public static StaticAnimation PILLAR_PRE1;
-    public static StaticAnimation PILLAR_PRE2;
-    public static StaticAnimation PILLAR_PRE3;
-    public static StaticAnimation PILLAR_PRE4;
-
-    //最高点循环， 0同1， 3同4
-    public static StaticAnimation PILLAR_LOOP;
     //定身术
     public static StaticAnimation DING;
     //安身法
@@ -162,7 +131,6 @@ public class WukongAnimations {
     //聚形散气
     public static StaticAnimation CLOUD_STEP_START;
     public static StaticAnimation CLOUD_STEP_START_BACKWARD;
-    public static StaticAnimation CLOUD_STEP_END;
     public static StaticAnimation CLOUD_STEP_END_STOP;
     public static StaticAnimation CLOUD_STEP_END_FORWARD;
 
@@ -172,23 +140,6 @@ public class WukongAnimations {
     public static StaticAnimation TONG_TOU_TIE_BI_FAIL;
     //身外身法
     public static StaticAnimation SHEN_WAI_SHEN_FA;
-
-    //赤潮
-    public static StaticAnimation RED_TIDE_IDLE;
-    public static StaticAnimation RED_TIDE_WALK;
-    public static StaticAnimation RED_TIDE_RUN;
-    public static StaticAnimation RED_TIDE_JUMP;
-    public static StaticAnimation RED_TIDE_JUMP_ATTACK;
-    public static StaticAnimation RED_TIDE_AUTO1;
-    public static StaticAnimation RED_TIDE_AUTO2;
-    public static StaticAnimation RED_TIDE_AUTO3;
-    public static StaticAnimation RED_TIDE_AUTO4;
-    public static StaticAnimation RED_TIDE_DODGE;
-    public static StaticAnimation RED_TIDE_DODGE_B;
-    public static StaticAnimation RED_TIDE_DODGE_L;
-    public static StaticAnimation RED_TIDE_DODGE_R;
-    public static StaticAnimation RED_TIDE_SKILL_F;
-    public static StaticAnimation RED_TIDE_SKILL;
 
     @SubscribeEvent
     public static void registerAnimations(AnimationRegistryEvent event) {
@@ -316,21 +267,7 @@ public class WukongAnimations {
                         .addProperty(AnimationProperty.AttackPhaseProperty.IMPACT_MODIFIER, ValueModifier.multiplier(5F)))
                 .addProperty(AnimationProperty.AttackPhaseProperty.STUN_TYPE, StunType.KNOCKDOWN)
                 .addProperty(AnimationProperty.ActionAnimationProperty.CANCELABLE_MOVE, false)
-                .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.2F))
-                .addEvents(AnimationEvent.TimeStampedEvent.create(1.125F, ((livingEntityPatch, staticAnimation, objects) -> {
-                            LivingEntity self = livingEntityPatch.getOriginal();
-                            if (self.getMainHandItem().is(WukongItems.KANG_JIN.get()) && EnchantmentHelper.getItemEnchantmentLevel(Enchantments.CHANNELING, self.getMainHandItem()) > 0) {
-                                if (livingEntityPatch.getTarget() != null && self.level instanceof ServerLevel serverLevel) {
-                                    EntityType.LIGHTNING_BOLT.spawn(serverLevel, null, null, livingEntityPatch.getTarget().getOnPos(), MobSpawnType.TRIGGERED, false, false);
-                                }
-                            }
-                        }), AnimationEvent.Side.SERVER),
-                        AnimationEvent.TimeStampedEvent.create(0.125F, ((livingEntityPatch, staticAnimation, objects) -> {
-                            LivingEntity self = livingEntityPatch.getOriginal();
-                            if (self.getMainHandItem().is(WukongItems.KANG_JIN.get()) && EnchantmentHelper.getItemEnchantmentLevel(Enchantments.CHANNELING, self.getMainHandItem()) > 0) {
-                                //TODO 粒子缠身
-                            }
-                        }), AnimationEvent.Side.SERVER));
+                .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.2F));
         STAFF_AUTO5 = new WukongScaleStaffAttackAnimation(0.01F, 0.9166F, 1.15F, 1.9833F, null, biped.toolR, "biped/auto_5", biped, 0.5F) {
             @Override
             public boolean isBasicAttackAnimation() {
@@ -591,161 +528,6 @@ public class WukongAnimations {
                 );
         //劈end
 
-        //立start
-        PILLAR_LOOP = new PillarLoopedActionAnimation(0.15F, "biped/pillar/loop", biped);
-
-        PILLAR_PRE0 = new ActionAnimation(0.15F, "biped/pillar/up0", biped)
-                .addProperty(AnimationProperty.ActionAnimationProperty.MOVE_VERTICAL, true)
-                .addProperty(AnimationProperty.ActionAnimationProperty.NO_GRAVITY_TIME, TimePairList.create(0.01F, 0.8333F))
-                .addEvents(AnimationProperty.StaticAnimationProperty.ON_END_EVENTS, AnimationEvent.create(((livingEntityPatch, staticAnimation, objects) -> {
-                    livingEntityPatch.reserveAnimation(PILLAR_LOOP);
-                    if (livingEntityPatch instanceof ServerPlayerPatch serverPlayerPatch) {
-                        serverPlayerPatch.getSkill(SkillSlots.WEAPON_INNATE).getDataManager().setDataSync(PillarHeavyAttack.IS_CHARGING, true, serverPlayerPatch.getOriginal());
-                    }
-                }), AnimationEvent.Side.SERVER));
-
-        PILLAR_PRE1 = new ActionAnimation(0.15F, "biped/pillar/up1", biped)
-                .addProperty(AnimationProperty.ActionAnimationProperty.MOVE_VERTICAL, true)
-                .addProperty(AnimationProperty.ActionAnimationProperty.NO_GRAVITY_TIME, TimePairList.create(0.01F, 0.8333F))
-                .addEvents(AnimationProperty.StaticAnimationProperty.ON_END_EVENTS, AnimationEvent.create(((livingEntityPatch, staticAnimation, objects) -> {
-                    livingEntityPatch.reserveAnimation(PILLAR_LOOP);
-                    if (livingEntityPatch instanceof ServerPlayerPatch serverPlayerPatch) {
-                        serverPlayerPatch.getSkill(SkillSlots.WEAPON_INNATE).getDataManager().setDataSync(SmashHeavyAttack.IS_CHARGING, true, serverPlayerPatch.getOriginal());
-                    }
-                }), AnimationEvent.Side.SERVER));
-
-        PILLAR_PRE2 = new ActionAnimation(0.15F, "biped/pillar/up2", biped)
-                .addProperty(AnimationProperty.ActionAnimationProperty.MOVE_VERTICAL, true)
-                .addProperty(AnimationProperty.ActionAnimationProperty.NO_GRAVITY_TIME, TimePairList.create(0.01F, 0.8333F))
-                .addEvents(AnimationProperty.StaticAnimationProperty.ON_END_EVENTS, AnimationEvent.create(((livingEntityPatch, staticAnimation, objects) -> {
-                    livingEntityPatch.reserveAnimation(PILLAR_LOOP);
-                    if (livingEntityPatch instanceof ServerPlayerPatch serverPlayerPatch) {
-                        serverPlayerPatch.getSkill(SkillSlots.WEAPON_INNATE).getDataManager().setDataSync(SmashHeavyAttack.IS_CHARGING, true, serverPlayerPatch.getOriginal());
-                    }
-                }), AnimationEvent.Side.SERVER));
-
-        PILLAR_PRE3 = new ActionAnimation(0.15F, "biped/pillar/up3", biped)
-                .addProperty(AnimationProperty.ActionAnimationProperty.MOVE_VERTICAL, true)
-                .addProperty(AnimationProperty.ActionAnimationProperty.NO_GRAVITY_TIME, TimePairList.create(0.01F, 0.8333F))
-                .addEvents(AnimationProperty.StaticAnimationProperty.ON_END_EVENTS, AnimationEvent.create(((livingEntityPatch, staticAnimation, objects) -> {
-                    livingEntityPatch.reserveAnimation(PILLAR_LOOP);
-                    if (livingEntityPatch instanceof ServerPlayerPatch serverPlayerPatch) {
-                        serverPlayerPatch.getSkill(SkillSlots.WEAPON_INNATE).getDataManager().setDataSync(SmashHeavyAttack.IS_CHARGING, true, serverPlayerPatch.getOriginal());
-                    }
-                }), AnimationEvent.Side.SERVER));
-
-        PILLAR_PRE4 = new ActionAnimation(0.15F, "biped/pillar/up4", biped)
-                .addProperty(AnimationProperty.ActionAnimationProperty.MOVE_VERTICAL, true)
-                .addProperty(AnimationProperty.ActionAnimationProperty.NO_GRAVITY_TIME, TimePairList.create(0.01F, 0.8333F))
-                .addEvents(AnimationProperty.StaticAnimationProperty.ON_END_EVENTS, AnimationEvent.create(((livingEntityPatch, staticAnimation, objects) -> {
-                    livingEntityPatch.reserveAnimation(PILLAR_LOOP);
-                    if (livingEntityPatch instanceof ServerPlayerPatch serverPlayerPatch) {
-                        serverPlayerPatch.getSkill(SkillSlots.WEAPON_INNATE).getDataManager().setDataSync(SmashHeavyAttack.IS_CHARGING, true, serverPlayerPatch.getOriginal());
-                    }
-                }), AnimationEvent.Side.SERVER));
-
-        PILLAR_CHARGED0 = new WukongScaleStaffAttackAnimation(0.15F, 0.366666F, 0.46666F, 1.3F, WukongColliders.STACK_0_1, biped.toolR, "biped/pillar/stick_heavy_a0", biped)
-                .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(1.7f))
-                .addProperty(AnimationProperty.ActionAnimationProperty.MOVE_VERTICAL, true)
-                .addProperty(AnimationProperty.ActionAnimationProperty.MOVE_ON_LINK, false)
-                .addProperty(AnimationProperty.ActionAnimationProperty.COORD_SET_BEGIN, MoveCoordFunctions.TRACE_LOC_TARGET)
-                .addProperty(AnimationProperty.ActionAnimationProperty.COORD_SET_TICK, MoveCoordFunctions.TRACE_LOC_TARGET)
-                .addProperty(AnimationProperty.ActionAnimationProperty.CANCELABLE_MOVE, false)
-                .addProperty(AnimationProperty.ActionAnimationProperty.NO_GRAVITY_TIME, TimePairList.create(0F, 0.26666F))
-                .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.1F))
-                .addEvents(AnimationEvent.TimeStampedEvent.create(0F, ((livingEntityPatch, anim, obj) -> livingEntityPatch.playSound(WuKongSounds.PERFECT_DODGE.get(), 1, 1)), AnimationEvent.Side.SERVER));
-
-        PILLAR_CHARGED1 = new WukongScaleStaffAttackAnimation(0.15F, 0.366666F, 0.46666F, 1.3F, WukongColliders.STACK_0_1, biped.toolR, "biped/pillar/stick_heavy_a1", biped)
-                .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(3.75F))
-                .addProperty(AnimationProperty.ActionAnimationProperty.MOVE_VERTICAL, true)
-                .addProperty(AnimationProperty.ActionAnimationProperty.MOVE_ON_LINK, false)
-                .addProperty(AnimationProperty.ActionAnimationProperty.COORD_SET_BEGIN, MoveCoordFunctions.TRACE_LOC_TARGET)
-                .addProperty(AnimationProperty.ActionAnimationProperty.COORD_SET_TICK, MoveCoordFunctions.TRACE_LOC_TARGET)
-                .addProperty(AnimationProperty.ActionAnimationProperty.CANCELABLE_MOVE, false)
-                .addProperty(AnimationProperty.ActionAnimationProperty.NO_GRAVITY_TIME, TimePairList.create(0F, 0.26666F))
-                .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.3F))
-                .addEvents(append(
-                        AnimationEvent.TimeStampedEvent.create(0F, ((livingEntityPatch, anim, obj) -> livingEntityPatch.playSound(WuKongSounds.PERFECT_DODGE.get(), 1, 1)), AnimationEvent.Side.SERVER),
-                        getScaleEvents(
-                                ScaleTime.of(0F, 1, 1.5F, 1F, 0F, 0.7F, 0F),
-                                ScaleTime.of(1.96666F, 1, 1F, 1F, 0F, 0F, 0F),
-                                ScaleTime.reset(1.96666F)
-                        )).toArray(new AnimationEvent.TimeStampedEvent[0])
-                );
-
-        PILLAR_CHARGED2 = new WukongScaleStaffAttackAnimation(0.15F, 0.433333F, 0.53333f, 1.3F, WukongColliders.STACK_2, biped.toolR, "biped/pillar/stick_heavy_a2", biped)
-                .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(5.75f))
-                .addProperty(AnimationProperty.ActionAnimationProperty.MOVE_VERTICAL, true)
-                .addProperty(AnimationProperty.ActionAnimationProperty.MOVE_ON_LINK, false)
-                .addProperty(AnimationProperty.ActionAnimationProperty.COORD_SET_BEGIN, MoveCoordFunctions.TRACE_LOC_TARGET)
-                .addProperty(AnimationProperty.ActionAnimationProperty.COORD_SET_TICK, MoveCoordFunctions.TRACE_LOC_TARGET)
-                .addProperty(AnimationProperty.ActionAnimationProperty.CANCELABLE_MOVE, false)
-                .addProperty(AnimationProperty.ActionAnimationProperty.NO_GRAVITY_TIME, TimePairList.create(0F, 0.26666F))
-                .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.5F))
-                .addEvents(append(
-                        AnimationEvent.TimeStampedEvent.create(0F, ((livingEntityPatch, anim, obj) -> livingEntityPatch.playSound(WuKongSounds.HIT_GROUND.get(), 1, 1)), AnimationEvent.Side.SERVER),
-                        getScaleEvents(
-                                ScaleTime.of(0F, 1, 2.2F, 1F, 0F, 0.9F, 0F),
-                                ScaleTime.of(2.6333F, 1, 1F, 1F, 0F, 0F, 0F),
-                                ScaleTime.reset(2.6333F)
-                        )).toArray(new AnimationEvent.TimeStampedEvent[0])
-                );
-
-        PILLAR_CHARGED3 = new WukongScaleStaffAttackAnimation(0.15F, 3.3F, 5F, 4.5F, WukongColliders.STACK_3, biped.toolR, "biped/pillar/stick_heavy_a3", biped)
-                .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(7.25f))
-                .addProperty(AnimationProperty.ActionAnimationProperty.MOVE_VERTICAL, true)
-                .addProperty(AnimationProperty.ActionAnimationProperty.MOVE_ON_LINK, false)
-                .addProperty(AnimationProperty.ActionAnimationProperty.COORD_SET_BEGIN, MoveCoordFunctions.TRACE_LOC_TARGET)
-                .addProperty(AnimationProperty.ActionAnimationProperty.COORD_SET_TICK, MoveCoordFunctions.TRACE_LOC_TARGET)
-                .addProperty(AnimationProperty.ActionAnimationProperty.CANCELABLE_MOVE, false)
-                .addProperty(AnimationProperty.ActionAnimationProperty.NO_GRAVITY_TIME, TimePairList.create(0F, 3.2F))
-                .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, (self, entityPatch, speed, elapsedTime) -> {
-                    if (elapsedTime > 3.2F && elapsedTime < 3.4f) {
-                        return 3F * speed;
-                    }
-                    return 1.2F * speed;
-                })
-                .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.2F));
-
-        PILLAR_CHARGED4 = new BasicMultipleAttackAnimation(0.15F, "biped/pillar/stick_heavy_a5", biped,
-                new AttackAnimation.Phase(0.0F, 1.3666F, 1.5666F, 5.93333F, 1.6666F, biped.toolR, WukongColliders.STACK_4)
-                        .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(2f)),
-                new AttackAnimation.Phase(1.6666F, 2.6666F, 2.7666F, 5.93333F, 2.8333F, biped.toolR, WukongColliders.STACK_4)
-                        .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(2f)),
-                new AttackAnimation.Phase(2.8333F, 3f, 3.16666F, 5.93333F, 3.26666F, biped.toolR, WukongColliders.STACK_4)
-                        .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(2f)),
-                new AttackAnimation.Phase(3.26666F, 3.933f, 4F, 5.93333F, 5.93333F, biped.toolR, WukongColliders.STACK_4)
-                        .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(13f)))
-                .addProperty(AnimationProperty.ActionAnimationProperty.MOVE_VERTICAL, true)
-                .addProperty(AnimationProperty.ActionAnimationProperty.MOVE_ON_LINK, false)
-                .addProperty(AnimationProperty.ActionAnimationProperty.COORD_SET_BEGIN, MoveCoordFunctions.TRACE_LOC_TARGET)
-                .addProperty(AnimationProperty.ActionAnimationProperty.COORD_SET_TICK, MoveCoordFunctions.TRACE_LOC_TARGET)
-                .addProperty(AnimationProperty.ActionAnimationProperty.CANCELABLE_MOVE, false)
-                .addProperty(AnimationProperty.ActionAnimationProperty.NO_GRAVITY_TIME, TimePairList.create(0F, 4.4666F))
-                .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, (self, entitypatch, speed, elapsedTime) -> {
-                    if (elapsedTime > 1.6333F && elapsedTime < 2.2f) {
-                        return 3F * speed;
-                    }
-                    return 1.2F * speed;
-                })
-                .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.2F));
-        List<AnimationEvent.TimeStampedEvent> scList5 = append(
-                AnimationEvent.TimeStampedEvent.create(0.1F, ((livingEntityPatch, anim, obj) -> livingEntityPatch.playSound(WuKongSounds.HIT_GROUND.get(), 1, 1)), AnimationEvent.Side.SERVER),
-                getScaleEvents(
-                        ScaleTime.of(0F, 1, 1F, 1F, 0F, 0F, 0F),
-                        ScaleTime.of(1.3333F, 1, 1.2F, 1F, 0F, -0.2F, 0F),
-                        ScaleTime.of(2.13333F, 1, 2.0F, 1F, 0F, -1.2F, 0F),
-                        ScaleTime.reset(5.93333F)
-                )
-        );
-        scList5.add(AnimationEvent.TimeStampedEvent.create(1.5666F, yesman.epicfight.gameasset.Animations.ReusableSources.FRACTURE_GROUND_SIMPLE, AnimationEvent.Side.CLIENT).params(new Vec3f(0F, 0F, 0F), yesman.epicfight.gameasset.Armatures.BIPED.rootJoint, 3D, 0.01F));
-        scList5.add(AnimationEvent.TimeStampedEvent.create(2.8333F, yesman.epicfight.gameasset.Animations.ReusableSources.FRACTURE_GROUND_SIMPLE, AnimationEvent.Side.CLIENT).params(new Vec3f(0F, -5F, -5F), yesman.epicfight.gameasset.Armatures.BIPED.rootJoint, 2D, 0.01F));
-        scList5.add(AnimationEvent.TimeStampedEvent.create(3.066F, yesman.epicfight.gameasset.Animations.ReusableSources.FRACTURE_GROUND_SIMPLE, AnimationEvent.Side.CLIENT).params(new Vec3f(0F, -5F, -5F), yesman.epicfight.gameasset.Armatures.BIPED.rootJoint, 4D, 0.01F));
-        scList5.add(AnimationEvent.TimeStampedEvent.create(3.966666F, yesman.epicfight.gameasset.Animations.ReusableSources.FRACTURE_GROUND_SIMPLE, AnimationEvent.Side.CLIENT).params(new Vec3f(0F, -5F, -5F), yesman.epicfight.gameasset.Armatures.BIPED.rootJoint, 7D, 0.01F));
-        PILLAR_CHARGED4.addEvents(scList5.toArray(new AnimationEvent.TimeStampedEvent[0]));
-
-        //立end
-
         //戳start
         THRUST_CHARGING = new StaticAnimation(true, "biped/thrust/thrust_xuli_loop", biped)
                 .newTimePair(0.0F, Float.MAX_VALUE)
@@ -769,7 +551,6 @@ public class WukongAnimations {
                         AnimationEvent.TimeStampedEvent.create(0.3F, ((livingEntityPatch, staticAnimation, objects) -> {
                             livingEntityPatch.playSound(EpicFightSounds.WHOOSH_ROD, 1, 1);
                         }), AnimationEvent.Side.SERVER));
-        ;
 
 
         THRUST_CHARGED0 = new WukongScaleStaffAttackAnimation(0F, 0.5F, 0.733F, 2.766F, WukongColliders.STACK_0_1, biped.toolR, "biped/thrust/thrust_heavy0", biped)
@@ -882,15 +663,13 @@ public class WukongAnimations {
                 AnimationEvent.TimeStampedEvent.create(0.1F, ((livingEntityPatch, anim, obj) -> livingEntityPatch.playSound(WuKongSounds.HIT_GROUND.get(), 1, 1)), AnimationEvent.Side.SERVER),
                 getScaleEvents(
                         ScaleTime.of(0F, 1, 1F, 1F),
-                        ScaleTime.of(0.8F, 1, 2.3F, 1F, 0F, -1.7F, 0F),
-                        ScaleTime.of(1.0F, 1F, 4F, 1F, 0F, -1.7F, 0F),
-                        ScaleTime.of(1.1666F, 1F, 4F, 1F, 0F, -1.7F, 0F),
+                        ScaleTime.of(0.8F, 1, 2.3F, 1F, 0F, -1.5F, 0F),
+                        ScaleTime.of(1.0F, 1F, 4F, 1F, 0F, -1.5F, 0F),
+                        ScaleTime.of(1.1666F, 1F, 4F, 1F, 0F, -1.5F, 0F),
                         ScaleTime.reset(1.8F)
                 )
         );
-//        charged4.add(AnimationEvent.TimeStampedEvent.create(0.833F, yesman.epicfight.gameasset.Animations.ReusableSources.FRACTURE_GROUND_SIMPLE, AnimationEvent.Side.CLIENT).params(new Vec3f(0F, 0F, -5F), yesman.epicfight.gameasset.Armatures.BIPED.rootJoint, 1D, 0.01F));
-//        charged4.add(AnimationEvent.TimeStampedEvent.create(0.933F, yesman.epicfight.gameasset.Animations.ReusableSources.FRACTURE_GROUND_SIMPLE, AnimationEvent.Side.CLIENT).params(new Vec3f(0F, 0F, -8F), yesman.epicfight.gameasset.Armatures.BIPED.rootJoint, 2D, 0.01F));
-//        charged4.add(AnimationEvent.TimeStampedEvent.create(1.1666F, yesman.epicfight.gameasset.Animations.ReusableSources.FRACTURE_GROUND_SIMPLE, AnimationEvent.Side.CLIENT).params(new Vec3f(0F, 0F, -13F), yesman.epicfight.gameasset.Armatures.BIPED.rootJoint, 3D, 0.01F));
+
         THRUST_CHARGED4.addEvents(charged4.toArray(new AnimationEvent.TimeStampedEvent[0]));
 
         //退寸
@@ -992,16 +771,14 @@ public class WukongAnimations {
                         ScaleTime.of(1.32F, 1, 1.2F, 1, 0F, 1.3F, 0F)
                 ));
 
-        THRUST_JUESICK_START = new BasicAttackAnimation(0.15F, 0.866F, 1.0F, 1.6666F, WukongColliders.STACK_0_1, biped.toolR, "biped/thrust/thrust_juesick_start", biped)
+        THRUST_JUESICK_START = new BasicAttackAnimation(0.15F, 0.866F, 1.0F, 1.2F, WukongColliders.STACK_0_1, biped.toolR, "biped/thrust/thrust_juesick_start", biped)
                 .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(1.68f))
                 .addProperty(AnimationProperty.ActionAnimationProperty.MOVE_VERTICAL, true)
                 .addProperty(AnimationProperty.ActionAnimationProperty.MOVE_ON_LINK, true)
                 .addProperty(AnimationProperty.ActionAnimationProperty.CANCELABLE_MOVE, false)
                 .addProperty(AnimationProperty.ActionAnimationProperty.STOP_MOVEMENT, true)
                 .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.7F))
-                .addEvents(AnimationProperty.StaticAnimationProperty.ON_END_EVENTS, AnimationEvent.create(((livingEntityPatch, staticAnimation, objects) -> {
-                    livingEntityPatch.reserveAnimation(THRUST_JUESICK_LOOP);
-                }), AnimationEvent.Side.SERVER));
+                .addEvents(AnimationProperty.StaticAnimationProperty.ON_END_EVENTS, AnimationEvent.create(((livingEntityPatch, staticAnimation, objects) -> livingEntityPatch.reserveAnimation(THRUST_JUESICK_LOOP)), AnimationEvent.Side.SERVER));
 
         THRUST_JUESICK_END = new WukongScaleStaffAttackAnimation(0F, 0F, 0F, 0.9f, null, biped.toolR, "biped/thrust/thrust_juesick_end", biped)
                 .addProperty(AnimationProperty.ActionAnimationProperty.MOVE_VERTICAL, true)
@@ -1082,7 +859,7 @@ public class WukongAnimations {
                 .addStateRemoveOld(EntityState.ATTACK_RESULT, (damageSource) -> AttackResult.ResultType.BLOCKED)
                 .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.5F));
 
-        TONG_TOU_TIE_BI_END = new ActionAnimation(0.15F, "biped/magicarts/tttb_end", biped);
+        TONG_TOU_TIE_BI_END = new ActionAnimation(0.15F, 0, "biped/magicarts/tttb_end", biped);
 
         TONG_TOU_TIE_BI_FAIL = new LongHitAnimation(0.15F, "biped/magicarts/tttb_fail", biped);
         //身外身法
@@ -1110,116 +887,6 @@ public class WukongAnimations {
                     }
                 }), AnimationEvent.Side.SERVER))
                 .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.5F));
-
-        //赤潮
-        RED_TIDE_IDLE = new StaticAnimation(true, "cc/cc_idle", biped);
-
-        RED_TIDE_WALK = new StaticAnimation(true, "cc/cc_walk", biped);
-
-        RED_TIDE_RUN = new StaticAnimation(true, "cc/cc_run", biped);
-
-        RED_TIDE_JUMP = new StaticAnimation(true, "cc/cc_jump", biped);
-
-        RED_TIDE_DODGE = new AttackAnimation(0.15F, 0.2916F, 0.2916F, 0.5000F, 0.5833F, null, biped.toolL, "cc/cc_dodge", biped)
-                .addProperty(AnimationProperty.AttackAnimationProperty.FIXED_MOVE_DISTANCE, true)
-                .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(0.9F))
-                .addProperty(AnimationProperty.ActionAnimationProperty.CANCELABLE_MOVE, false)
-                .newTimePair(0.0F, 0.5F)//无敌时间
-                .addStateRemoveOld(EntityState.ATTACK_RESULT, (source -> AttackResult.ResultType.MISSED))
-                .newTimePair(0.0F, 1.5F)//禁用技能，播完才能
-                .addStateRemoveOld(EntityState.CAN_SKILL_EXECUTION, false)
-                .addState(EntityState.LOCKON_ROTATE, true)
-                .addState(EntityState.MOVEMENT_LOCKED, true)
-                .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.5F))
-                .addEvents(AnimationEvent.TimeStampedEvent.create(1.3F, ((livingEntityPatch, staticAnimation, objects) -> {
-                    if (livingEntityPatch instanceof PlayerPatch<?> patch) {
-                        SkillDataManager manager = patch.getSkill(SkillSlots.WEAPON_INNATE).getDataManager();
-                        if (manager.hasData(RedTideHeavyAttack.COUNTER)) {
-                            manager.setData(RedTideHeavyAttack.COUNTER, Config.DERIVE_CHECK_TIME.get().intValue());
-                        }
-                    }
-                }), AnimationEvent.Side.BOTH));//无敌时间
-        RED_TIDE_DODGE_B = new AttackAnimation(0.15F, 0.2916F, 0.2916F, 0.5000F, 0.5833F, null, biped.toolL, "cc/cc_dodge_b", biped)
-                .addProperty(AnimationProperty.AttackAnimationProperty.FIXED_MOVE_DISTANCE, true)
-                .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(0.9F))
-                .addProperty(AnimationProperty.ActionAnimationProperty.CANCELABLE_MOVE, false)
-                .newTimePair(0.0F, 0.5F)//无敌时间
-                .addStateRemoveOld(EntityState.ATTACK_RESULT, (source -> AttackResult.ResultType.MISSED))
-                .newTimePair(0.0F, 1.5F)//禁用技能，播完才能
-                .addStateRemoveOld(EntityState.CAN_SKILL_EXECUTION, false)
-                .addState(EntityState.LOCKON_ROTATE, true)
-                .addEvents(AnimationEvent.TimeStampedEvent.create(1.3F, ((livingEntityPatch, staticAnimation, objects) -> {
-                    if (livingEntityPatch instanceof PlayerPatch<?> patch) {
-                        SkillDataManager manager = patch.getSkill(SkillSlots.WEAPON_INNATE).getDataManager();
-                        if (manager.hasData(RedTideHeavyAttack.COUNTER)) {
-                            manager.setData(RedTideHeavyAttack.COUNTER, Config.DERIVE_CHECK_TIME.get().intValue());
-                        }
-                    }
-                }), AnimationEvent.Side.BOTH));//无敌时间
-        RED_TIDE_DODGE_L = new AttackAnimation(0.15F, 0.2916F, 0.2916F, 0.5000F, 0.5833F, null, biped.toolL, "cc/cc_dodge_l", biped)
-                .addProperty(AnimationProperty.AttackAnimationProperty.FIXED_MOVE_DISTANCE, true)
-                .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(0.9F))
-                .addProperty(AnimationProperty.ActionAnimationProperty.CANCELABLE_MOVE, false)
-                .newTimePair(0.0F, 0.5F)//无敌时间
-                .addStateRemoveOld(EntityState.ATTACK_RESULT, (source -> AttackResult.ResultType.MISSED))
-                .newTimePair(0.0F, 1.5F)//禁用技能，播完才能
-                .addStateRemoveOld(EntityState.CAN_SKILL_EXECUTION, false)
-                .addState(EntityState.LOCKON_ROTATE, true)
-                .addEvents(AnimationEvent.TimeStampedEvent.create(1.3F, ((livingEntityPatch, staticAnimation, objects) -> {
-                    if (livingEntityPatch instanceof PlayerPatch<?> patch) {
-                        SkillDataManager manager = patch.getSkill(SkillSlots.WEAPON_INNATE).getDataManager();
-                        if (manager.hasData(RedTideHeavyAttack.COUNTER)) {
-                            manager.setData(RedTideHeavyAttack.COUNTER, Config.DERIVE_CHECK_TIME.get().intValue());
-                        }
-                    }
-                }), AnimationEvent.Side.BOTH));//无敌时间
-        RED_TIDE_DODGE_R = new AttackAnimation(0.15F, 0.2916F, 0.2916F, 0.5000F, 0.5833F, null, biped.toolL, "cc/cc_dodge_r", biped)
-                .addProperty(AnimationProperty.AttackAnimationProperty.FIXED_MOVE_DISTANCE, true)
-                .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(0.9F))
-                .addProperty(AnimationProperty.ActionAnimationProperty.CANCELABLE_MOVE, false)
-                .newTimePair(0.0F, 0.5F)//无敌时间
-                .addStateRemoveOld(EntityState.ATTACK_RESULT, (source -> AttackResult.ResultType.MISSED))
-                .newTimePair(0.0F, 1.5F)//禁用技能，播完才能
-                .addStateRemoveOld(EntityState.CAN_SKILL_EXECUTION, false)
-                .addState(EntityState.LOCKON_ROTATE, true)
-                .addEvents(AnimationEvent.TimeStampedEvent.create(1.3F, ((livingEntityPatch, staticAnimation, objects) -> {
-                    if (livingEntityPatch instanceof PlayerPatch<?> patch) {
-                        SkillDataManager manager = patch.getSkill(SkillSlots.WEAPON_INNATE).getDataManager();
-                        if (manager.hasData(RedTideHeavyAttack.COUNTER)) {
-                            manager.setData(RedTideHeavyAttack.COUNTER, Config.DERIVE_CHECK_TIME.get().intValue());
-                        }
-                    }
-                }), AnimationEvent.Side.BOTH));//无敌时间
-        RED_TIDE_SKILL_F = new AttackAnimation(0.15F, 1.5F, 1.5F, 1.7F, 3, null, biped.toolL, "cc/cc_skill_f", biped)
-                .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(0.9F))
-                .addProperty(AnimationProperty.ActionAnimationProperty.CANCELABLE_MOVE, false)
-                .addProperty(AnimationProperty.ActionAnimationProperty.MOVE_VERTICAL, true)
-                .addProperty(AnimationProperty.ActionAnimationProperty.NO_GRAVITY_TIME, TimePairList.create(0.0F, 1.133F))
-                .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 0.9F));
-        RED_TIDE_SKILL = new AttackAnimation(0.15F, 1.17F, 1.17F, 1.83F, 2.3F, null, biped.toolL, "cc/cc_skill", biped)
-                .addProperty(AnimationProperty.AttackAnimationProperty.FIXED_MOVE_DISTANCE, true)
-                .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(0.9F))
-                .addProperty(AnimationProperty.ActionAnimationProperty.CANCELABLE_MOVE, false);
-        RED_TIDE_AUTO1 = new BasicAttackAnimation(0.15F, 0.6F, 1, 1.3F, null, biped.toolL, "cc/cc_auto1", biped)
-                .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(0.9F))
-                .addProperty(AnimationProperty.ActionAnimationProperty.CANCELABLE_MOVE, false);
-        RED_TIDE_AUTO2 = new BasicAttackAnimation(0.15F, 1.17F, 1.5F, 2, null, biped.toolL, "cc/cc_auto2", biped)
-                .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(0.9F))
-                .addProperty(AnimationProperty.ActionAnimationProperty.CANCELABLE_MOVE, false);
-        RED_TIDE_AUTO3 = new BasicMultipleAttackAnimation(0.15F, "cc/cc_auto3", biped,
-                new AttackAnimation.Phase(0.0F, 0.33F, 0.53F, 0.63F, 0.63F, biped.toolR, null),
-                new AttackAnimation.Phase(0.63F, 0.63F, 0.9F, 1.0F, 1.0F, biped.toolR, null),
-                new AttackAnimation.Phase(1, 1.0F, 1.2F, 2.16F, 2.16F, biped.toolR, null))
-                .addProperty(AnimationProperty.ActionAnimationProperty.CANCELABLE_MOVE, false);
-        RED_TIDE_AUTO4 = new BasicMultipleAttackAnimation(0.15F, "cc/cc_auto4", biped,
-                new AttackAnimation.Phase(0.0F, 0.3F, 0.77F, 0.77F, 0.77F, biped.toolR, null),
-                new AttackAnimation.Phase(0.77F, 0.77F, 0.93F, 1.23F, 1.23F, biped.toolR, null),
-                new AttackAnimation.Phase(1.23F, 1.23F, 1.5F, 2, 2, biped.toolR, null))
-                .addProperty(AnimationProperty.ActionAnimationProperty.CANCELABLE_MOVE, false);
-        RED_TIDE_JUMP_ATTACK = new BasicMultipleAttackAnimation(0.15F, "cc/cc_jump_attack", biped,
-                new AttackAnimation.Phase(0.0F, 1, 2, 2.33F, 2.33F, biped.toolR, WukongColliders.JUMP_ATTACK_LIGHT),
-                new AttackAnimation.Phase(2.33F, 2.33F, 2.5F, 3, 3, biped.toolR, null))
-                .addProperty(AnimationProperty.ActionAnimationProperty.CANCELABLE_MOVE, false);
 
     }
 
