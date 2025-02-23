@@ -1,13 +1,9 @@
 package com.p1nero.wukong.epicfight.skill.custom.magicarts;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.p1nero.wukong.client.WuKongSounds;
 import com.p1nero.wukong.epicfight.WukongSkillCategories;
-import com.p1nero.wukong.epicfight.animation.StaticAnimationProvider;
 import com.p1nero.wukong.epicfight.animation.WukongAnimations;
 import com.p1nero.wukong.epicfight.skill.SkillDataRegister;
-import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerLevel;
@@ -17,10 +13,7 @@ import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.phys.Vec3;
-import yesman.epicfight.api.animation.types.DynamicAnimation;
-import yesman.epicfight.api.animation.types.EntityState;
 import yesman.epicfight.api.utils.AttackResult;
-import yesman.epicfight.client.gui.BattleModeGui;
 import yesman.epicfight.skill.*;
 import yesman.epicfight.world.capabilities.EpicFightCapabilities;
 import yesman.epicfight.world.capabilities.entitypatch.player.PlayerPatch;
@@ -101,7 +94,10 @@ public class ASFSkill extends QiShuSkill {
             }
             if (manager.getDataValue(EXIST_TIMER) > 0) {
                 createFireCircles(serverPlayer, playerPos,manager);
-                createRepelCircle(serverPlayer, playerPos,manager);
+                if (container.getExecuter().getAnimator().getPlayerFor(null).getAnimation() == WukongAnimations.AN_SHEN_FA) {
+                    createRepelCircle(serverPlayer, playerPos, manager);
+                }
+                Fire(serverPlayer,playerPos,manager);
             }
         }
     }
@@ -184,7 +180,6 @@ public class ASFSkill extends QiShuSkill {
             if (entity instanceof Monster) {
                 double distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY + deltaZ * deltaZ);
                 if (distance <= range) {
-                    entity.setSecondsOnFire(1);
                     if (Math.abs(deltaZ) > Math.abs(deltaX)) {
                         if (deltaZ > 0) {
                             entity.push(0, 0, knockbackStrength);
@@ -198,6 +193,42 @@ public class ASFSkill extends QiShuSkill {
                             entity.push(-knockbackStrength, 0, 0);
                         }
                     }
+                }
+            }
+        }
+    }
+    public void  Fire(ServerPlayer player,Vec3 position,SkillDataManager dataManager) {
+        double range = 4.7;  // 设定范围（4.7米）
+        List<LivingEntity> nearbyEntities = player.getLevel().getEntitiesOfClass(LivingEntity.class, player.getBoundingBox().inflate(150), entity -> entity != player && entity.isAlive());
+        List<Player> nearbyPlayer = player.getLevel().getEntitiesOfClass(Player.class, player.getBoundingBox().inflate(150), Player::isAlive);
+        for (Player player1 : nearbyPlayer) {
+            if (dataManager.getDataValue(EXIST_TIMER) <= 0) {
+                break;
+            }
+            ServerPlayerPatch pp = EpicFightCapabilities.getEntityPatch(player1, ServerPlayerPatch.class);
+            SkillContainer container = pp.getSkill(SkillSlots.WEAPON_INNATE);
+            float value = container.getResource() + 1;
+            Vec3 monsterPos = player.position();
+            double deltaX = monsterPos.x - position.x;
+            double deltaY = monsterPos.y - position.y;
+            double deltaZ = monsterPos.z - position.z;
+            double distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY + deltaZ * deltaZ);
+            if (distance <= range) {
+                pp.getSkill(SkillSlots.WEAPON_INNATE).getSkill().setConsumptionSynchronize(pp, value);
+            }
+        }
+        for (LivingEntity entity : nearbyEntities) {
+            if (dataManager.getDataValue(EXIST_TIMER) <= 0) {
+                break;
+            }
+            Vec3 monsterPos = entity.position();
+            double deltaX = monsterPos.x - position.x;
+            double deltaY = monsterPos.y - position.y;
+            double deltaZ = monsterPos.z - position.z;
+            if (entity instanceof Monster) {
+                double distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY + deltaZ * deltaZ);
+                if (distance <= range) {
+                    entity.setSecondsOnFire(1);
                 }
             }
         }
