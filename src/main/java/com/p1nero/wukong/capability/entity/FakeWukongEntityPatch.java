@@ -7,14 +7,18 @@ import com.p1nero.wukong.epicfight.WukongStyles;
 import com.p1nero.wukong.epicfight.animation.WukongAnimations;
 import com.p1nero.wukong.epicfight.weapon.WukongWeaponCategories;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.Entity;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import yesman.epicfight.api.animation.LivingMotions;
 import yesman.epicfight.api.animation.types.StaticAnimation;
 import yesman.epicfight.api.client.animation.ClientAnimator;
+import yesman.epicfight.api.utils.AttackResult;
 import yesman.epicfight.gameasset.Animations;
+import yesman.epicfight.world.capabilities.EpicFightCapabilities;
 import yesman.epicfight.world.capabilities.entitypatch.Faction;
 import yesman.epicfight.world.capabilities.entitypatch.HumanoidMobPatch;
+import yesman.epicfight.world.capabilities.entitypatch.player.PlayerPatch;
 import yesman.epicfight.world.damagesource.EpicFightDamageSource;
 import yesman.epicfight.world.entity.ai.goal.CombatBehaviors;
 
@@ -52,17 +56,21 @@ public class FakeWukongEntityPatch extends HumanoidMobPatch<FakeWukongEntity> {
         this.weaponAttackMotions.put(WukongWeaponCategories.WK_STAFF, ImmutableMap.of(WukongStyles.SMASH, WK_STAFF));
     }
 
+    @Override
+    public AttackResult attack(EpicFightDamageSource damageSource, Entity target, InteractionHand hand) {
+        if(this.getOriginal().getOwner() != null){
+            return EpicFightCapabilities.getEntityPatch(this.getOriginal().getOwner(), PlayerPatch.class).attack(damageSource, target, hand);
+        }
+        return super.attack(damageSource, target, hand);
+    }
+
     /**
      * 伤害源应来自主人
      */
     @Override
     public EpicFightDamageSource getDamageSource(StaticAnimation animation, InteractionHand hand) {
         if(this.getOriginal().getOwner() != null){
-            EpicFightDamageSource damageSource = EpicFightDamageSource.commonEntityDamageSource("player", this.original.getOwner(), animation);
-            damageSource.setImpact(this.getImpact(hand));
-            damageSource.setArmorNegation(this.getArmorNegation(hand));
-            damageSource.setHurtItem(this.getOriginal().getOwner().getItemInHand(hand));
-            return damageSource;
+            return EpicFightCapabilities.getEntityPatch(this.getOriginal().getOwner(), PlayerPatch.class).getDamageSource(animation, hand);
         }
         return super.getDamageSource(animation, hand);
     }
