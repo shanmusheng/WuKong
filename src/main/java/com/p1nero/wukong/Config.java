@@ -26,6 +26,7 @@ public class Config
     public static final ForgeConfigSpec.DoubleValue DERIVE_STAMINA_CONSUME;
     public static final ForgeConfigSpec.DoubleValue CHARGING_STAMINA_CONSUME;
     public static final ForgeConfigSpec.DoubleValue BASIC_ATTACK_INTERVAL_TICKS;
+    public static final ForgeConfigSpec.DoubleValue FAKE_ENTITY_DAMAGE_RATE;
     public static final ForgeConfigSpec.BooleanValue GET_GUILD_BOOK;
     public static final ForgeConfigSpec.ConfigValue<List<? extends String>> ENTITIES_CAN_BE_BLOCKED_BY_STAFF_FLOWER;
     public static final ForgeConfigSpec SPEC;
@@ -40,6 +41,7 @@ public class Config
         STAFF_FLOWER_STAMINA_CONSUME = createDouble("棍花每tick耐力消耗", "staff_flower_stamina_consume", 0.1);
         DERIVE_STAMINA_CONSUME = createDouble("立棍和戳棍切手技和每tick耐力消耗", "derive_stamina_consume", 0.1);
         CHARGING_STAMINA_CONSUME = createDouble("蓄力每tick耐力消耗", "charging_stamina_consume", 0.1);
+        FAKE_ENTITY_DAMAGE_RATE = createDouble("分身伤害倍率（相对玩家）", "fake_entity_damage_rate", 0.3);
         ENTITIES_CAN_BE_BLOCKED_BY_STAFF_FLOWER = BUILDER
                 .comment("可被棍花格挡的实体")
                 .defineListAllowEmpty(List.of("可被棍花格挡的实体"), () -> List.of("minecraft:arrow"), Config::validateEntityName);

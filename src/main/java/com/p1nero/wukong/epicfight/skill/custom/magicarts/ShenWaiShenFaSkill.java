@@ -2,10 +2,12 @@ package com.p1nero.wukong.epicfight.skill.custom.magicarts;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.p1nero.wukong.Config;
 import com.p1nero.wukong.capability.WKCapabilityProvider;
 import com.p1nero.wukong.capability.entity.FakeWukongEntityPatch;
 import com.p1nero.wukong.client.WuKongSounds;
 import com.p1nero.wukong.entity.FakeWukongEntity;
+import com.p1nero.wukong.epicfight.WukongDamageSourceTags;
 import com.p1nero.wukong.epicfight.WukongSkillCategories;
 import com.p1nero.wukong.epicfight.animation.WukongAnimations;
 import com.p1nero.wukong.epicfight.skill.SkillDataRegister;
@@ -71,6 +73,13 @@ public class ShenWaiShenFaSkill extends Skill {
                 hurtEvent.setCanceled(true);
             }
         }),10);
+        container.getExecuter().getEventListener().addEventListener(PlayerEventListener.EventType.DEALT_DAMAGE_EVENT_PRE, EVENT_UUID, (damageEvent -> {
+            if(damageEvent.getDamageSource().hasTag(WukongDamageSourceTags.FAKE_WUKONG)){
+                System.out.println("original damage " + damageEvent.getAttackDamage());
+                damageEvent.setAttackDamage(damageEvent.getAttackDamage() * Config.FAKE_ENTITY_DAMAGE_RATE.get().floatValue());
+                System.out.println("reset damage " + damageEvent.getAttackDamage());
+            }
+        }));
         container.getExecuter().getEventListener().addEventListener(PlayerEventListener.EventType.ACTION_EVENT_SERVER, EVENT_UUID, (actionEvent -> {
             StaticAnimation animation = actionEvent.getAnimation();
             ServerPlayerPatch executor = actionEvent.getPlayerPatch();
@@ -111,7 +120,9 @@ public class ShenWaiShenFaSkill extends Skill {
     @Override
     public void onRemoved(SkillContainer container) {
         super.onRemoved(container);
+        container.getExecuter().getEventListener().removeListener(PlayerEventListener.EventType.ACTION_EVENT_SERVER, EVENT_UUID);
         container.getExecuter().getEventListener().removeListener(PlayerEventListener.EventType.HURT_EVENT_PRE, EVENT_UUID);
+        container.getExecuter().getEventListener().removeListener(PlayerEventListener.EventType.DEALT_DAMAGE_EVENT_PRE, EVENT_UUID);
     }
 
     @Override

@@ -57,7 +57,7 @@ public class FakeWukongEntity extends TamableAnimal {
         if(source.isFall()){
             return false;
         }
-        if(!source.isCreativePlayer() && source.getEntity() != null && (source.getEntity() instanceof FakeWukongEntity || (getOwner() != null && source.getEntity().is(getOwner())))){
+        if(source.getEntity() != null && (source.getEntity() instanceof FakeWukongEntity || (getOwner() != null && source.getEntity().is(getOwner())))){
             return false;
         }
         return super.hurt(source, p_27568_);

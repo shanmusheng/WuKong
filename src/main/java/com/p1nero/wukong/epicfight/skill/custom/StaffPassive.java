@@ -4,12 +4,11 @@ import com.p1nero.wukong.Config;
 import com.p1nero.wukong.capability.WKCapabilityProvider;
 import com.p1nero.wukong.client.keymapping.WukongKeyMappings;
 import com.p1nero.wukong.epicfight.animation.WukongAnimations;
+import com.p1nero.wukong.epicfight.animation.custom.StaffSpinAttackAnimation;
 import com.p1nero.wukong.epicfight.skill.SkillDataRegister;
 import com.p1nero.wukong.epicfight.skill.WukongSkills;
 import com.p1nero.wukong.epicfight.weapon.WukongWeaponCategories;
-import com.p1nero.wukong.network.PacketHandler;
 import com.p1nero.wukong.network.PacketRelay;
-import com.p1nero.wukong.network.packet.server.PlayStaffFlowerPacket;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.Input;
 import net.minecraft.client.player.LocalPlayer;
@@ -47,12 +46,13 @@ import java.util.stream.Collectors;
  */
 public class StaffPassive extends Skill {
 
-    public static SkillDataManager.SkillDataKey<Boolean> PLAYING_STAFF_SPIN = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.BOOLEAN);
-    public static final SkillDataManager.SkillDataKey<Integer> TICK = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.INTEGER);
+    public static SkillDataManager.SkillDataKey<Boolean> STAFF_SPIN_KEY_PRESSED;
+    public static SkillDataManager.SkillDataKey<Boolean> W_PRESSED;
     private static final UUID EVENT_UUID = UUID.fromString("d2d057cc-f30f-11ed-a05b-0242ac191981");
     public static void register(final FMLCommonSetupEvent event) {
         event.enqueueWork(() -> {
-            PLAYING_STAFF_SPIN = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.BOOLEAN);
+            STAFF_SPIN_KEY_PRESSED = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.BOOLEAN);
+            W_PRESSED = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.BOOLEAN);
         });
     }
     public StaffPassive(Builder<? extends Skill> builder) {
@@ -63,8 +63,8 @@ public class StaffPassive extends Skill {
     public void onInitiate(SkillContainer container) {
         super.onInitiate(container);
         SkillDataManager manager = container.getDataManager();
-        SkillDataRegister.register(manager, PLAYING_STAFF_SPIN, false);
-        SkillDataRegister.register(manager, TICK, 0);
+        SkillDataRegister.register(manager, STAFF_SPIN_KEY_PRESSED, false);
+        SkillDataRegister.register(manager, W_PRESSED, false);
 
         //自动学闪避
         Skill dodge = container.getExecuter().getSkill(SkillSlots.DODGE).getSkill();
@@ -94,8 +94,8 @@ public class StaffPassive extends Skill {
         }));
 
         container.getExecuter().getEventListener().addEventListener(PlayerEventListener.EventType.HURT_EVENT_PRE, EVENT_UUID, (event -> {
-
-            if (container.getDataManager().getDataValue(PLAYING_STAFF_SPIN) && (canBeBlocked(event.getDamageSource().getDirectEntity()) || event.getDamageSource().isProjectile())) {
+            if (event.getPlayerPatch().getAnimator().getPlayerFor(null).getAnimation() instanceof StaffSpinAttackAnimation &&
+                        (canBeBlocked(event.getDamageSource().getDirectEntity()) || event.getDamageSource().isProjectile())) {
                 if (!isBlocked(event.getDamageSource(), event.getPlayerPatch().getOriginal())) {
                     return;
                 }
@@ -215,20 +215,24 @@ public class StaffPassive extends Skill {
     @Override
     public void updateContainer(SkillContainer container) {
         super.updateContainer(container);
-        if (!container.getExecuter().isLogicalClient() || !WukongWeaponCategories.isWeaponValid(container.getExecuter()) || !container.getExecuter().isBattleMode() || !container.getExecuter().getOriginal().isOnGround()) {
+        if (!WukongWeaponCategories.isWeaponValid(container.getExecuter()) || !container.getExecuter().isBattleMode() || !container.getExecuter().getOriginal().isOnGround()) {
             return;
         }
 
-        if (WukongKeyMappings.STAFF_FLOWER.isDown() && container.getExecuter().hasStamina(Config.STAFF_FLOWER_STAMINA_CONSUME.get().floatValue()) && !container.getExecuter().getEntityState().knockDown()) {
-            if (!container.getDataManager().getDataValue(PLAYING_STAFF_SPIN) && Minecraft.getInstance().player != null) {
-                PacketRelay.sendToServer(PacketHandler.INSTANCE, new PlayStaffFlowerPacket(WukongKeyMappings.W.isDown()));//按w可变双手棍花
-                container.getDataManager().setDataSync(PLAYING_STAFF_SPIN, true, ((LocalPlayer) container.getExecuter().getOriginal()));
+        if(container.getExecuter().isLogicalClient()){
+            if(container.getDataManager().getDataValue(STAFF_SPIN_KEY_PRESSED) != WukongKeyMappings.STAFF_FLOWER.isDown()){
+                container.getDataManager().setDataSync(STAFF_SPIN_KEY_PRESSED, WukongKeyMappings.STAFF_FLOWER.isDown(), ((LocalPlayer) container.getExecuter().getOriginal()));
+            }
+            if(container.getDataManager().getDataValue(W_PRESSED) != WukongKeyMappings.W.isDown()) {
+                container.getDataManager().setDataSync(W_PRESSED, WukongKeyMappings.W.isDown(), ((LocalPlayer) container.getExecuter().getOriginal()));
+            }
+        } else {
+            if(container.getDataManager().getDataValue(STAFF_SPIN_KEY_PRESSED) && container.getExecuter().hasStamina(Config.STAFF_FLOWER_STAMINA_CONSUME.get().floatValue()) && !container.getExecuter().getEntityState().inaction()){
+                boolean twoHand = container.getDataManager().getDataValue(W_PRESSED);
+                container.getExecuter().playAnimationSynchronized(twoHand ? WukongAnimations.STAFF_SPIN_TWO_HAND_LOOP : WukongAnimations.STAFF_SPIN_ONE_HAND_LOOP, 0.15F);
+                container.getExecuter().consumeStamina(container.getExecuter().getOriginal().isCreative() ? 0 : Config.STAFF_FLOWER_STAMINA_CONSUME.get().floatValue());
             }
         }
-        //现在加入动态贴图计时
-        container.getDataManager().setDataSync(TICK, container.getDataManager().getDataValue(TICK) + 1, ((LocalPlayer) container.getExecuter().getOriginal()));
-        if (container.getDataManager().getDataValue(TICK) >= 4) {
-            container.getDataManager().setDataSync(TICK, 0, ((LocalPlayer) container.getExecuter().getOriginal()));
-        }
+
     }
 }

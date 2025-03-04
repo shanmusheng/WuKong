@@ -766,6 +766,11 @@ public class WukongAnimations {
                         CameraAnim.zoomIn(new Vec3f(-1.0F, 0.0F, 1.25F), 20);
                     }
                 }), AnimationEvent.Side.CLIENT))
+                .addEvents(AnimationProperty.StaticAnimationProperty.ON_END_EVENTS, AnimationEvent.create(((livingEntityPatch, staticAnimation, objects) -> {
+                    if (livingEntityPatch instanceof LocalPlayerPatch localPlayerPatch && !localPlayerPatch.isTargetLockedOn()) {
+                        CameraAnim.zoomOut(20);
+                    }
+                }), AnimationEvent.Side.CLIENT))
                 .addEvents(getScaleEvents(
                         ScaleTime.of(0.0F, 1, 1.2F, 1, 0F, 1.3F, 0F),
                         ScaleTime.of(1.32F, 1, 1.2F, 1, 0F, 1.3F, 0F)
@@ -778,6 +783,8 @@ public class WukongAnimations {
                 .addProperty(AnimationProperty.ActionAnimationProperty.CANCELABLE_MOVE, false)
                 .addProperty(AnimationProperty.ActionAnimationProperty.STOP_MOVEMENT, true)
                 .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.7F))
+                .newTimePair(0.0F, Float.MAX_VALUE)
+                .addStateRemoveOld(EntityState.TURNING_LOCKED, false)
                 .addEvents(AnimationProperty.StaticAnimationProperty.ON_END_EVENTS, AnimationEvent.create(((livingEntityPatch, staticAnimation, objects) -> livingEntityPatch.reserveAnimation(THRUST_JUESICK_LOOP)), AnimationEvent.Side.SERVER));
 
         THRUST_JUESICK_END = new WukongScaleStaffAttackAnimation(0F, 0F, 0F, 0.9f, null, biped.toolR, "biped/thrust/thrust_juesick_end", biped)
@@ -785,6 +792,7 @@ public class WukongAnimations {
                 .addProperty(AnimationProperty.ActionAnimationProperty.CANCELABLE_MOVE, false)
                 .newTimePair(0.0F, Float.MAX_VALUE)
                 .addStateRemoveOld(EntityState.CAN_SKILL_EXECUTION, true)
+                .addStateRemoveOld(EntityState.TURNING_LOCKED, false)
                 .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.8F));
         //戳end
         //定

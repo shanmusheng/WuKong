@@ -5,7 +5,6 @@ import com.p1nero.wukong.network.packet.BasePacket;
 import com.p1nero.wukong.network.packet.client.AddEntityAfterImageParticle;
 import com.p1nero.wukong.network.packet.client.AddEntityAfterImageWithTextureParticle;
 import com.p1nero.wukong.network.packet.client.ClientSyncPlayerCapabilityPacket;
-import com.p1nero.wukong.network.packet.server.PlayStaffFlowerPacket;
 import com.p1nero.wukong.network.packet.server.ServerSyncPlayerCapabilityPacket;
 import com.p1nero.wukong.network.packet.server.UpdateWeaponInnatePacket;
 import net.minecraft.network.FriendlyByteBuf;
@@ -27,7 +26,6 @@ public class PacketHandler {
     public static synchronized void register() {
 
         //Client
-        register(PlayStaffFlowerPacket.class, PlayStaffFlowerPacket::decode);
         register(ServerSyncPlayerCapabilityPacket.class, ServerSyncPlayerCapabilityPacket::decode);
 
         //Server

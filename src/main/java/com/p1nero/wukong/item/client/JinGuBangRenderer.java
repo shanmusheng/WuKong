@@ -24,6 +24,7 @@ public class JinGuBangRenderer extends GeoItemRenderer<JinGuBang> {
 
     public JinGuBangRenderer() {
         super(new AnimatedGeoModel<>() {
+            private int tickCount = 0;
             private final ResourceLocation[] textures = {
                     new ResourceLocation(WukongMoveset.MOD_ID, "textures/item/jingubang/jingubang1.png"),
                     new ResourceLocation(WukongMoveset.MOD_ID, "textures/item/jingubang/jingubang2.png"),
@@ -39,14 +40,11 @@ public class JinGuBangRenderer extends GeoItemRenderer<JinGuBang> {
             @Override
             public ResourceLocation getTextureLocation(JinGuBang jinGuBang) {
                 final Minecraft mc = Minecraft.getInstance();
-                int currentFrame;
-                LocalPlayerPatch lpp = EpicFightCapabilities.getEntityPatch(mc.player, LocalPlayerPatch.class);
-                if (lpp != null && (lpp.getSkill(WukongSkills.STAFF_SPIN) != null && lpp.getSkill(WukongSkills.STAFF_SPIN).getDataManager().getDataValue(StaffPassive.TICK) != null)) {
-                    currentFrame = lpp.getSkill(WukongSkills.STAFF_SPIN).getDataManager().getDataValue(StaffPassive.TICK);
-                } else {
-                    currentFrame = 0;
+                if(mc.player == null){
+                    return textures[0];
                 }
-                return textures[currentFrame];
+                tickCount = (tickCount + 1) % 4;
+                return textures[tickCount];
 
             }
 
