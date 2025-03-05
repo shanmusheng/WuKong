@@ -47,6 +47,10 @@ public class CameraAnim {
         AIMING_CORRECTION = aimingCorrection;
     }
 
+    public static void zoomOut(){
+        aiming = false;
+    }
+
     public static void zoomOut(int timer) {
         aiming = false;
         zoomOutTimer = timer;

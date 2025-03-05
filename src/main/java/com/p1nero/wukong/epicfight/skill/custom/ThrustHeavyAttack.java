@@ -382,17 +382,7 @@ public class ThrustHeavyAttack extends HeavyAttack {
     public void updateContainer(SkillContainer container) {
         super.updateContainer(container);
         SkillDataManager dataManager = container.getDataManager();
-        if (container.getExecuter().isLogicalClient()) {
-            LocalPlayerPatch localPlayerPatch = (LocalPlayerPatch) container.getExecuter();
-            LocalPlayer localPlayer = localPlayerPatch.getOriginal();
-            //用于搅棍判断
-            if (!WukongKeyMappings.JIAO_ZHEN.getKey().equals(WukongKeyMappings.JIAO_ZHEN.getDefaultKey())) {
-                boolean isDown = WukongKeyMappings.JIAO_ZHEN.isDownWithoutConflictCheck();
-                if(dataManager.getDataValue(IS_ATTACK_KEY_DOWN) != isDown){
-                    dataManager.setDataSync(IS_ATTACK_KEY_DOWN, WukongKeyMappings.JIAO_ZHEN.isDownWithoutConflictCheck(), localPlayer);
-                }
-            }
-        } else {
+        if (!container.getExecuter().isLogicalClient()){
             ServerPlayerPatch serverPlayerPatch = ((ServerPlayerPatch) container.getExecuter());
             ServerPlayer serverPlayer = serverPlayerPatch.getOriginal();
 

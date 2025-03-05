@@ -91,18 +91,16 @@ public class HandleClientInput {
             }
 
             //搅阵判断
-            if (WukongKeyMappings.JIAO_ZHEN.getKey().equals(WukongKeyMappings.JIAO_ZHEN.getDefaultKey())) {
-                if (event.getButton() == 0) {
-                    LocalPlayer player = Minecraft.getInstance().player;
-                    LocalPlayerPatch patch = EpicFightCapabilities.getEntityPatch(player, LocalPlayerPatch.class);
-                    if (player.isAlive() && patch != null && patch.getSkill(SkillSlots.WEAPON_INNATE) != null) {
-                        SkillDataManager manager = patch.getSkill(SkillSlots.WEAPON_INNATE).getDataManager();
-                        if (manager.hasData(ThrustHeavyAttack.IS_ATTACK_KEY_DOWN)) {
-                            if (event.getAction() == 1) {
-                                manager.setDataSync(ThrustHeavyAttack.IS_ATTACK_KEY_DOWN, true, player);
-                            } else if (event.getAction() == 0) {
-                                manager.setDataSync(ThrustHeavyAttack.IS_ATTACK_KEY_DOWN, false, player);
-                            }
+            if (event.getButton() == WukongKeyMappings.JIAO_ZHEN.getKey().getValue()) {
+                LocalPlayer player = Minecraft.getInstance().player;
+                LocalPlayerPatch patch = EpicFightCapabilities.getEntityPatch(player, LocalPlayerPatch.class);
+                if (player.isAlive() && patch != null && patch.getSkill(SkillSlots.WEAPON_INNATE) != null) {
+                    SkillDataManager manager = patch.getSkill(SkillSlots.WEAPON_INNATE).getDataManager();
+                    if (manager.hasData(ThrustHeavyAttack.IS_ATTACK_KEY_DOWN)) {
+                        if (event.getAction() == 1) {
+                            manager.setDataSync(ThrustHeavyAttack.IS_ATTACK_KEY_DOWN, true, player);
+                        } else if (event.getAction() == 0) {
+                            manager.setDataSync(ThrustHeavyAttack.IS_ATTACK_KEY_DOWN, false, player);
                         }
                     }
                 }

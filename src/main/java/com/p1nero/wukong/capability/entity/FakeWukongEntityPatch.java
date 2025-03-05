@@ -17,6 +17,7 @@ import yesman.epicfight.api.animation.types.StaticAnimation;
 import yesman.epicfight.api.client.animation.ClientAnimator;
 import yesman.epicfight.api.utils.AttackResult;
 import yesman.epicfight.gameasset.Animations;
+import yesman.epicfight.skill.SkillContainer;
 import yesman.epicfight.skill.SkillSlots;
 import yesman.epicfight.world.capabilities.EpicFightCapabilities;
 import yesman.epicfight.world.capabilities.entitypatch.Faction;
@@ -24,7 +25,6 @@ import yesman.epicfight.world.capabilities.entitypatch.HumanoidMobPatch;
 import yesman.epicfight.world.capabilities.entitypatch.player.PlayerPatch;
 import yesman.epicfight.world.capabilities.entitypatch.player.ServerPlayerPatch;
 import yesman.epicfight.world.damagesource.EpicFightDamageSource;
-import yesman.epicfight.world.damagesource.SourceTags;
 import yesman.epicfight.world.entity.ai.goal.CombatBehaviors;
 
 public class FakeWukongEntityPatch extends HumanoidMobPatch<FakeWukongEntity> {
@@ -66,7 +66,9 @@ public class FakeWukongEntityPatch extends HumanoidMobPatch<FakeWukongEntity> {
         if(result.resultType.dealtDamage()){
             ServerPlayerPatch serverPlayerPatch = EpicFightCapabilities.getEntityPatch(this.getOriginal().getOwner(), ServerPlayerPatch.class);
             if(serverPlayerPatch != null){
-                serverPlayerPatch.getSkill(SkillSlots.WEAPON_INNATE).getSkill().setConsumptionSynchronize(serverPlayerPatch, result.damage * Config.FAKE_ENTITY_DAMAGE_RATE.get().floatValue());
+                SkillContainer container = serverPlayerPatch.getSkill(SkillSlots.WEAPON_INNATE);
+                float value = container.getResource() + result.damage * Config.FAKE_ENTITY_DAMAGE_RATE.get().floatValue();
+                container.getSkill().setConsumptionSynchronize(serverPlayerPatch, value);
             }
         }
         return result;

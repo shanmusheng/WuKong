@@ -43,19 +43,4 @@ public abstract class ServerPlayerPatchMixin extends PlayerPatch<ServerPlayer> {
         }
     }
 
-    @Inject(method = "gatherDamageDealt", at = @At("HEAD"), cancellable = true)
-    private void wukong$gatherDamageDealt(EpicFightDamageSource source, float amount, CallbackInfo ci){
-        if(source.hasTag(WukongDamageSourceTags.FAKE_WUKONG)){
-            SkillContainer container = this.getSkill(SkillSlots.WEAPON_INNATE);
-            ItemStack mainHandItem = this.getOriginal().getMainHandItem();
-            if (!container.isFull() && !container.isActivated() && container.hasSkill(EpicFightCapabilities.getItemStackCapability(mainHandItem).getInnateSkill(this, mainHandItem))) {
-                float value = container.getResource() + amount * Config.FAKE_ENTITY_DAMAGE_RATE.get().floatValue();
-                if (value > 0.0F) {
-                    this.getSkill(SkillSlots.WEAPON_INNATE).getSkill().setConsumptionSynchronize((ServerPlayerPatch) (Object)this, value);
-                }
-            }
-            ci.cancel();
-        }
-    }
-
 }

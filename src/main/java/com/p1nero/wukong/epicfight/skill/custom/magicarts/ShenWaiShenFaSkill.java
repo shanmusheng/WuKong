@@ -73,13 +73,6 @@ public class ShenWaiShenFaSkill extends Skill {
                 hurtEvent.setCanceled(true);
             }
         }),10);
-        container.getExecuter().getEventListener().addEventListener(PlayerEventListener.EventType.DEALT_DAMAGE_EVENT_PRE, EVENT_UUID, (damageEvent -> {
-            if(damageEvent.getDamageSource().hasTag(WukongDamageSourceTags.FAKE_WUKONG)){
-                System.out.println("original damage " + damageEvent.getAttackDamage());
-                damageEvent.setAttackDamage(damageEvent.getAttackDamage() * Config.FAKE_ENTITY_DAMAGE_RATE.get().floatValue());
-                System.out.println("reset damage " + damageEvent.getAttackDamage());
-            }
-        }));
         container.getExecuter().getEventListener().addEventListener(PlayerEventListener.EventType.ACTION_EVENT_SERVER, EVENT_UUID, (actionEvent -> {
             StaticAnimation animation = actionEvent.getAnimation();
             ServerPlayerPatch executor = actionEvent.getPlayerPatch();
@@ -91,7 +84,8 @@ public class ShenWaiShenFaSkill extends Skill {
                             if(executor.getOriginal().getLevel().getEntity(id) instanceof FakeWukongEntity fakeWukongEntity){
                                 if(executor.getTarget() != null && fakeWukongEntity.distanceTo(executor.getTarget()) < 4){
                                     fakeWukongEntity.getLookControl().setLookAt(executor.getTarget());
-                                    EpicFightCapabilities.getEntityPatch(fakeWukongEntity, FakeWukongEntityPatch.class).playAnimationSynchronized(animation, 0.15F);
+                                    FakeWukongEntityPatch fakeWukongEntityPatch = EpicFightCapabilities.getEntityPatch(fakeWukongEntity, FakeWukongEntityPatch.class);
+                                    fakeWukongEntityPatch.playAnimationSynchronized(animation, 0.15F);
                                 }
                             }
                         }
@@ -120,6 +114,7 @@ public class ShenWaiShenFaSkill extends Skill {
     @Override
     public void onRemoved(SkillContainer container) {
         super.onRemoved(container);
+        container.getExecuter().getOriginal().getCapability(WKCapabilityProvider.WK_PLAYER).ifPresent(wkPlayer -> wkPlayer.getFakeWukongIds().clear());
         container.getExecuter().getEventListener().removeListener(PlayerEventListener.EventType.ACTION_EVENT_SERVER, EVENT_UUID);
         container.getExecuter().getEventListener().removeListener(PlayerEventListener.EventType.HURT_EVENT_PRE, EVENT_UUID);
         container.getExecuter().getEventListener().removeListener(PlayerEventListener.EventType.DEALT_DAMAGE_EVENT_PRE, EVENT_UUID);
@@ -133,6 +128,7 @@ public class ShenWaiShenFaSkill extends Skill {
     @Override
     public void executeOnServer(ServerPlayerPatch executor, FriendlyByteBuf args) {
         super.executeOnServer(executor, args);
+        executor.getOriginal().getCapability(WKCapabilityProvider.WK_PLAYER).ifPresent(wkPlayer -> wkPlayer.getFakeWukongIds().clear());
         executor.playAnimationSynchronized(WukongAnimations.SHEN_WAI_SHEN_FA, 0.0F);
         executor.playSound(WuKongSounds.FEN_SHEN.get(), 0.5F, 0.0F, 0.0F);
         executor.getSkill(this).getDataManager().setDataSync(COOLDOWN_TIMER, MAX_COOLDOWN, executor.getOriginal());

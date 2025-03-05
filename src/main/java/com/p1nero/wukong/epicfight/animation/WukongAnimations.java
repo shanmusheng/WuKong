@@ -695,6 +695,8 @@ public class WukongAnimations {
                 .addStateRemoveOld(EntityState.CAN_SKILL_EXECUTION, true)
                 .newTimePair(0.0F, 0.7F)
                 .addStateRemoveOld(EntityState.CAN_SKILL_EXECUTION, false)
+                .newTimePair(0.0F, Float.MAX_VALUE)
+                .addStateRemoveOld(EntityState.TURNING_LOCKED, false)
                 .addEvents(AnimationEvent.TimeStampedEvent.create(0.6F, ((livingEntityPatch, staticAnimation, objects) -> {
                     if (livingEntityPatch instanceof ServerPlayerPatch serverPlayerPatch) {
                         serverPlayerPatch.getSkill(SkillSlots.WEAPON_INNATE).getDataManager().setDataSync(ThrustHeavyAttack.REPEATING_DERIVE_TIMER, ThrustHeavyAttack.MAX_DERIVE_TIMER, serverPlayerPatch.getOriginal());
@@ -749,6 +751,8 @@ public class WukongAnimations {
                 .addProperty(AnimationProperty.ActionAnimationProperty.CANCELABLE_MOVE, false)
                 .addProperty(AnimationProperty.ActionAnimationProperty.STOP_MOVEMENT, true)
                 .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.8F))
+                .newTimePair(0.0F, Float.MAX_VALUE)
+                .addStateRemoveOld(EntityState.TURNING_LOCKED, false)
                 .addEvents(AnimationProperty.StaticAnimationProperty.ON_END_EVENTS, AnimationEvent.create(((livingEntityPatch, staticAnimation, objects) -> {
                     if (livingEntityPatch instanceof ServerPlayerPatch serverPlayerPatch) {
                         SkillDataManager manager = serverPlayerPatch.getSkill(SkillSlots.WEAPON_INNATE).getDataManager();
@@ -758,17 +762,12 @@ public class WukongAnimations {
                     }
                 }), AnimationEvent.Side.SERVER), AnimationEvent.create(((livingEntityPatch, staticAnimation, objects) -> {
                     if (livingEntityPatch.isLogicalClient()) {
-                        CameraAnim.zoomOut(20);
+                        CameraAnim.zoomOut();
                     }
                 }), AnimationEvent.Side.CLIENT))
                 .addEvents(AnimationProperty.StaticAnimationProperty.ON_BEGIN_EVENTS, AnimationEvent.create(((livingEntityPatch, staticAnimation, objects) -> {
                     if (livingEntityPatch instanceof LocalPlayerPatch localPlayerPatch && !localPlayerPatch.isTargetLockedOn()) {
                         CameraAnim.zoomIn(new Vec3f(-1.0F, 0.0F, 1.25F), 20);
-                    }
-                }), AnimationEvent.Side.CLIENT))
-                .addEvents(AnimationProperty.StaticAnimationProperty.ON_END_EVENTS, AnimationEvent.create(((livingEntityPatch, staticAnimation, objects) -> {
-                    if (livingEntityPatch instanceof LocalPlayerPatch localPlayerPatch && !localPlayerPatch.isTargetLockedOn()) {
-                        CameraAnim.zoomOut(20);
                     }
                 }), AnimationEvent.Side.CLIENT))
                 .addEvents(getScaleEvents(
@@ -807,24 +806,17 @@ public class WukongAnimations {
                             if (attackTarget != null) {
                                 LivingEntityPatch<?> ep = EpicFightCapabilities.getEntityPatch(attackTarget, LivingEntityPatch.class);
                                 if (ep != null) {
+                                    //躲定身
                                     if ((ep.getAnimator().getPlayerFor(null).getAnimation() instanceof DodgeAnimation | ep.getAnimator().getPlayerFor(null).getAnimation() instanceof LongHitAnimation)) {
                                         ep.playSound(EpicFightSounds.ROLL,1.0f,0.8f,1.2f);
+                                        return;
                                     }
-                                    //躲定身
-                                    else {
-                                        if (attackTarget.getLevel() instanceof ServerLevel serverLevel) {
-                                            serverLevel.sendParticles(WuKongParticles.DING.get(), attackTarget.getX(), attackTarget.getEyeY() + 1, attackTarget.getZ(), 1, 0, 0, 0, 0);
-                                        }
-                                        attackTarget.addEffect(new MobEffectInstance(WuKongEffects.DING.get(), 120, 0));
-                                        attackTarget.addEffect(new MobEffectInstance(MobEffects.GLOWING, 120, 0));
-                                    }
-                                } else {
-                                    if (attackTarget.getLevel() instanceof ServerLevel serverLevel) {
-                                        serverLevel.sendParticles(WuKongParticles.DING.get(), attackTarget.getX(), attackTarget.getEyeY() + 1, attackTarget.getZ(), 1, 0, 0, 0, 0);
-                                    }
-                                    attackTarget.addEffect(new MobEffectInstance(WuKongEffects.DING.get(), 120, 0));
-                                    attackTarget.addEffect(new MobEffectInstance(MobEffects.GLOWING, 120, 0));
                                 }
+                                if (attackTarget.getLevel() instanceof ServerLevel serverLevel) {
+                                    serverLevel.sendParticles(WuKongParticles.DING.get(), attackTarget.getX(), attackTarget.getEyeY() + 1, attackTarget.getZ(), 1, 0, 0, 0, 0);
+                                }
+                                attackTarget.addEffect(new MobEffectInstance(WuKongEffects.DING.get(), 120, 0));
+                                attackTarget.addEffect(new MobEffectInstance(MobEffects.GLOWING, 120, 0));
                             }
                         }, AnimationEvent.TimeStampedEvent.Side.SERVER)
                 });
