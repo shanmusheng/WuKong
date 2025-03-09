@@ -9,6 +9,7 @@
     "ItemRendererMixin",
     "PatchedLivingEntityRendererMixin",
     "RenderEngineMixin",
+    "TrailParticleMixin",
     "ding_shen_fa.MixinKeyboardHandler",
     "ding_shen_fa.MixinKeyMapping",
     "ding_shen_fa.MixinMouseHandler"
@@ -16,12 +17,12 @@
   "mixins": [
     "BasicAttackMixin",
     "EntityStateMixin",
+    "LocalPlayerPatchMixin",
     "OpenMatrix4fMixin",
     "ServerPlayerPatchMixin",
     "ding_shen_fa.ActionAnimationMixin",
     "ding_shen_fa.AnimationPlayerMixin",
     "ding_shen_fa.LivingEntityMixin",
-    "LocalPlayerPatchMixin",
     "ding_shen_fa.MixinMob",
     "ding_shen_fa.PlayerMixin"
   ],
