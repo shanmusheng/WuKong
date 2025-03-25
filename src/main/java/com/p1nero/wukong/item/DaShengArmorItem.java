@@ -81,6 +81,11 @@ public class DaShengArmorItem extends GeoArmorItem implements IAnimatable {
     }
 
     @Override
+    public boolean isDamageable(ItemStack stack) {
+        return false;
+    }
+
+    @Override
     public void appendHoverText(@NotNull ItemStack p_41421_, @Nullable Level p_41422_, @NotNull List<Component> list, @NotNull TooltipFlag p_41424_) {
         list.add(new TextComponent("好！好！好！").withStyle(ChatFormatting.BOLD, ChatFormatting.GOLD));
         list.add(new TextComponent("全套穿着获得筋斗云（创造飞行）"));

@@ -12,7 +12,7 @@ import java.util.function.Supplier;
 import net.minecraft.util.LazyLoadedValue;
 
 public enum WukongArmorMaterials implements ArmorMaterial {
-    DA_SHENG("da_sheng", 237, new int[]{6, 10, 10, 5}, 15, SoundEvents.ARMOR_EQUIP_NETHERITE, 3.0F, 0.1F, () -> Ingredient.of(Items.NETHERITE_INGOT));
+    DA_SHENG("da_sheng", 237, new int[]{6, 10, 10, 5}, 15, SoundEvents.ARMOR_EQUIP_NETHERITE, 5.0F, 0.4F, () -> Ingredient.of(Items.NETHERITE_INGOT));
 
     private static final int[] HEALTH_PER_SLOT = new int[]{13, 15, 16, 11};
     private final String name;
