@@ -88,7 +88,7 @@ public class DaShengArmorItem extends GeoArmorItem implements IAnimatable {
     @Override
     public void appendHoverText(@NotNull ItemStack p_41421_, @Nullable Level p_41422_, @NotNull List<Component> list, @NotNull TooltipFlag p_41424_) {
         list.add(new TextComponent("好！好！好！").withStyle(ChatFormatting.BOLD, ChatFormatting.GOLD));
-        list.add(new TextComponent("全套穿着获得筋斗云（创造飞行）"));
+        list.add(new TextComponent("全套（包括如意金箍棒）穿着获得筋斗云（创造飞行）"));
         list.add(new TextComponent("【凝星制作组】赞助").withStyle(ChatFormatting.GREEN));
         super.appendHoverText(p_41421_, p_41422_, list, p_41424_);
     }
