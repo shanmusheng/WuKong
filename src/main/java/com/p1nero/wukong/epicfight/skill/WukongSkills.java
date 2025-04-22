@@ -16,6 +16,7 @@ import yesman.epicfight.skill.dodge.StepSkill;
 import yesman.epicfight.skill.weaponinnate.WeaponInnateSkill;
 
 public class WukongSkills {
+    public static Skill SMASH_STYLE_SHAN_MU;//这里是我自己注册的技能
     public static Skill SMASH_STYLE;
     public static Skill THRUST_STYLE;
     public static Skill PILLAR_STYLE;
