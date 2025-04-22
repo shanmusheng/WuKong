@@ -116,6 +116,7 @@ public class StaffPassive extends Skill {
                     (canBeBlocked(event.getDamageSource().getDirectEntity()) || event.getDamageSource().isProjectile())) {
                 // 判断是否可以格挡
                 if (!isBlocked(event.getDamageSource(), event.getPlayerPatch().getOriginal())) {
+                    // 不可以格挡
                     return;
                 }
                 event.setCanceled(true); // 取消攻击事件，表示格挡成功
@@ -201,7 +202,9 @@ public class StaffPassive extends Skill {
         });
     }
 
-    // 判断目标实体是否可以被格挡
+/**
+ *  判断目标实体是否可以被格挡
+ */
     public static boolean canBeBlocked(Entity entity) {
         if (entity == null) {
             return false;
@@ -214,9 +217,8 @@ public class StaffPassive extends Skill {
         }
         return Config.entitiesCanBeBlocked.contains(entity.getType());
     }
-
     /**
-     * 判断是否为正面攻击，并且是否可以被格挡
+     *  判断是否为正面攻击，并且是否可以被格挡 isBlocked:格挡判断
      */
     private boolean isBlocked(DamageSource damageSource, ServerPlayer player) {
         Vec3 sourceLocation = damageSource.getSourcePosition();
