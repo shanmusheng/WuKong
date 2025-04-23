@@ -163,6 +163,17 @@ public class SmashHeavyAttack extends HeavyAttack {
             executer.playAnimationSynchronized(jumpAttackHeavy, 0.15F);  // 播放跳跃重击动画
             resetConsumption(container, executer, false);  // 重置技能消耗
         } else if (player.isOnGround()) {
+            //铜头铁壁成功后的判断，可以马上放蓄力，算彩蛋但是清了棍势
+            SkillContainer tongTouTieBi = executer.getSkill(WukongSkills.TONG_TOU_TIE_BI);
+            if (tongTouTieBi != null) {
+                SkillDataManager tDataManager = tongTouTieBi.getDataManager();
+                if (tDataManager.hasData(TTTBSkill.TTTB_TIMER) && tDataManager.getDataValue(TTTBSkill.TTTB_TIMER) > 0 && container.getStack() > 0) {
+                    executer.playAnimationSynchronized(animations[container.getStack()], 0.0F);
+                    resetConsumption(container, executer, true);
+                    super.executeOnServer(executer, args);
+                    return;
+                }
+            }
             // 处理长按期间的衍生攻击判断
             if (dataManager.getDataValue(DERIVE_TIMER) > 0) {
                 if (dataManager.getDataValue(CAN_FIRST_DERIVE)) {
@@ -185,6 +196,7 @@ public class SmashHeavyAttack extends HeavyAttack {
                 }
             }
         }
+
         super.executeOnServer(executer, args);
     }
 
@@ -210,6 +222,110 @@ public class SmashHeavyAttack extends HeavyAttack {
                 input.jumping = false;  // 禁止跳跃
             }
         }));
+        //成功识破加棍势，并重置普攻计数器，下次从三段普攻开始
+        container.getExecuter().getEventListener().addEventListener(PlayerEventListener.EventType.HURT_EVENT_PRE, EVENT_UUID, (event -> {
+
+            if (container.getDataManager().getDataValue(IS_IN_SPECIAL_ATTACK)) {
+                //需加判断，否则此期间会猛涨
+                if (!container.getDataManager().getDataValue(IS_SPECIAL_ATTACK_SUCCESS)) {
+                    container.getSkill().setConsumptionSynchronize(event.getPlayerPatch(), container.getResource() + Config.CHARGING_SPEED.get().floatValue() * 20);//获得大量棍势
+                    container.getDataManager().setDataSync(IS_SPECIAL_ATTACK_SUCCESS, true, event.getPlayerPatch().getOriginal());
+                }
+            }
+
+            if (container.getDataManager().getDataValue(IS_SPECIAL_ATTACK_SUCCESS)) {
+                BasicAttack.setComboCounterWithEvent(ComboCounterHandleEvent.Causal.ACTION_ANIMATION_RESET, event.getPlayerPatch(), event.getPlayerPatch().getSkill(SkillSlots.BASIC_ATTACK), deriveAnimation1, 2);
+                event.setAmount(0);
+                event.setResult(AttackResult.ResultType.MISSED);
+                event.setCanceled(true);
+            }
+
+        }));
+
+        //普攻后立即右键可以衍生
+        container.getExecuter().getEventListener().addEventListener(
+                PlayerEventListener.EventType.ACTION_EVENT_SERVER, EVENT_UUID, (event -> {
+                    ServerPlayer player = event.getPlayerPatch().getOriginal();
+                    CapabilityItem capabilityItem = EpicFightCapabilities.getItemStackCapability(player.getMainHandItem());
+                    if (!WukongWeaponCategories.isWeaponValid(event.getPlayerPatch())) {
+                        return;
+                    }
+
+                    List<StaticAnimation> autoAnimations = capabilityItem.getAutoAttckMotion(event.getPlayerPatch());
+                    //autoAnimations 的倒一倒二是冲刺和跳跃攻击，倒三是第五段普攻
+                    boolean isLightAttack = autoAnimations.contains(event.getAnimation()) && !event.getAnimation().equals(autoAnimations.get(autoAnimations.size() - 1)) && !event.getAnimation().equals(autoAnimations.get(autoAnimations.size() - 2));
+                    boolean isLastLightAttack = autoAnimations.get(autoAnimations.size() - 3).equals(event.getAnimation());
+
+                    //蓄力的时候做动作是非法的，应该清空棍势，悟空Dodge额外判断
+                    if (container.getDataManager().getDataValue(IS_CHARGING) && !event.getAnimation().equals(chargePre) && !(event.getAnimation() instanceof WukongDodgeAnimation)) {
+                        this.setConsumptionSynchronize(event.getPlayerPatch(), 1);
+                        this.setStackSynchronize(event.getPlayerPatch(), 0);
+                        container.getDataManager().setDataSync(IS_CHARGING, false, player);
+                    }
+
+                    //释放普攻后重置可衍生时间
+                    if (isLastLightAttack) {
+                        container.getDataManager().setDataSync(CAN_FIRST_DERIVE, false, player);
+                        container.getDataManager().setDataSync(DERIVE_TIMER, 0, player);
+                    } else if (isLightAttack || event.getAnimation().equals(WukongAnimations.STAFF_AUTO1_DASH)) {
+                        container.getDataManager().setDataSync(CAN_FIRST_DERIVE, true, player);
+                        container.getDataManager().setDataSync(DERIVE_TIMER, MAX_DERIVE_TIMER, player);
+                    }
+
+                }));
+
+        //刷新四蓄计时器，识破打中则可接二段
+        container.getExecuter().getEventListener().addEventListener(
+                PlayerEventListener.EventType.DEALT_DAMAGE_EVENT_POST, EVENT_UUID, (event -> {
+                    ServerPlayer player = event.getPlayerPatch().getOriginal();
+                    if (event.getDamageSource().getAnimation().equals(deriveAnimation1)) {
+                        container.getDataManager().setDataSync(CAN_SECOND_DERIVE, true, player);
+                        container.getDataManager().setDataSync(DERIVE_TIMER, MAX_DERIVE_TIMER, player);
+                    }
+                }));
+
+        container.getExecuter().getEventListener().addEventListener(
+                PlayerEventListener.EventType.DEALT_DAMAGE_EVENT_PRE, EVENT_UUID, (event -> {
+                    //成功识破则无视防御并造成强硬直
+                    if (container.getDataManager().getDataValue(IS_SPECIAL_ATTACK_SUCCESS)) {
+                        event.getDamageSource().addTag(SourceTags.GUARD_PUNCTURE);
+                        event.getDamageSource().setStunType(StunType.HOLD);
+                    }
+
+                    //聚形散气加伤（没有暴击率...）
+                    if (manager.hasData(CloudStepSkill.CHARGING_TIMER)) {
+                        int chargingTime = manager.getDataValue(CloudStepSkill.CHARGING_TIMER);
+                        if (List.of(animations).contains(event.getDamageSource().getAnimation())) {
+                            double damageBoost = 1 + (0.2 * (CloudStepSkill.MAX_TIME - chargingTime) / CloudStepSkill.MAX_TIME);
+                            event.setAttackDamage((float) (damageBoost * event.getAttackDamage()));
+                        }
+                    }
+
+                    //根据星数改跳跃重击和破、斩棍式伤害
+                    int starCnt = container.getDataManager().getDataValue(STARS_CONSUMED);
+                    if (event.getDamageSource().getAnimation().equals(jumpAttackHeavy)) {
+                        float mul = switch (starCnt) {
+                            case 1 -> 3;
+                            case 2 -> 4.5F;
+                            case 3 -> 6.2F;
+                            case 4 -> 8.75F;
+                            default -> 1.45F;
+                        };
+                        event.getDamageSource().setDamageModifier(ValueModifier.multiplier(mul));
+                    } else if (event.getDamageSource().getAnimation().equals(deriveAnimation1)) {
+                        float mul = starCnt == 0 ? 1.0F : 1.96F;
+                        event.getDamageSource().setDamageModifier(ValueModifier.multiplier(mul));
+                    } else if (event.getDamageSource().getAnimation().equals(deriveAnimation2)) {
+                        float mul = switch (starCnt) {
+                            case 1 -> 4.7F;
+                            case 2 -> 4.9F;
+                            case 3, 4 -> 5.1F;
+                            default -> 4.48F;
+                        };
+                        event.getDamageSource().setDamageModifier(ValueModifier.multiplier(mul));
+                    }
+                }));
+
         super.onInitiate(container);
     }
 

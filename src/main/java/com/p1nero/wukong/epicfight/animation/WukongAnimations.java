@@ -56,295 +56,380 @@ import java.util.Set;
 
 @Mod.EventBusSubscriber(modid = WukongMoveset.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class WukongAnimations {
+    // 定义静态动画字段，用于存储各种角色动作的动画对象
+    public static StaticAnimation IDLE; // 角色静止动画
+    public static StaticAnimation WALK; // 角色行走动画
+    public static StaticAnimation RUN_F; // 角色跑步动画（前进）
+    public static StaticAnimation RUN; // 角色跑步动画
+    public static StaticAnimation DASH; // 角色冲刺动画
+    public static StaticAnimation JUMP; // 角色跳跃动画
+    public static StaticAnimation FALL; // 角色下落动画
+    public static StaticAnimation JUMP_ATTACK_LIGHT; // 轻型跳跃攻击动画
+    public static StaticAnimation JUMP_ATTACK_LIGHT_HIT; // 轻型跳跃攻击命中动画
+    public static StaticAnimation JUMP_ATTACK_HEAVY; // 重型跳跃攻击动画
 
-    public static StaticAnimation IDLE;
-    public static StaticAnimation WALK;
-    public static StaticAnimation RUN_F;
-    public static StaticAnimation RUN;
-    public static StaticAnimation DASH;
-    public static StaticAnimation JUMP;
-    public static StaticAnimation FALL;
-    public static StaticAnimation JUMP_ATTACK_LIGHT;
-    public static StaticAnimation JUMP_ATTACK_LIGHT_HIT;
-    public static StaticAnimation JUMP_ATTACK_HEAVY;
-    public static StaticAnimation DODGE_F1;
-    public static StaticAnimation DODGE_F2;
-    public static StaticAnimation DODGE_F3;
-    public static StaticAnimation DODGE_FP;
-    public static StaticAnimation DODGE_B1;
-    public static StaticAnimation DODGE_B2;
-    public static StaticAnimation DODGE_B3;
-    public static StaticAnimation DODGE_BP;
-    public static StaticAnimation DODGE_L1;
-    public static StaticAnimation DODGE_L2;
-    public static StaticAnimation DODGE_L3;
-    public static StaticAnimation DODGE_LP;
-    public static StaticAnimation DODGE_R1;
-    public static StaticAnimation DODGE_R2;
-    public static StaticAnimation DODGE_R3;
-    public static StaticAnimation DODGE_RP;
-    //棍花
-    public static StaticAnimation STAFF_SPIN_ONE_HAND_LOOP;
-    public static StaticAnimation STAFF_SPIN_TWO_HAND_LOOP;
+    // 闪避相关动画（不同方向的闪避动作）
+    public static StaticAnimation DODGE_F1; // 前闪避动画1
+    public static StaticAnimation DODGE_F2; // 前闪避动画2
+    public static StaticAnimation DODGE_F3; // 前闪避动画3
+    public static StaticAnimation DODGE_FP; // 前闪避动画（特殊）
 
-    //轻击 1~5
-    public static StaticAnimation STAFF_AUTO1_DASH;
-    public static StaticAnimation STAFF_AUTO1;
-    public static StaticAnimation STAFF_AUTO2;
-    public static StaticAnimation STAFF_AUTO3;
-    public static StaticAnimation STAFF_AUTO4;
-    public static StaticAnimation STAFF_AUTO5;
+    public static StaticAnimation DODGE_B1; // 后闪避动画1
+    public static StaticAnimation DODGE_B2; // 后闪避动画2
+    public static StaticAnimation DODGE_B3; // 后闪避动画3
+    public static StaticAnimation DODGE_BP; // 后闪避动画（特殊）
 
-    //劈棍
-    //衍生 1 2
-    public static StaticAnimation SMASH_SPECIAL1;
-    public static StaticAnimation SMASH_SPECIAL2;
-    public static StaticAnimation SMASH_CHARGING_PRE;
-    public static StaticAnimation SMASH_CHARGING_LOOP;
-    public static StaticAnimation SMASH_CHARGING_LOOP_STAND;
-    //不同星级的重击
-    public static StaticAnimation SMASH_CHARGED0;
-    public static StaticAnimation SMASH_CHARGED1;
-    public static StaticAnimation SMASH_CHARGED2;
-    public static StaticAnimation SMASH_CHARGED3;
-    public static StaticAnimation SMASH_CHARGED4;
+    public static StaticAnimation DODGE_L1; // 左闪避动画1
+    public static StaticAnimation DODGE_L2; // 左闪避动画2
+    public static StaticAnimation DODGE_L3; // 左闪避动画3
+    public static StaticAnimation DODGE_LP; // 左闪避动画（特殊）
 
-    //戳棍
-    //不同星级的重击
-    public static StaticAnimation THRUST_PRE;
-    public static StaticAnimation THRUST_CHARGING;
-    public static StaticAnimation THRUST_CHARGED0;
-    public static StaticAnimation THRUST_CHARGED1;
-    public static StaticAnimation THRUST_CHARGED2;
-    public static StaticAnimation THRUST_CHARGED3;
-    public static StaticAnimation THRUST_CHARGED4;//四豆
-    public static StaticAnimation THRUST_JUESICK_END;//搅棍结束
-    public static StaticAnimation THRUST_JUESICK_START;//搅棍起始
-    public static StaticAnimation THRUST_JUESICK_LOOP;//搅棍循环
-    public static StaticAnimation THRUST_FOOTAGE;//进尺
-    public static StaticAnimation THRUST_RETREAT;//退寸
+    public static StaticAnimation DODGE_R1; // 右闪避动画1
+    public static StaticAnimation DODGE_R2; // 右闪避动画2
+    public static StaticAnimation DODGE_R3; // 右闪避动画3
+    public static StaticAnimation DODGE_RP; // 右闪避动画（特殊）
 
-    //定身术
-    public static StaticAnimation DING;
-    //安身法
-    public static StaticAnimation AN_SHEN_FA;
-    //聚形散气
-    public static StaticAnimation CLOUD_STEP_START;
-    public static StaticAnimation CLOUD_STEP_START_BACKWARD;
-    public static StaticAnimation CLOUD_STEP_END_STOP;
-    public static StaticAnimation CLOUD_STEP_END_FORWARD;
+    // 棍花相关动画（单手和双手旋转棍子）
+    public static StaticAnimation STAFF_SPIN_ONE_HAND_LOOP; // 单手旋转棍子动画
+    public static StaticAnimation STAFF_SPIN_TWO_HAND_LOOP; // 双手旋转棍子动画
 
-    //铜头铁臂
-    public static StaticAnimation TONG_TOU_TIE_BI;
-    public static StaticAnimation TONG_TOU_TIE_BI_END;
-    public static StaticAnimation TONG_TOU_TIE_BI_FAIL;
-    //身外身法
-    public static StaticAnimation SHEN_WAI_SHEN_FA;
+    // 轻击动作1~5（基本的攻击动作，按顺序从1到5）
+    public static StaticAnimation STAFF_AUTO1_DASH; // 轻击1：冲刺状态下的轻击动画
+    public static StaticAnimation STAFF_AUTO1; // 轻击1动画
+    public static StaticAnimation STAFF_AUTO2; // 轻击2动画
+    public static StaticAnimation STAFF_AUTO3; // 轻击3动画
+    public static StaticAnimation STAFF_AUTO4; // 轻击4动画
+    public static StaticAnimation STAFF_AUTO5; // 轻击5动画
 
+    // 劈棍相关动画
+    // SMASH_SPECIAL1 和 SMASH_SPECIAL2 是劈棍的特殊动作动画
+    public static StaticAnimation SMASH_SPECIAL1; // 劈棍特殊动作1
+    public static StaticAnimation SMASH_SPECIAL2; // 劈棍特殊动作2
+
+    // 劈棍充能动画
+    public static StaticAnimation SMASH_CHARGING_PRE; // 劈棍充能前摇动画
+    public static StaticAnimation SMASH_CHARGING_LOOP; // 劈棍充能循环动画
+    public static StaticAnimation SMASH_CHARGING_LOOP_STAND; // 劈棍充能站立动画
+
+    // 劈棍的不同星级重击动画（随着充能增加，重击的威力和效果不同）
+    public static StaticAnimation SMASH_CHARGED0; // 重击（0星）
+    public static StaticAnimation SMASH_CHARGED1; // 重击（1星）
+    public static StaticAnimation SMASH_CHARGED2; // 重击（2星）
+    public static StaticAnimation SMASH_CHARGED3; // 重击（3星）
+    public static StaticAnimation SMASH_CHARGED4; // 重击（4星）
+
+    // 戳棍相关动画
+    // THRUST_PRE：戳棍的预备动作，充能开始前的准备阶段
+    // THRUST_CHARGING：戳棍充能动画
+    // 不同星级的戳棍重击（不同充能级别的戳棍攻击）
+    public static StaticAnimation THRUST_PRE; // 戳棍预备动画
+    public static StaticAnimation THRUST_CHARGING; // 戳棍充能动画
+    public static StaticAnimation THRUST_CHARGED0; // 戳棍重击（0星）
+    public static StaticAnimation THRUST_CHARGED1; // 戳棍重击（1星）
+    public static StaticAnimation THRUST_CHARGED2; // 戳棍重击（2星）
+    public static StaticAnimation THRUST_CHARGED3; // 戳棍重击（3星）
+    public static StaticAnimation THRUST_CHARGED4; // 戳棍重击（4星）
+
+    // 戳棍相关附加动作
+    public static StaticAnimation THRUST_JUESICK_END; // 戳棍的结束动画
+    public static StaticAnimation THRUST_JUESICK_START; // 戳棍的起始动画
+    public static StaticAnimation THRUST_JUESICK_LOOP; // 戳棍的循环动画（搅棍）
+    public static StaticAnimation THRUST_FOOTAGE; // 戳棍进尺动画
+    public static StaticAnimation THRUST_RETREAT; // 戳棍退寸动画
+
+    // 定身术相关动画
+    public static StaticAnimation DING; // 定身术动画
+
+    // 安身法相关动画
+    public static StaticAnimation AN_SHEN_FA; // 安身法动画
+
+    // 聚形散气相关动画（包含不同方向的移动效果）
+    public static StaticAnimation CLOUD_STEP_START; // 聚形散气开始动画
+    public static StaticAnimation CLOUD_STEP_START_BACKWARD; // 聚形散气后退开始动画
+    public static StaticAnimation CLOUD_STEP_END_STOP; // 聚形散气结束停止动画
+    public static StaticAnimation CLOUD_STEP_END_FORWARD; // 聚形散气结束前进动画
+
+    // 铜头铁臂相关动画
+    public static StaticAnimation TONG_TOU_TIE_BI; // 铜头铁臂动画
+    public static StaticAnimation TONG_TOU_TIE_BI_END; // 铜头铁臂结束动画
+    public static StaticAnimation TONG_TOU_TIE_BI_FAIL; // 铜头铁臂失败动画
+
+    // 身外身法相关动画
+    public static StaticAnimation SHEN_WAI_SHEN_FA; // 身外身法动画
     @SubscribeEvent
     public static void registerAnimations(AnimationRegistryEvent event) {
-        event.getRegistryMap().put(WukongMoveset.MOD_ID, WukongAnimations::build);
+        // 注册所有动画到事件中，这样它们就能在游戏中使用
+        event.getRegistryMap().put(WukongMoveset.MOD_ID, WukongAnimations::build); // 使用MOD_ID作为键，注册build方法来初始化动画
     }
 
     private static void build() {
-        HumanoidArmature biped = Armatures.BIPED;
+        // 获取角色的骨架（HumanoidArmature），这是一个代表人物动作的结构，通常用于二足动物或人类角色
+        HumanoidArmature biped = Armatures.BIPED; // 使用Armatures中的BIPED骨架模型
 
-        //专治各种因为移动导致的动画取消
+        // 创建一个“专治各种因为移动导致的动画取消”的事件
+        // 这个事件用于防止角色在执行动画时受到玩家移动控制的影响（例如：当角色在执行某个动画时不应该继续移动）
         AnimationEvent.TimePeriodEvent allStopMovement = AnimationEvent.TimePeriodEvent.create(0.00F, Float.MAX_VALUE, ((livingEntityPatch, staticAnimation, objects) -> {
+            // 如果是本地玩家Patch
             if (livingEntityPatch instanceof LocalPlayerPatch localPlayerPatch) {
+                // 获取玩家的输入，设置所有输入为零，这样角色就不会移动
                 Input input = localPlayerPatch.getOriginal().input;
-                input.forwardImpulse = 0.0F;
-                input.leftImpulse = 0.0F;
-                input.down = false;
-                input.up = false;
-                input.left = false;
-                input.right = false;
-                input.jumping = false;
-                input.shiftKeyDown = false;
-                localPlayerPatch.getOriginal().setSprinting(false);
+                input.forwardImpulse = 0.0F; // 前进力量设为0
+                input.leftImpulse = 0.0F; // 向左的力量设为0
+                input.down = false; // 向下不激活
+                input.up = false; // 向上不激活
+                input.left = false; // 向左不激活
+                input.right = false; // 向右不激活
+                input.jumping = false; // 不跳跃
+                input.shiftKeyDown = false; // 不按下Shift
+                localPlayerPatch.getOriginal().setSprinting(false); // 不冲刺
             }
-        }), AnimationEvent.Side.CLIENT);
+        }), AnimationEvent.Side.CLIENT); // 这是客户端特有的事件
 
-        IDLE = new StaticAnimation(true, "biped/idle", biped);
+        // 定义静止（待机）动画，IDLE代表角色处于待机状态时播放的动画
+        IDLE = new StaticAnimation(true, "biped/idle", biped); // biped/idle是动画文件的路径，表示待机动画
 
+        // 行走动画，播放速度调整为1.2倍
         WALK = new StaticAnimation(true, "biped/walk", biped)
-                .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.2F));
+                .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.2F)); // 设置播放速度为1.2倍
 
-        RUN_F = new StaticAnimation(true, "biped/run", biped);
+        // 正常奔跑动画
+        RUN_F = new StaticAnimation(true, "biped/run", biped); // biped/run是奔跑动画的路径
 
+        // 跑步动画，采用 SelectiveAnimation，根据玩家的视角和移动方向来选择合适的动画
         RUN = new SelectiveAnimation((entityPatch) -> {
+            // 获取角色的视角向量和移动向量
             Vec3 view = entityPatch.getOriginal().getViewVector(1.0F);
             Vec3 move = entityPatch.getOriginal().getDeltaMovement();
-            double dot = view.dot(move);
-            return dot < 0.0 ? 1 : 0;
-        }, RUN_F, WALK);
+            double dot = view.dot(move); // 计算视角和移动向量的点积
+            return dot < 0.0 ? 1 : 0; // 如果角色正在后退（视角和移动方向相反），播放跑步动画，否则播放行走动画
+        }, RUN_F, WALK); // RUN_F代表向后的奔跑动画，WALK代表行走动画
 
-        DASH = new StaticAnimation(true, "biped/dash", biped);
+        // 冲刺动画，表示角色快速冲刺的动作
+        DASH = new StaticAnimation(true, "biped/dash", biped); // biped/dash是冲刺动画的路径
 
+        // 跳跃动画，播放速度调整为1.2倍
         JUMP = new StaticAnimation(0.15F, false, "biped/jump", biped)
-                .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.2F));
+                .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.2F)); // 跳跃动画，播放速度为1.2倍
 
-        FALL = new StaticAnimation(0.15F, true, "biped/fall", biped);
+        // 下落动画，角色从空中掉落时播放的动画
+        FALL = new StaticAnimation(0.15F, true, "biped/fall", biped); // biped/fall是下落动画的路径
 
-        DODGE_F1 = new WukongDodgeAnimation(0.1F, 0.4F, "biped/dodge/dodge_f1", 0.6F, 0.8F, biped);
+        // 以下是闪避动作动画，包括前后左右等不同方向的闪避动作
 
-        DODGE_B1 = new WukongDodgeAnimation(0.1F, 0.4F, "biped/dodge/dodge_b1", 0.6F, 0.8F, biped);
+        DODGE_F1 = new WukongDodgeAnimation(0.1F, 0.4F, "biped/dodge/dodge_f1", 0.6F, 0.8F, biped); // 前向闪避1
+        DODGE_B1 = new WukongDodgeAnimation(0.1F, 0.4F, "biped/dodge/dodge_b1", 0.6F, 0.8F, biped); // 后向闪避1
+        DODGE_R1 = new WukongDodgeAnimation(0.1F, 0.4F, "biped/dodge/dodge_r1", 0.6F, 0.8F, biped); // 右向闪避1
+        DODGE_L1 = new WukongDodgeAnimation(0.1F, 0.4F, "biped/dodge/dodge_l1", 0.6F, 0.8F, biped); // 左向闪避1
 
-        DODGE_R1 = new WukongDodgeAnimation(0.1F, 0.4F, "biped/dodge/dodge_r1", 0.6F, 0.8F, biped);
+        // 第二组闪避动画（更高难度或更复杂的动作）
+        DODGE_F2 = new WukongDodgeAnimation(0.1F, 0.4F, "biped/dodge/dodge_f2", 0.6F, 0.8F, biped); // 前向闪避2
+        DODGE_B2 = new WukongDodgeAnimation(0.1F, 0.4F, "biped/dodge/dodge_b2", 0.6F, 0.8F, biped); // 后向闪避2
+        DODGE_R2 = new WukongDodgeAnimation(0.1F, 0.4F, "biped/dodge/dodge_r2", 0.6F, 0.8F, biped); // 右向闪避2
+        DODGE_L2 = new WukongDodgeAnimation(0.1F, 0.4F, "biped/dodge/dodge_l2", 0.6F, 0.8F, biped); // 左向闪避2
 
-        DODGE_L1 = new WukongDodgeAnimation(0.1F, 0.4F, "biped/dodge/dodge_l1", 0.6F, 0.8F, biped);
+        // 第三组闪避动画（极端动作或特殊技能闪避）
+        DODGE_F3 = new WukongDodgeAnimation(0.1F, 0.6F, "biped/dodge/dodge_f3", 0.6F, 1.35F, biped).addProperty(AnimationProperty.ActionAnimationProperty.MOVE_VERTICAL, true); // 前向闪避3（带垂直移动）
+        DODGE_B3 = new WukongDodgeAnimation(0.1F, 0.6F, "biped/dodge/dodge_b3", 0.6F, 1.35F, biped).addProperty(AnimationProperty.ActionAnimationProperty.MOVE_VERTICAL, true); // 后向闪避3（带垂直移动）
+        DODGE_R3 = new WukongDodgeAnimation(0.1F, 0.6F, "biped/dodge/dodge_r3", 0.6F, 1.35F, biped).addProperty(AnimationProperty.ActionAnimationProperty.MOVE_VERTICAL, true); // 右向闪避3（带垂直移动）
+        DODGE_L3 = new WukongDodgeAnimation(0.1F, 0.6F, "biped/dodge/dodge_l3", 0.6F, 1.35F, biped).addProperty(AnimationProperty.ActionAnimationProperty.MOVE_VERTICAL, true); // 左向闪避3（带垂直移动）
 
-        DODGE_F2 = new WukongDodgeAnimation(0.1F, 0.4F, "biped/dodge/dodge_f2", 0.6F, 0.8F, biped);
+        // 特殊闪避动画（例如，快速闪避或带有效果的闪避）
+        DODGE_FP = new WukongDodgeAnimation(0.1F, 0.63F, "biped/dodge/dodge_fp", 0.6F, 1.35F, biped, true); // 前向特殊闪避
+        DODGE_BP = new WukongDodgeAnimation(0.1F, 0.63F, "biped/dodge/dodge_bp", 0.6F, 1.35F, biped, true); // 后向特殊闪避
+        DODGE_RP = new WukongDodgeAnimation(0.1F, 0.63F, "biped/dodge/dodge_rp", 0.6F, 1.35F, biped, true); // 右向特殊闪避
+        DODGE_LP = new WukongDodgeAnimation(0.1F, 0.63F, "biped/dodge/dodge_lp", 0.6F, 1.35F, biped, true); // 左向特殊闪避
 
-        DODGE_B2 = new WukongDodgeAnimation(0.1F, 0.4F, "biped/dodge/dodge_b2", 0.6F, 0.8F, biped);
-
-        DODGE_R2 = new WukongDodgeAnimation(0.1F, 0.4F, "biped/dodge/dodge_r2", 0.6F, 0.8F, biped);
-
-        DODGE_L2 = new WukongDodgeAnimation(0.1F, 0.4F, "biped/dodge/dodge_l2", 0.6F, 0.8F, biped);
-
-        DODGE_F3 = new WukongDodgeAnimation(0.1F, 0.6F, "biped/dodge/dodge_f3", 0.6F, 1.35F, biped).addProperty(AnimationProperty.ActionAnimationProperty.MOVE_VERTICAL, true);
-
-        DODGE_B3 = new WukongDodgeAnimation(0.1F, 0.6F, "biped/dodge/dodge_b3", 0.6F, 1.35F, biped).addProperty(AnimationProperty.ActionAnimationProperty.MOVE_VERTICAL, true);
-
-        DODGE_R3 = new WukongDodgeAnimation(0.1F, 0.6F, "biped/dodge/dodge_r3", 0.6F, 1.35F, biped).addProperty(AnimationProperty.ActionAnimationProperty.MOVE_VERTICAL, true);
-
-        DODGE_L3 = new WukongDodgeAnimation(0.1F, 0.6F, "biped/dodge/dodge_l3", 0.6F, 1.35F, biped).addProperty(AnimationProperty.ActionAnimationProperty.MOVE_VERTICAL, true);
-
-        DODGE_FP = new WukongDodgeAnimation(0.1F, 0.63F, "biped/dodge/dodge_fp", 0.6F, 1.35F, biped, true);
-
-        DODGE_BP = new WukongDodgeAnimation(0.1F, 0.63F, "biped/dodge/dodge_bp", 0.6F, 1.35F, biped, true);
-
-        DODGE_RP = new WukongDodgeAnimation(0.1F, 0.63F, "biped/dodge/dodge_rp", 0.6F, 1.35F, biped, true);
-
-        DODGE_LP = new WukongDodgeAnimation(0.1F, 0.63F, "biped/dodge/dodge_lp", 0.6F, 1.35F, biped, true);
-
+        // 定义轻击（STAFF_AUTO1到STAFF_AUTO5）的动画，代表一系列的普通攻击动作
         STAFF_AUTO1_DASH = new BasicAttackAnimation(0.15F, 0.2916F, 0.5000F, 0.5833F, null, biped.toolR, "biped/auto_1", biped)
-                .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(0.9F))
-                .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.8F))
+                .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(0.9F)) // 轻击伤害修正
+                .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.8F)) // 速度修正
                 .addEvents(AnimationProperty.StaticAnimationProperty.ON_BEGIN_EVENTS,
                         AnimationEvent.create(((livingEntityPatch, staticAnimation, objects) -> {
+                            // 处理开始事件，重置攻击计数器
                             if (livingEntityPatch instanceof ServerPlayerPatch serverPlayerPatch) {
-                                //冲刺攻击重置普攻计数器
                                 BasicAttack.setComboCounterWithEvent(ComboCounterHandleEvent.Causal.BASIC_ATTACK_COUNT, serverPlayerPatch, serverPlayerPatch.getSkill(SkillSlots.BASIC_ATTACK), staticAnimation, 1);
                             }
-                        }), AnimationEvent.Side.SERVER));
+                        }), AnimationEvent.Side.SERVER)); // 在服务器端进行计数器重置
 
         STAFF_AUTO1 = new BasicAttackAnimation(0.15F, 0.2916F, 0.5000F, 0.5833F, null, biped.toolR, "biped/auto_1", biped)
+                // 创建轻击动画，动画时间为0.15秒，接下来的参数表示该动画的各个时段（如攻击前摇、攻击中段等）的持续时间
                 .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(0.9F))
+                // 设置攻击阶段的伤害修正，0.9倍伤害
                 .addProperty(AnimationProperty.ActionAnimationProperty.CANCELABLE_MOVE, false)
+                // 设置此动画不可取消（在动画执行时玩家无法移动）
                 .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.8F));
+        // 设置播放速度为1.8倍，即加速播放此动画
 
         STAFF_AUTO2 = new BasicAttackAnimation(0.15F, 0.6667F, 0.875F, 0.875F, null, biped.toolR, "biped/auto_2", biped)
+                // 创建第二个轻击动画，时间和动画路径参数类似于STAFF_AUTO1
                 .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(1.25F))
+                // 设置攻击阶段的伤害修正，伤害提高为1.25倍
                 .addProperty(AnimationProperty.ActionAnimationProperty.CANCELABLE_MOVE, false)
+                // 设置此动画不可取消（在动画执行时玩家无法移动）
                 .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.8F));
+        // 设置播放速度为1.8倍，即加速播放此动画
 
         STAFF_AUTO3 = new BasicAttackAnimation(0.15F, "biped/auto_3", biped,
+                // 创建第三个轻击动画，这次使用攻击的不同阶段来定义动作
                 new AttackAnimation.Phase(0.0F, 0.25F, 0.4583F, 0.4583F, 0.4583F, biped.toolR, null)
                         .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(1.0F))
-                        .addProperty(AnimationProperty.AttackPhaseProperty.MAX_STRIKES_MODIFIER, ValueModifier.setter(4.0F)),
+                        // 第一个阶段的伤害修正，保持原本的伤害
+                        .addProperty(AnimationProperty.AttackPhaseProperty.MAX_STRIKES_MODIFIER, ValueModifier.setter(4.0F)), // 设置最大攻击次数为4
                 new AttackAnimation.Phase(0.4583F, 0.4583F, 0.7083F, 0.7083F, 3.3333F, biped.toolR, null)
                         .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(1.0F))
                         .addProperty(AnimationProperty.AttackPhaseProperty.MAX_STRIKES_MODIFIER, ValueModifier.setter(4.0F)))
+                // 第二个阶段的伤害修正，保持原本的伤害，并允许最多4次攻击
                 .addProperty(AnimationProperty.ActionAnimationProperty.CANCELABLE_MOVE, false)
+                // 设置此动画不可取消（在动画执行时玩家无法移动）
                 .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.2F));
+        // 设置播放速度为1.2倍，即加速播放此动画
 
         STAFF_AUTO4 = new BasicAttackAnimation(0.15F, "biped/auto_4", biped,
+                // 创建第四个轻击动画，包含多个阶段以细化动作
                 new AttackAnimation.Phase(0.0F, 0.1F, 0.2F, 0.2F, 0.2F, biped.toolR, null)
                         .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(0.5F))
-                        .addProperty(AnimationProperty.AttackPhaseProperty.SWING_SOUND, EpicFightSounds.WHOOSH_ROD),
+                        // 第一个阶段的伤害修正，减少至原本的0.5倍
+                        .addProperty(AnimationProperty.AttackPhaseProperty.SWING_SOUND, EpicFightSounds.WHOOSH_ROD), // 播放挥棒声音
                 new AttackAnimation.Phase(0.2F, 0.2F, 0.4F, 0.4F, 0.4F, biped.toolR, null)
                         .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(0.5F))
-                        .addProperty(AnimationProperty.AttackPhaseProperty.SWING_SOUND, EpicFightSounds.WHOOSH_ROD),
+                        // 第二个阶段的伤害修正，继续减少伤害至0.5倍
+                        .addProperty(AnimationProperty.AttackPhaseProperty.SWING_SOUND, EpicFightSounds.WHOOSH_ROD), // 播放挥棒声音
                 new AttackAnimation.Phase(0.4F, 0.4F, 0.6F, 0.6F, 0.6F, biped.toolR, null)
                         .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(0.5F))
-                        .addProperty(AnimationProperty.AttackPhaseProperty.SWING_SOUND, EpicFightSounds.WHOOSH_ROD),
+                        // 第三个阶段的伤害修正，继续减少伤害至0.5倍
+                        .addProperty(AnimationProperty.AttackPhaseProperty.SWING_SOUND, EpicFightSounds.WHOOSH_ROD), // 播放挥棒声音
                 new AttackAnimation.Phase(0.6F, 0.6F, 0.8F, 0.8F, 0.8F, biped.toolR, null)
                         .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(0.5F))
-                        .addProperty(AnimationProperty.AttackPhaseProperty.SWING_SOUND, EpicFightSounds.WHOOSH_ROD),
+                        // 第四个阶段的伤害修正，继续减少伤害至0.5倍
+                        .addProperty(AnimationProperty.AttackPhaseProperty.SWING_SOUND, EpicFightSounds.WHOOSH_ROD), // 播放挥棒声音
                 new AttackAnimation.Phase(0.8F, 1.0416F, 1.125F, 1.2583F, 2.5F, biped.toolR, null)
                         .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(1.0F))
+                        // 最后的阶段增加伤害修正至原本的1倍
                         .addProperty(AnimationProperty.AttackPhaseProperty.IMPACT_MODIFIER, ValueModifier.multiplier(5F)))
+                // 增加击中时的冲击修正，提升5倍
                 .addProperty(AnimationProperty.AttackPhaseProperty.STUN_TYPE, StunType.KNOCKDOWN)
+                // 设置击中时的控制效果为“击倒”
                 .addProperty(AnimationProperty.ActionAnimationProperty.CANCELABLE_MOVE, false)
+                // 设置此动画不可取消（在动画执行时玩家无法移动）
                 .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.2F));
+        // 设置播放速度为1.2倍，即加速播放此动画
+
         STAFF_AUTO5 = new WukongScaleStaffAttackAnimation(0.01F, 0.9166F, 1.15F, 1.9833F, null, biped.toolR, "biped/auto_5", biped, 0.5F) {
             @Override
             public boolean isBasicAttackAnimation() {
                 return true;
+                // 返回是否为基本攻击动画，STAFF_AUTO5是基本攻击动画
             }
         }
                 .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(3.0F))
+                // 设置伤害修正为3倍
                 .addProperty(AnimationProperty.AttackPhaseProperty.STUN_TYPE, StunType.LONG)
+                // 设置控制效果为“长时间击倒”
                 .addProperty(AnimationProperty.AttackPhaseProperty.SWING_SOUND, EpicFightSounds.WHOOSH_BIG)
+                // 播放大挥棒声音
                 .addProperty(AnimationProperty.AttackPhaseProperty.IMPACT_MODIFIER, ValueModifier.multiplier(2.0F))
+                // 设置击中时的冲击修正为2倍
                 .addProperty(AnimationProperty.ActionAnimationProperty.CANCELABLE_MOVE, false)
+                // 设置此动画不可取消（在动画执行时玩家无法移动）
                 .addProperty(AnimationProperty.ActionAnimationProperty.MOVE_VERTICAL, true)
+                // 设置动画可以垂直移动
                 .addProperty(AnimationProperty.ActionAnimationProperty.NO_GRAVITY_TIME, TimePairList.create(0.01F, 1.9833F))
+                // 设置动画在特定时段内不受重力影响
                 .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.2F))
+                // 设置播放速度为1.2倍，即加速播放此动画
                 .addEvents(AnimationProperty.StaticAnimationProperty.ON_BEGIN_EVENTS,
                         AnimationEvent.create(((livingEntityPatch, staticAnimation, objects) ->
                                 livingEntityPatch.playSound(EpicFightSounds.ENTITY_MOVE, 1, 1)), AnimationEvent.Side.SERVER));
+        // 在动画开始时播放声音“ENTITY_MOVE”，该事件只在服务器端执行
 
         JUMP_ATTACK_LIGHT = new WukongJumpAttackAnimation(0.10F, 0.13F, 0.40F, 0.50F, WukongColliders.JUMP_ATTACK_LIGHT, biped.toolR, "biped/jump_attack/jump_light_pre", biped)
+                // 创建轻型跳跃攻击动画，动画的各个时段分别为 0.10F、0.13F、0.40F 和 0.50F，对应不同的动画阶段
                 .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(1.45F))
-                .addProperty(AnimationProperty.AttackPhaseProperty.MAX_STRIKES_MODIFIER, ValueModifier.setter(1))//最多踹一个
+                // 设置攻击阶段的伤害修正，伤害增加1.45倍
+                .addProperty(AnimationProperty.AttackPhaseProperty.MAX_STRIKES_MODIFIER, ValueModifier.setter(1))
+                // 设置此动画最大击打次数为1，即每次跳跃攻击只能进行一次攻击
                 .addProperty(AnimationProperty.ActionAnimationProperty.NO_GRAVITY_TIME, TimePairList.create(0.01F, 0.10F))
+                // 设置动画播放期间不受重力影响的时长，从0.01秒到0.10秒
                 .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.8F));
+        // 设置播放速度为1.8倍，加速播放此动画
 
         JUMP_ATTACK_LIGHT_HIT = new ActionAnimation(0.15F, "biped/jump_attack/jump_light_hit", biped)
+                // 创建轻型跳跃攻击击中时的动画，持续时间为0.15秒
                 .addProperty(AnimationProperty.ActionAnimationProperty.MOVE_VERTICAL, true)
+                // 设置该动画允许垂直移动
                 .addProperty(AnimationProperty.ActionAnimationProperty.NO_GRAVITY_TIME, TimePairList.create(0.01F, 0.3F))
-                .addState(EntityState.CAN_SKILL_EXECUTION, true)//为了可以用重击取消后摇
+                // 设置动画播放期间不受重力影响的时长，从0.01秒到0.3秒
+                .addState(EntityState.CAN_SKILL_EXECUTION, true)
+                // 设置该动画允许技能执行，即可以使用重击取消后摇
                 .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.0F));
+        // 设置播放速度为正常速度（1倍）
 
         JUMP_ATTACK_HEAVY = new WukongScaleStaffAttackAnimation(0.01F, 0.54F, 0.67F, 1.25F, null, biped.toolR, "biped/jump_attack/jump_heavy", biped, 0.5F)
+                // 创建重型跳跃攻击动画，设定其时间和其他参数
                 .addProperty(AnimationProperty.AttackPhaseProperty.STUN_TYPE, StunType.LONG)
+                // 设置攻击阶段的控制效果为“长时间击倒”
                 .addProperty(AnimationProperty.AttackPhaseProperty.SWING_SOUND, EpicFightSounds.WHOOSH_BIG)
+                // 设置攻击时的挥棒声音为“WHOOSH_BIG”
                 .addProperty(AnimationProperty.AttackPhaseProperty.IMPACT_MODIFIER, ValueModifier.multiplier(2.0F))
+                // 设置击中时的冲击修正，提升2倍
                 .addProperty(AnimationProperty.ActionAnimationProperty.MOVE_VERTICAL, true)
+                // 设置该动画可以进行垂直移动
                 .addProperty(AnimationProperty.ActionAnimationProperty.NO_GRAVITY_TIME, TimePairList.create(0.01F, 0.67F))
+                // 设置动画播放期间不受重力影响的时长，从0.01秒到0.67秒
                 .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.0F))
+                // 设置播放速度为正常速度（1倍）
                 .addEvents(AnimationProperty.StaticAnimationProperty.ON_BEGIN_EVENTS,
                         AnimationEvent.create(((livingEntityPatch, staticAnimation, objects) ->
                                 livingEntityPatch.playSound(EpicFightSounds.ROLL, 1, 1)), AnimationEvent.Side.SERVER));
+        // 在动画开始时播放“ROLL”声音，服务器端执行
 
-        STAFF_SPIN_ONE_HAND_LOOP = new StaffSpinAttackAnimation(1.25F, biped, "biped/staff_spin/staff_spin_one_hand", 0.05F, false);
+        STAFF_SPIN_ONE_HAND_LOOP = new StaffSpinAttackAnimation(1.25F, biped, "biped/staff_spin/staff_spin_one_hand", 0.05F, false)
+                // 创建单手棍花旋转攻击动画，旋转速度为1.25倍，动画持续时间为0.05秒，禁用某些动作
+                .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.0F));
+        // 设置播放速度为正常速度（1倍）
 
-        STAFF_SPIN_TWO_HAND_LOOP = new StaffSpinAttackAnimation(0.83F, biped, "biped/staff_spin/staff_spin_two_hand", 0.08F, true);
+        STAFF_SPIN_TWO_HAND_LOOP = new StaffSpinAttackAnimation(0.83F, biped, "biped/staff_spin/staff_spin_two_hand", 0.08F, true)
+                // 创建双手棍花旋转攻击动画，旋转速度为0.83倍，动画持续时间为0.08秒，启用某些动作
+                .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.0F));
+        // 设置播放速度为正常速度（1倍）
 
         //劈start
         //前摇完自动接下一个动作
+        // 劈棍技能动画
+        // SMASH_CHARGING_PRE：为劈棍的蓄力前摇阶段，准备重击。
         SMASH_CHARGING_PRE = new ActionAnimation(0.15F, "biped/smash/smash_charge_pre", biped)
                 .addEvents(AnimationProperty.StaticAnimationProperty.ON_END_EVENTS, AnimationEvent.create(((livingEntityPatch, staticAnimation, objects) -> {
+                    // 蓄力结束后，切换为充能持续动画
                     livingEntityPatch.reserveAnimation(SMASH_CHARGING_LOOP_STAND);
                     if (livingEntityPatch instanceof ServerPlayerPatch serverPlayerPatch) {
+                        // 设置技能数据同步，表示重击正在充能
                         serverPlayerPatch.getSkill(SkillSlots.WEAPON_INNATE).getDataManager().setDataSync(SmashHeavyAttack.IS_CHARGING, true, serverPlayerPatch.getOriginal());
                     }
                 }), AnimationEvent.Side.SERVER))
                 .addEvents(
+                        // 在不同时间戳播放声音（如"WHOOSH_ROD"）
                         AnimationEvent.TimeStampedEvent.create(0.1F, ((livingEntityPatch, staticAnimation, objects) -> {
                             livingEntityPatch.playSound(EpicFightSounds.WHOOSH_ROD, 1, 1);
                         }), AnimationEvent.Side.SERVER),
                         AnimationEvent.TimeStampedEvent.create(0.3F, ((livingEntityPatch, staticAnimation, objects) -> {
                             livingEntityPatch.playSound(EpicFightSounds.WHOOSH_ROD, 1, 1);
                         }), AnimationEvent.Side.SERVER));
-
+        // SMASH_CHARGING_LOOP_STAND：重击充能持续阶段，角色站立不动并持续蓄力。
         SMASH_CHARGING_LOOP_STAND = new StaticAnimation(0.15F, true, "biped/smash/smash_charging", biped);
-
+// SMASH_CHARGED0：代表重击（0星），充能达到一定程度后发动重击。
         SMASH_CHARGED0 = new WukongScaleStaffAttackAnimation(0.15F, 0.75F, 0.92F, 1.67F, WukongColliders.STACK_0_1, biped.toolR, "biped/smash/smash_heavy1", biped)
-                .addProperty(AnimationProperty.AttackPhaseProperty.IMPACT_MODIFIER, ValueModifier.multiplier(2.0F))
-                .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(2.6F))
-                .addProperty(AnimationProperty.ActionAnimationProperty.MOVE_VERTICAL, true)
-                .addProperty(AnimationProperty.ActionAnimationProperty.CANCELABLE_MOVE, false)
-                .addProperty(AnimationProperty.ActionAnimationProperty.MOVE_ON_LINK, false)
+                .addProperty(AnimationProperty.AttackPhaseProperty.IMPACT_MODIFIER, ValueModifier.multiplier(2.0F)) // 设置击中效果
+                .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(2.6F))// 设置伤害值
+                .addProperty(AnimationProperty.ActionAnimationProperty.MOVE_VERTICAL, true)// 垂直移动效果
+                .addProperty(AnimationProperty.ActionAnimationProperty.CANCELABLE_MOVE, false)// 不允许在攻击过程中取消移动
+                .addProperty(AnimationProperty.ActionAnimationProperty.MOVE_ON_LINK, false)// 不在链接中移动
                 .addProperty(AnimationProperty.ActionAnimationProperty.COORD_SET_BEGIN, MoveCoordFunctions.TRACE_LOC_TARGET)
                 .addProperty(AnimationProperty.ActionAnimationProperty.COORD_SET_TICK, MoveCoordFunctions.TRACE_LOC_TARGET)
-                .addProperty(AnimationProperty.ActionAnimationProperty.NO_GRAVITY_TIME, TimePairList.create(0.01F, 0.75F))
-                .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.0F))
-                .addEvents(allStopMovement)
+                .addProperty(AnimationProperty.ActionAnimationProperty.NO_GRAVITY_TIME, TimePairList.create(0.01F, 0.75F))// 无重力时间
+                .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.0F))// 设置播放速度
+                .addEvents(allStopMovement)// 停止所有移动
                 .addEvents(AnimationEvent.TimeStampedEvent.create(0.083F, ((livingEntityPatch, staticAnimation, objects) -> {
-                    livingEntityPatch.playSound(WuKongSounds.HIT_GROUND.get(), 1, 1);
+                    livingEntityPatch.playSound(WuKongSounds.HIT_GROUND.get(), 1, 1);// 播放击地声
                 }), AnimationEvent.Side.SERVER));
 
         SMASH_CHARGED1 = new WukongScaleStaffAttackAnimation(0.15F, 0.75F, 0.92F, 1.67F, WukongColliders.STACK_0_1, biped.toolR, "biped/smash/smash_heavy1", biped)

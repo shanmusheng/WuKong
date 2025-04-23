@@ -127,6 +127,12 @@ public class StaffPassive extends Skill {
                 if (attackerPatch != null) {
                     attackerPatch.setLastAttackEntity(event.getPlayerPatch().getOriginal());
                 }
+                Entity directEntity = event.getDamageSource().getDirectEntity();
+                LivingEntityPatch<?> entityPatch = (LivingEntityPatch<?>) EpicFightCapabilities.getEntityPatch(directEntity, LivingEntityPatch.class);
+                if (entityPatch != null) {
+                    entityPatch.onAttackBlocked(event.getDamageSource(), event.getPlayerPatch());
+                }
+
                 // 显示格挡特效
                 showBlockedEffect(event.getPlayerPatch(), event.getDamageSource().getDirectEntity());
                 // 恢复能量
