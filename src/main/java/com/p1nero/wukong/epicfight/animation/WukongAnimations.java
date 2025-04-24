@@ -240,7 +240,7 @@ public class WukongAnimations {
         DODGE_LP = new WukongDodgeAnimation(0.1F, 0.63F, "biped/dodge/dodge_lp", 0.6F, 1.35F, biped, true); // 左向特殊闪避
 
         // 定义轻击（STAFF_AUTO1到STAFF_AUTO5）的动画，代表一系列的普通攻击动作
-        STAFF_AUTO1_DASH = new BasicAttackAnimation(0.15F, 0.2916F, 0.5000F, 0.5833F, null, biped.toolR, "biped/auto_1", biped)
+        STAFF_AUTO1_DASH = new BasicAttackAnimation(0.15F, 0.2916F, 0.5000F, 0.5833F, null, biped.toolR, "biped/hunter_dual_dash", biped)
                 .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(0.9F)) // 轻击伤害修正
                 .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.8F)) // 速度修正
                 .addEvents(AnimationProperty.StaticAnimationProperty.ON_BEGIN_EVENTS,
@@ -255,16 +255,21 @@ public class WukongAnimations {
                 // 创建轻击动画，动画时间为0.15秒，接下来的参数表示该动画的各个时段（如攻击前摇、攻击中段等）的持续时间
                 .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(0.9F))
                 // 设置攻击阶段的伤害修正，0.9倍伤害
-                .addProperty(AnimationProperty.ActionAnimationProperty.CANCELABLE_MOVE, false)
+                .addProperty(AnimationProperty.ActionAnimationProperty.CANCELABLE_MOVE, true)
                 // 设置此动画不可取消（在动画执行时玩家无法移动）
-                .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.8F));
-        // 设置播放速度为1.8倍，即加速播放此动画
+                .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.8F))
+                // 设置播放速度为1.8倍，即加速播放此动画
+                .addEvents(AnimationProperty.StaticAnimationProperty.ON_BEGIN_EVENTS,
+                        AnimationEvent.create(((livingEntityPatch, staticAnimation, objects) ->
+                                livingEntityPatch.playSound(EpicFightSounds.NETHER_STAR_GLITTER, 1, 1)), AnimationEvent.Side.SERVER));
+        // 在动画开始时播放“NETHER_STAR_GLITTER”声音，服务器端执行 布灵布灵的
+
 
         STAFF_AUTO2 = new BasicAttackAnimation(0.15F, 0.6667F, 0.875F, 0.875F, null, biped.toolR, "biped/hunter_dual_auto2", biped)
                 // 创建第二个轻击动画，时间和动画路径参数类似于STAFF_AUTO1
                 .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(1.25F))
                 // 设置攻击阶段的伤害修正，伤害提高为1.25倍
-                .addProperty(AnimationProperty.ActionAnimationProperty.CANCELABLE_MOVE, false)
+                .addProperty(AnimationProperty.ActionAnimationProperty.CANCELABLE_MOVE, true)
                 // 设置此动画不可取消（在动画执行时玩家无法移动）
                 .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.8F));
         // 设置播放速度为1.8倍，即加速播放此动画
@@ -275,29 +280,35 @@ public class WukongAnimations {
                         .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(1.0F))
                         // 第一个阶段的伤害修正，保持原本的伤害
                         .addProperty(AnimationProperty.AttackPhaseProperty.MAX_STRIKES_MODIFIER, ValueModifier.setter(4.0F)), // 设置最大攻击次数为4
-                new AttackAnimation.Phase(0.4583F, 0.4583F, 0.7083F, 0.7083F, 3.3333F, biped.toolR, null)
+                new AttackAnimation.Phase(0.4583F, 0.4583F, 0.7083F, 0.7083F, 1.3333F, biped.toolR, null)
                         .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(1.0F))
                         .addProperty(AnimationProperty.AttackPhaseProperty.MAX_STRIKES_MODIFIER, ValueModifier.setter(4.0F)))
                 // 第二个阶段的伤害修正，保持原本的伤害，并允许最多4次攻击
-                .addProperty(AnimationProperty.ActionAnimationProperty.CANCELABLE_MOVE, false)
+                .addProperty(AnimationProperty.ActionAnimationProperty.CANCELABLE_MOVE, true)
                 // 设置此动画不可取消（在动画执行时玩家无法移动）
                 .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.2F));
         // 设置播放速度为1.2倍，即加速播放此动画
+
+        ///Phase的解释
+        //相当于时间段打点
+        //2s的动画,第一个Phase是0.1到0.2s之间,代表一个Phase,第二个是0.2到0.4s之间代表一个Phase,而addProperty也只应用于当前的Phase
+
+
 
         STAFF_AUTO4 = new BasicAttackAnimation(0.15F, "biped/auto_4", biped,
                 // 创建第四个轻击动画，包含多个阶段以细化动作
                 new AttackAnimation.Phase(0.0F, 0.1F, 0.2F, 0.2F, 0.2F, biped.toolR, null)
                         .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(0.5F))
                         // 第一个阶段的伤害修正，减少至原本的0.5倍
-                        .addProperty(AnimationProperty.AttackPhaseProperty.SWING_SOUND, EpicFightSounds.WHOOSH_ROD), // 播放挥棒声音
+                        .addProperty(AnimationProperty.AttackPhaseProperty.SWING_SOUND, EpicFightSounds.BIG_ENTITY_MOVE), // 播放声音
                 new AttackAnimation.Phase(0.2F, 0.2F, 0.4F, 0.4F, 0.4F, biped.toolR, null)
                         .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(0.5F))
                         // 第二个阶段的伤害修正，继续减少伤害至0.5倍
-                        .addProperty(AnimationProperty.AttackPhaseProperty.SWING_SOUND, EpicFightSounds.WHOOSH_ROD), // 播放挥棒声音
+                        .addProperty(AnimationProperty.AttackPhaseProperty.SWING_SOUND, EpicFightSounds.BLUNT_HIT_HARD), // 播放声音
                 new AttackAnimation.Phase(0.4F, 0.4F, 0.6F, 0.6F, 0.6F, biped.toolR, null)
                         .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(0.5F))
                         // 第三个阶段的伤害修正，继续减少伤害至0.5倍
-                        .addProperty(AnimationProperty.AttackPhaseProperty.SWING_SOUND, EpicFightSounds.WHOOSH_ROD), // 播放挥棒声音
+                        .addProperty(AnimationProperty.AttackPhaseProperty.SWING_SOUND, EpicFightSounds.BLADE_RUSH_FINISHER), // 播放声音
                 new AttackAnimation.Phase(0.6F, 0.6F, 0.8F, 0.8F, 0.8F, biped.toolR, null)
                         .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(0.5F))
                         // 第四个阶段的伤害修正，继续减少伤害至0.5倍
