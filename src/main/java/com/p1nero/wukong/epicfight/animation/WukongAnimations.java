@@ -186,7 +186,7 @@ public class WukongAnimations {
         }), AnimationEvent.Side.CLIENT); // 这是客户端特有的事件
 
         // 定义静止（待机）动画，IDLE代表角色处于待机状态时播放的动画
-        IDLE = new StaticAnimation(true, "biped/idle", biped); // biped/idle是动画文件的路径，表示待机动画
+        IDLE = new StaticAnimation(true, "biped/hunter_dual_idle", biped); // biped/idle是动画文件的路径，表示待机动画
 
         // 行走动画，播放速度调整为1.2倍
         WALK = new StaticAnimation(true, "biped/walk", biped)
@@ -251,7 +251,7 @@ public class WukongAnimations {
                             }
                         }), AnimationEvent.Side.SERVER)); // 在服务器端进行计数器重置
 
-        STAFF_AUTO1 = new BasicAttackAnimation(0.15F, 0.2916F, 0.5000F, 0.5833F, null, biped.toolR, "biped/auto_1", biped)
+        STAFF_AUTO1 = new BasicAttackAnimation(0.15F, 0.2916F, 0.5000F, 0.5833F, null, biped.toolR, "biped/hunter_dual_auto1", biped)
                 // 创建轻击动画，动画时间为0.15秒，接下来的参数表示该动画的各个时段（如攻击前摇、攻击中段等）的持续时间
                 .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(0.9F))
                 // 设置攻击阶段的伤害修正，0.9倍伤害
@@ -260,7 +260,7 @@ public class WukongAnimations {
                 .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.8F));
         // 设置播放速度为1.8倍，即加速播放此动画
 
-        STAFF_AUTO2 = new BasicAttackAnimation(0.15F, 0.6667F, 0.875F, 0.875F, null, biped.toolR, "biped/auto_2", biped)
+        STAFF_AUTO2 = new BasicAttackAnimation(0.15F, 0.6667F, 0.875F, 0.875F, null, biped.toolR, "biped/hunter_dual_auto2", biped)
                 // 创建第二个轻击动画，时间和动画路径参数类似于STAFF_AUTO1
                 .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(1.25F))
                 // 设置攻击阶段的伤害修正，伤害提高为1.25倍
@@ -269,7 +269,7 @@ public class WukongAnimations {
                 .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.8F));
         // 设置播放速度为1.8倍，即加速播放此动画
 
-        STAFF_AUTO3 = new BasicAttackAnimation(0.15F, "biped/auto_3", biped,
+        STAFF_AUTO3 = new BasicAttackAnimation(0.15F, "biped/hunter_dual_auto3", biped,
                 // 创建第三个轻击动画，这次使用攻击的不同阶段来定义动作
                 new AttackAnimation.Phase(0.0F, 0.25F, 0.4583F, 0.4583F, 0.4583F, biped.toolR, null)
                         .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(1.0F))

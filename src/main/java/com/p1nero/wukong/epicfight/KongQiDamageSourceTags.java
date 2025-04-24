@@ -2,14 +2,14 @@ package com.p1nero.wukong.epicfight;
 
 import yesman.epicfight.world.damagesource.SourceTag;
 
-public enum WukongDamageSourceTags implements SourceTag {
-    FAKE_WUKONG;  // 定义了一个虚假的“Wukong”伤害来源标签，表示一个特殊的伤害类型
+public enum KongQiDamageSourceTags implements SourceTag {
+    FAKE_KONGQI;  // 定义了一个虚假的“KONGQI”伤害来源标签，表示一个特殊的伤害类型
 
     // 存储该伤害源的唯一ID
     final int id;
 
     // 构造函数，初始化时为该伤害源分配一个唯一的ID
-    WukongDamageSourceTags() {
+    KongQiDamageSourceTags() {
         this.id = SourceTag.ENUM_MANAGER.assign(this);  // 使用枚举管理器分配一个唯一的ID
     }
 

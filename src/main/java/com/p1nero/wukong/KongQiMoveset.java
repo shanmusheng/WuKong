@@ -4,7 +4,7 @@ import com.mojang.logging.LogUtils;
 import net.minecraftforge.fml.common.Mod;
 import org.slf4j.Logger;
 
-@Mod("kongqi")  // 模组标识符，表示这是一个名为"Wukong"的模组
+//@Mod("kongqi")  // 模组标识符，表示这是一个名为"Wukong"的模组
 public class KongQiMoveset {
 
     public static final String MOD_ID = "kongqi";  // 模组的唯一标识符
