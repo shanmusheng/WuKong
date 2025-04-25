@@ -45,6 +45,7 @@ import yesman.epicfight.api.utils.math.ValueModifier;
 import yesman.epicfight.api.utils.math.Vec2i;
 import yesman.epicfight.client.gui.BattleModeGui;
 import yesman.epicfight.config.ConfigurationIngame;
+import yesman.epicfight.gameasset.EpicFightSkills;
 import yesman.epicfight.main.EpicFightMod;
 import yesman.epicfight.skill.*;
 import yesman.epicfight.skill.weaponinnate.WeaponInnateSkill;
@@ -67,7 +68,6 @@ import java.util.UUID;
  * 该技能包含重击、蓄力、衍生攻击等多种特性，并且具有各种动画效果。
  */
 public class SmashHeavyAttack extends HeavyAttack {
-
     private static final UUID EVENT_UUID = UUID.fromString("d2d057cc-f30f-11ed-a05b-0242ac114514");
     public static final int MAX_DERIVE_TIMER = Config.DERIVE_CHECK_TIME.get().intValue();  // 衍生攻击的最大有效时间
     public static final SkillDataManager.SkillDataKey<Boolean> IS_IN_SPECIAL_ATTACK = SkillDataManager.SkillDataKey.createDataKey(SkillDataManager.ValueType.BOOLEAN);  // 是否正在进行特殊攻击
@@ -100,7 +100,7 @@ public class SmashHeavyAttack extends HeavyAttack {
     /**
      * 创建并返回一个构建者实例，用于构建充能攻击。
      *
-     * @return 构建器实例
+     * @return 构建器实例  WEAPON_INNATE  武器固有技能，这类技能通常与玩家使用的武器类型有关
      */
     public static Builder createChargedAttack() {
         return new Builder().setCategory(SkillCategories.WEAPON_INNATE).setResource(Resource.NONE);

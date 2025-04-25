@@ -19,7 +19,7 @@ import yesman.epicfight.world.capabilities.item.CapabilityItem;
 import yesman.epicfight.world.capabilities.item.WeaponCapability;
 
 import java.util.function.Function;
-
+///WeaponCapabilityPresets （武器能力预设）
 @Mod.EventBusSubscriber(modid = WukongMoveset.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class WukongWeaponCapabilityPresets {
 
@@ -48,8 +48,8 @@ public class WukongWeaponCapabilityPresets {
                             WukongAnimations.STAFF_AUTO1,
                             WukongAnimations.STAFF_AUTO2,
                             WukongAnimations.STAFF_AUTO3,
-                            WukongAnimations.STAFF_AUTO4,
-                            WukongAnimations.STAFF_AUTO5,
+//                            WukongAnimations.STAFF_AUTO4,
+//                            WukongAnimations.STAFF_AUTO5,
                             WukongAnimations.STAFF_AUTO1_DASH,
                             WukongAnimations.JUMP_ATTACK_LIGHT)
                     .innateSkill(WukongStyles.SMASH, (itemstack) -> WukongSkills.SMASH_HEAVY_ATTACK)  // 设置劈棍的固有技能

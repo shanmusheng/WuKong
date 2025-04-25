@@ -38,7 +38,7 @@ import yesman.epicfight.skill.SkillCategory;
 import yesman.epicfight.skill.SkillSlot;
 import yesman.epicfight.world.capabilities.item.WeaponCategory;
 import yesman.epicfight.world.damagesource.SourceTag;
-
+//这个是主类
 @Mod("wukong")  // 模组标识符，表示这是一个名为"Wukong"的模组
 public class WukongMoveset {
 
