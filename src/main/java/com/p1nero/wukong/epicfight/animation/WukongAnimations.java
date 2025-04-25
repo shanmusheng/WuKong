@@ -12,6 +12,7 @@ import com.p1nero.wukong.epicfight.skill.custom.SmashHeavyAttack;
 import com.p1nero.wukong.epicfight.skill.custom.ThrustHeavyAttack;
 import com.p1nero.wukong.epicfight.weapon.WukongColliders;
 import com.p1nero.wukong.epicfight.weapon.WukongWeaponCategories;
+import com.p1nero.wukong.item.WukongItems;
 import net.minecraft.client.player.Input;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
@@ -20,7 +21,12 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -286,7 +292,22 @@ public class WukongAnimations {
                 // 第二个阶段的伤害修正，保持原本的伤害，并允许最多4次攻击
                 .addProperty(AnimationProperty.ActionAnimationProperty.CANCELABLE_MOVE, true)
                 // 设置此动画不可取消（在动画执行时玩家无法移动）
-                .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.2F));
+                .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.2F))
+                .addEvents(AnimationEvent.TimeStampedEvent.create(1.125F, ((livingEntityPatch, staticAnimation, objects) -> {
+                            LivingEntity self = livingEntityPatch.getOriginal();
+                            // 去掉附魔检查，直接进行雷电效果的触发
+                            if(livingEntityPatch.getTarget() != null && self.level instanceof ServerLevel serverLevel){
+                                EntityType.LIGHTNING_BOLT.spawn(serverLevel, null, null, livingEntityPatch.getTarget().getOnPos(), MobSpawnType.TRIGGERED, false, false);
+                            }
+                        }), AnimationEvent.Side.SERVER)
+                        //  AnimationEvent.TimeStampedEvent.create(0.125F, ((livingEntityPatch, staticAnimation, objects) -> {
+                        //                            LivingEntity self = livingEntityPatch.getOriginal();
+                        //                            // 去掉附魔检查，保留粒子效果 TODO
+                        //                        }), AnimationEvent.Side.SERVER)
+
+                      );
+
+
         // 设置播放速度为1.2倍，即加速播放此动画
 
         ///Phase的解释

@@ -49,14 +49,14 @@ public class WukongDodgeAnimation extends DodgeAnimation {
         }), AnimationEvent.Side.SERVER));
         this.stateSpectrumBlueprint.clear()
                 .newTimePair(0.0F, delayTime)
-                    .addState(EntityState.TURNING_LOCKED, true)
-                    .addState(EntityState.MOVEMENT_LOCKED, true)
-                    .addState(EntityState.UPDATE_LIVING_MOTION, false)
-                    .addState(EntityState.CAN_BASIC_ATTACK, false)
-                    .addState(EntityState.CAN_SKILL_EXECUTION, false)
-                    .addState(EntityState.INACTION, true)
-                .newTimePair(0.0F, delayTime)//区别就在这里，把闪避时间缩短到后摇时间
-                    .addState(EntityState.ATTACK_RESULT, DODGEABLE_SOURCE_VALIDATOR);
+                    .addState(EntityState.TURNING_LOCKED, true)//不能转向
+                    .addState(EntityState.MOVEMENT_LOCKED, true)//不能移动
+                    .addState(EntityState.UPDATE_LIVING_MOTION, false)//不能更新动作
+                    .addState(EntityState.CAN_BASIC_ATTACK, false)//不能普功
+                    .addState(EntityState.CAN_SKILL_EXECUTION, false)//不能释放技能
+                    .addState(EntityState.INACTION, true)//不能切换物品
+                .newTimePair(0.0F, delayTime)//区别就在这里，把闪避时间缩短到后摇时间 delayTime 后摇结束时间
+                    .addState(EntityState.ATTACK_RESULT, DODGEABLE_SOURCE_VALIDATOR);//ATTACK_RESULT 受击状态
     }
 
     /**

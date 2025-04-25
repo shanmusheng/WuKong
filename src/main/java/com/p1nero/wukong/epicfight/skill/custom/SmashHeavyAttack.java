@@ -356,6 +356,7 @@ public class SmashHeavyAttack extends HeavyAttack {
         super.updateContainer(container);
         SkillDataManager dataManager = container.getDataManager();
         if (!container.getExecuter().isLogicalClient()) {
+            //
             ServerPlayerPatch serverPlayerPatch = ((ServerPlayerPatch) container.getExecuter());
             ServerPlayer serverPlayer = serverPlayerPatch.getOriginal();
 
@@ -372,8 +373,8 @@ public class SmashHeavyAttack extends HeavyAttack {
                 if (!dataManager.getDataValue(KEY_PRESSING) || !serverPlayerPatch.hasStamina(Config.CHARGING_STAMINA_CONSUME.get().floatValue() + 0.1F)) {
                     dataManager.setDataSync(IS_CHARGING, false, serverPlayer);
                     dataManager.setData(PROTECT_NEXT_FALL, true);  // 防止重击时的跌落
-                    serverPlayerPatch.playAnimationSynchronized(animations[container.getStack()], 0.0F);  // 播放当前的重击动画
-                    dataManager.setDataSync(STARS_CONSUMED, container.getStack(), serverPlayer);  // 设置星数
+                    serverPlayerPatch.playAnimationSynchronized(animations[container.getStack()], 0.0F);  // 播放当前的重击动画 有几星就几星重击
+                    dataManager.setDataSync(STARS_CONSUMED, container.getStack(), serverPlayer);  // 设置星数 设置消耗星数，方便客户端绘制
                     resetConsumption(container, serverPlayerPatch, true);
                 }
             }
