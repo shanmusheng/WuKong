@@ -162,6 +162,11 @@ public class WukongAnimations {
 
     // 身外身法相关动画
     public static StaticAnimation SHEN_WAI_SHEN_FA; // 身外身法动画
+    //空气相关动画
+    public static StaticAnimation KONGQI_AUTO1; // 轻击1动画
+    public static StaticAnimation KONGQI_AUTO2; // 轻击2动画
+    public static StaticAnimation KONGQI_AUTO3; // 轻击3动画
+    public static StaticAnimation KONGQI_AUTO1_DASH; // 轻击1：冲刺状态下的轻击动画
     @SubscribeEvent
     public static void registerAnimations(AnimationRegistryEvent event) {
         // 注册所有动画到事件中，这样它们就能在游戏中使用
@@ -219,7 +224,75 @@ public class WukongAnimations {
 
         // 下落动画，角色从空中掉落时播放的动画
         FALL = new StaticAnimation(0.15F, true, "biped/fall", biped); // biped/fall是下落动画的路径
+        // 定义空气平a的动画，代表一系列的普通攻击动作
+//        convertTime是过渡时间 一个动画到下一个动画的自动补帧时间
+//        antic 伤害开始时间
+//        contact  伤害停止时间
+//        recovery 后摇停止时间
+//        collider 碰撞箱大小
+        //biped.toolR指定哪一个模型在攻击
+        //path 模型路径 动画路径
+        // 定义轻击（STAFF_AUTO1到STAFF_AUTO5）的动画，代表一系列的普通攻击动作
+        KONGQI_AUTO1_DASH = new BasicAttackAnimation(0.15F, 0.2916F, 0.5000F, 0.5833F, null, biped.toolR, "biped/hunter_dual_dash", biped)
+                .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(0.9F)) // 轻击伤害修正
+                .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.8F)) // 速度修正
+                .addEvents(AnimationProperty.StaticAnimationProperty.ON_BEGIN_EVENTS,
+                        AnimationEvent.create(((livingEntityPatch, staticAnimation, objects) -> {
+                            // 处理开始事件，重置攻击计数器
+                            if (livingEntityPatch instanceof ServerPlayerPatch serverPlayerPatch) {
+                                BasicAttack.setComboCounterWithEvent(ComboCounterHandleEvent.Causal.BASIC_ATTACK_COUNT, serverPlayerPatch, serverPlayerPatch.getSkill(SkillSlots.BASIC_ATTACK), staticAnimation, 1);
+                            }
+                        }), AnimationEvent.Side.SERVER)); // 在服务器端进行计数器重置
 
+        KONGQI_AUTO1 = new BasicAttackAnimation(0.15F, 0.2916F, 0.5000F, 0.5833F, null, biped.toolR, "biped/hunter_dual_auto1", biped)
+                // 创建轻击动画，动画时间为0.15秒，接下来的参数表示该动画的各个时段（如攻击前摇、攻击中段等）的持续时间
+                .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(0.9F))
+                // 设置攻击阶段的伤害修正，0.9倍伤害
+                .addProperty(AnimationProperty.ActionAnimationProperty.CANCELABLE_MOVE, true)
+                // 设置此动画不可取消（在动画执行时玩家无法移动）
+                .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.8F))
+                // 设置播放速度为1.8倍，即加速播放此动画
+                .addEvents(AnimationProperty.StaticAnimationProperty.ON_BEGIN_EVENTS,
+                        AnimationEvent.create(((livingEntityPatch, staticAnimation, objects) ->
+                                livingEntityPatch.playSound(EpicFightSounds.NETHER_STAR_GLITTER, 1, 1)), AnimationEvent.Side.SERVER));
+        // 在动画开始时播放“NETHER_STAR_GLITTER”声音，服务器端执行 布灵布灵的
+
+
+        KONGQI_AUTO2 = new BasicAttackAnimation(0.15F, 0.6667F, 0.875F, 0.875F, null, biped.toolR, "biped/hunter_dual_auto2", biped)
+                // 创建第二个轻击动画，时间和动画路径参数类似于STAFF_AUTO1
+                .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(1.25F))
+                // 设置攻击阶段的伤害修正，伤害提高为1.25倍
+                .addProperty(AnimationProperty.ActionAnimationProperty.CANCELABLE_MOVE, true)
+                // 设置此动画不可取消（在动画执行时玩家无法移动）
+                .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.8F));
+        // 设置播放速度为1.8倍，即加速播放此动画
+
+        KONGQI_AUTO3 = new BasicAttackAnimation(0.15F, "biped/hunter_dual_auto3", biped,
+                // 创建第三个轻击动画，这次使用攻击的不同阶段来定义动作
+                new AttackAnimation.Phase(0.0F, 0.25F, 0.4583F, 0.4583F, 0.4583F, biped.toolR, null)
+                        .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(1.0F))
+                        // 第一个阶段的伤害修正，保持原本的伤害
+                        .addProperty(AnimationProperty.AttackPhaseProperty.MAX_STRIKES_MODIFIER, ValueModifier.setter(4.0F)), // 设置最大攻击次数为4
+                new AttackAnimation.Phase(0.4583F, 0.4583F, 0.7083F, 0.7083F, 1.3333F, biped.toolR, null)
+                        .addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(1.0F))
+                        .addProperty(AnimationProperty.AttackPhaseProperty.MAX_STRIKES_MODIFIER, ValueModifier.setter(4.0F)))
+                // 第二个阶段的伤害修正，保持原本的伤害，并允许最多4次攻击
+                .addProperty(AnimationProperty.ActionAnimationProperty.CANCELABLE_MOVE, true)
+                // 设置此动画不可取消（在动画执行时玩家无法移动）
+                .addProperty(AnimationProperty.StaticAnimationProperty.PLAY_SPEED_MODIFIER, ((dynamicAnimation, livingEntityPatch, v, v1) -> 1.2F))
+                .addEvents(AnimationEvent.TimeStampedEvent.create(1.125F, ((livingEntityPatch, staticAnimation, objects) -> {
+                            LivingEntity self = livingEntityPatch.getOriginal();
+                            // 去掉附魔检查，直接进行雷电效果的触发
+                            if(livingEntityPatch.getTarget() != null && self.level instanceof ServerLevel serverLevel){
+                                EntityType.LIGHTNING_BOLT.spawn(serverLevel, null, null, livingEntityPatch.getTarget().getOnPos(), MobSpawnType.TRIGGERED, false, false);
+                            }
+                        }), AnimationEvent.Side.SERVER)
+                        //  AnimationEvent.TimeStampedEvent.create(0.125F, ((livingEntityPatch, staticAnimation, objects) -> {
+                        //                            LivingEntity self = livingEntityPatch.getOriginal();
+                        //                            // 去掉附魔检查，保留粒子效果 TODO
+                        //                        }), AnimationEvent.Side.SERVER)
+
+                );
         // 以下是闪避动作动画，包括前后左右等不同方向的闪避动作
 
         DODGE_F1 = new WukongDodgeAnimation(0.1F, 0.4F, "biped/dodge/dodge_f1", 0.6F, 0.8F, biped); // 前向闪避1

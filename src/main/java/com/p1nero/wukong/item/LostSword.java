@@ -25,25 +25,11 @@ import yesman.epicfight.world.item.WeaponItem;
 import java.util.List;
 import java.util.function.Consumer;
 
-public class JinGuBang extends WeaponItem implements IAnimatable {
+public class LostSword extends WeaponItem implements IAnimatable {
     public final AnimationFactory factory = GeckoLibUtil.createFactory(this);
-
-    public JinGuBang(Tier tier, int damageIn, float speedIn, Properties builder) {
+    public LostSword(Tier tier, int damageIn, float speedIn, Properties builder) {
         super(tier, damageIn, speedIn, builder);
     }
-
-    @Override
-    public void appendHoverText(@NotNull ItemStack itemStack, @Nullable Level p_41422_, @NotNull List<Component> list, @NotNull TooltipFlag p_41424_) {
-        super.appendHoverText(itemStack, p_41422_, list, p_41424_);
-        list.add(new TextComponent("那块铁，挽着些儿就死，磕着些儿就亡，挨挨儿皮破，擦擦儿筋伤！").copy().withStyle(ChatFormatting.GOLD));
-        list.add(new TextComponent("【凝星制作组赞助】").withStyle(ChatFormatting.GREEN));
-    }
-//不能损坏
-    @Override
-    public boolean isDamageable(ItemStack stack) {
-        return false;
-    }
-
     @Override
     public void initializeClient(Consumer<IItemRenderProperties> consumer) {
         consumer.accept(new IItemRenderProperties() {
@@ -55,6 +41,18 @@ public class JinGuBang extends WeaponItem implements IAnimatable {
                 return renderer;
             }
         });
+    }
+    //描述
+    @Override
+    public void appendHoverText(@NotNull ItemStack itemStack, @Nullable Level p_41422_, @NotNull List<Component> list, @NotNull TooltipFlag p_41424_) {
+        super.appendHoverText(itemStack, p_41422_, list, p_41424_);
+        list.add(new TextComponent("一把来自深邃之地的剑,是 被遗弃了吗").copy().withStyle(ChatFormatting.GOLD));
+        list.add(new TextComponent("【杉木笙赞助】").withStyle(ChatFormatting.GREEN));
+    }
+    //不能损坏
+    @Override
+    public boolean isDamageable(ItemStack stack) {
+        return false;
     }
 
     @Override

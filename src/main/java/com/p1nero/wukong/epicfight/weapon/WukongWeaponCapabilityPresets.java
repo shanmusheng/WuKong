@@ -3,6 +3,7 @@ package com.p1nero.wukong.epicfight.weapon;
 import com.p1nero.wukong.WukongMoveset;
 import com.p1nero.wukong.epicfight.WukongSkillSlots;
 import com.p1nero.wukong.epicfight.WukongStyles;
+//import com.p1nero.wukong.epicfight.animation.KongqiAnimations;
 import com.p1nero.wukong.epicfight.animation.WukongAnimations;
 import com.p1nero.wukong.epicfight.skill.custom.StaffStance;
 import com.p1nero.wukong.epicfight.skill.WukongSkills;
@@ -11,25 +12,30 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import yesman.epicfight.api.animation.LivingMotions;
 import yesman.epicfight.api.forgeevent.WeaponCapabilityPresetRegistryEvent;
+import yesman.epicfight.gameasset.Animations;
+import yesman.epicfight.gameasset.ColliderPreset;
 import yesman.epicfight.gameasset.EpicFightSounds;
 import yesman.epicfight.particle.EpicFightParticles;
 import yesman.epicfight.skill.SkillContainer;
+import yesman.epicfight.skill.SkillSlot;
+import yesman.epicfight.skill.SkillSlots;
+import yesman.epicfight.world.capabilities.EpicFightCapabilities;
 import yesman.epicfight.world.capabilities.entitypatch.player.PlayerPatch;
 import yesman.epicfight.world.capabilities.item.CapabilityItem;
 import yesman.epicfight.world.capabilities.item.WeaponCapability;
+import yesman.epicfight.world.capabilities.item.WeaponCapabilityPresets;
 
 import java.util.function.Function;
 ///WeaponCapabilityPresets （武器能力预设）
 @Mod.EventBusSubscriber(modid = WukongMoveset.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class WukongWeaponCapabilityPresets {
-
     // STAFF: Staff 武器的能力构建器
     public static final Function<Item, CapabilityItem.Builder> STAFF = (item) ->
             (CapabilityItem.Builder) WeaponCapability.builder().category(WukongWeaponCategories.WK_STAFF)
                     // 选择武器样式（劈棍、戳棍、立棍等），根据玩家的当前技能选择
                     .styleProvider((livingEntityPatch) -> {
                         if (livingEntityPatch instanceof PlayerPatch<?> playerPatch) {
-                            // 获取玩家的Staff技能槽
+                            // 获取玩家的Staff技能槽  livingEntityPatch  如果当前是玩家获取玩家的技能(棍势)是什么
                             SkillContainer container = playerPatch.getSkill(WukongSkillSlots.STAFF_STYLE);
                             if (container.getSkill() instanceof StaffStance style) {
                                 return style.getStyle(container); // 返回选定的武器样式
@@ -44,16 +50,16 @@ public class WukongWeaponCapabilityPresets {
                     .comboCancel((style) -> false)  // 设置是否取消连击
                     .passiveSkill(WukongSkills.STAFF_SPIN)  // 设置被动技能为 StaffSpin
                     // 劈棍（Smash Style）连击动画
-                    .newStyleCombo(WukongStyles.SMASH,
+                    .newStyleCombo(WukongStyles.SMASH,//newStyleCombo新的连招(普攻)
                             WukongAnimations.STAFF_AUTO1,
                             WukongAnimations.STAFF_AUTO2,
                             WukongAnimations.STAFF_AUTO3,
-//                            WukongAnimations.STAFF_AUTO4,
-//                            WukongAnimations.STAFF_AUTO5,
-                            WukongAnimations.STAFF_AUTO1_DASH,
-                            WukongAnimations.JUMP_ATTACK_LIGHT)
+                            WukongAnimations.STAFF_AUTO4,
+                            WukongAnimations.STAFF_AUTO5,
+                            WukongAnimations.STAFF_AUTO1_DASH,//冲刺
+                            WukongAnimations.JUMP_ATTACK_LIGHT)//跳劈
                     .innateSkill(WukongStyles.SMASH, (itemstack) -> WukongSkills.SMASH_HEAVY_ATTACK)  // 设置劈棍的固有技能
-                    // 设置不同动作下的动画
+                    // 设置不同动作下的动画   样式 动作 动画
                     .livingMotionModifier(WukongStyles.SMASH, LivingMotions.IDLE, WukongAnimations.IDLE)
                     .livingMotionModifier(WukongStyles.SMASH, LivingMotions.WALK, WukongAnimations.RUN)
                     .livingMotionModifier(WukongStyles.SMASH, LivingMotions.CHASE, WukongAnimations.DASH)
@@ -143,14 +149,32 @@ public class WukongWeaponCapabilityPresets {
                     .livingMotionModifier(WukongStyles.THRUST, LivingMotions.WALK, WukongAnimations.WALK)
                     .livingMotionModifier(WukongStyles.THRUST, LivingMotions.CHASE, WukongAnimations.RUN)
                     .livingMotionModifier(WukongStyles.THRUST, LivingMotions.RUN, WukongAnimations.RUN);
+    public static final Function<Item, CapabilityItem.Builder> SWORDING = (item) ->
+            (CapabilityItem.Builder) WeaponCapability.builder().category(WukongWeaponCategories.KQ_SWORD)
+                    .category(CapabilityItem.WeaponCategories.SWORD)
+                    .styleProvider((playerpatch) -> WukongStyles.SWORDING)
+                    .collider(ColliderPreset.LONGSWORD)
+                    .hitSound(EpicFightSounds.BLADE_HIT)
+                    .newStyleCombo(WukongStyles.SWORDING, WukongAnimations.KONGQI_AUTO1, WukongAnimations.KONGQI_AUTO2, WukongAnimations.KONGQI_AUTO3, WukongAnimations.KONGQI_AUTO1_DASH,WukongAnimations.KONGQI_AUTO1_DASH)
+//                    .newStyleCombo(CapabilityItem.Styles.TWO_HAND, Animations.SWORD_DUAL_AUTO1, Animations.SWORD_DUAL_AUTO2, Animations.SWORD_DUAL_AUTO3, Animations.SWORD_DUAL_DASH, Animations.SWORD_DUAL_AIR_SLASH)
+//                    .newStyleCombo(CapabilityItem.Styles.MOUNT, Animations.SWORD_MOUNT_ATTACK)
+//                    .specialAttack(CapabilityItem.Styles.ONE_HAND, KongQiStyles.SWORD)
+//                    .specialAttack(CapabilityItem.Styles.TWO_HAND, Skills.DANCING_EDGE)
+                    .livingMotionModifier(CapabilityItem.Styles.ONE_HAND, LivingMotions.BLOCK, Animations.SWORD_GUARD)
+                    .livingMotionModifier(CapabilityItem.Styles.TWO_HAND, LivingMotions.BLOCK, Animations.SWORD_DUAL_GUARD)
+                    .weaponCombinationPredicator((entitypatch) -> EpicFightCapabilities.getItemStackCapability(entitypatch.getOriginal().getOffhandItem()).getWeaponCategory() == CapabilityItem.WeaponCategories.SWORD);
 
     // 注册武器能力到事件中
+    //监听这个事件将武器能力预设（Staff, Smash, Thrust）注册到事件类型条目中
+    //第一步拥有一个武器类型
+    //第二部要使用 需要应用到数据包
     @SubscribeEvent
     public static void register(WeaponCapabilityPresetRegistryEvent event) {
         // 将武器能力预设（Staff, Smash, Thrust）注册到事件类型条目中
         event.getTypeEntry().put("wk_staff", STAFF);
         event.getTypeEntry().put("smash_only", SMASH_ONLY);
         event.getTypeEntry().put("thrust_only", THRUST_ONLY);
+        event.getTypeEntry().put("kq_sword", SWORDING);
     }
 
 }

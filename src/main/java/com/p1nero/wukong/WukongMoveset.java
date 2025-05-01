@@ -9,6 +9,7 @@ import com.p1nero.wukong.epicfight.WukongDamageSourceTags;
 import com.p1nero.wukong.epicfight.WukongSkillCategories;
 import com.p1nero.wukong.epicfight.WukongSkillSlots;
 import com.p1nero.wukong.epicfight.animation.WukongAnimations;
+//import com.p1nero.wukong.epicfight.skill.KongqiSkills;
 import com.p1nero.wukong.epicfight.skill.WukongSkills;
 import com.p1nero.wukong.epicfight.skill.custom.CoolDownSkill;
 import com.p1nero.wukong.epicfight.skill.custom.SmashHeavyAttack;
@@ -16,6 +17,7 @@ import com.p1nero.wukong.epicfight.skill.custom.StaffPassive;
 import com.p1nero.wukong.epicfight.skill.custom.ThrustHeavyAttack;
 import com.p1nero.wukong.epicfight.skill.custom.magicarts.CloudStepSkill;
 import com.p1nero.wukong.epicfight.skill.custom.magicarts.ShenWaiShenFaSkill;
+//import com.p1nero.wukong.epicfight.weapon.KongQiWeaponCategories;
 import com.p1nero.wukong.epicfight.weapon.WukongWeaponCategories;
 import com.p1nero.wukong.item.WukongItems;
 import com.p1nero.wukong.network.PacketHandler;
@@ -50,13 +52,13 @@ public class WukongMoveset {
     public WukongMoveset() {
         // 加载伤害源标签（WukongDamageSourceTags）
         SourceTag.ENUM_MANAGER.loadPreemptive(WukongDamageSourceTags.class);
-        // 加载技能类别标签（WukongSkillCategories）
+        // 加载技能类别标签（WukongSkillCategories）//注册技能类别
         SkillCategory.ENUM_MANAGER.loadPreemptive(WukongSkillCategories.class);
-        // 加载技能槽标签（WukongSkillSlots）
+        // 加载技能槽标签（WukongSkillSlots）//注册技能槽
         SkillSlot.ENUM_MANAGER.loadPreemptive(WukongSkillSlots.class);
-        // 加载武器类别标签（WukongWeaponCategories）
+        // 加载武器类别标签（WukongWeaponCategories）//注册武器种类
         WeaponCategory.ENUM_MANAGER.loadPreemptive(WukongWeaponCategories.class);
-
+//        WeaponCategory.ENUM_MANAGER.loadPreemptive(KongQiWeaponCategories.class);
         // 获取模组的事件总线
         IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
 
@@ -80,10 +82,11 @@ public class WukongMoveset {
 
         // 注册技能
         WukongSkills.registerSkills();
-
+//        KongqiSkills.registerSkills();
         // 注册Forge的事件总线，用于监听玩家技能构建等事件
         IEventBus fg_bus = MinecraftForge.EVENT_BUS;
         fg_bus.addListener(WukongSkills::BuildSkills);  // 构建技能
+//        fg_bus.addListener(KongqiSkills::BuildSkills);  // 构建技能
         fg_bus.addListener(WukongAnimations::onPlayerTick);  // 每次玩家更新时调用动画更新
         fg_bus.addListener(WukongMoveset::onPlayerLoggedIn);  // 玩家登录时的处理
         GeckoLib.initialize();  // 初始化GeckoLib库，用于处理动画等

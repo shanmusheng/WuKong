@@ -20,11 +20,11 @@ public class KongqiSkills {
 
     public static void registerSkills() {
         // 注册 Skill.createBuilder()是技能构造器 决定了 setCategory技能类型(也影响技能书的小图标):WEAPON_PASSIVE 武器被动技能   setResource资源消耗:NONE
-        SkillManager.register(StaffPassive::new, Skill.createBuilder().setResource(Skill.Resource.NONE).setCategory(SkillCategories.WEAPON_PASSIVE), KongQiMoveset.MOD_ID, "shanmu");
+        SkillManager.register(StaffPassive::new, Skill.createBuilder().setResource(Skill.Resource.NONE).setCategory(SkillCategories.WEAPON_PASSIVE), WukongMoveset.MOD_ID, "shanmu");
 
          }
     public static void BuildSkills(SkillBuildEvent event) {
-        SMASH_STYLE_SHAN_MU = event.build(KongQiMoveset.MOD_ID, "shanmu");
+        SMASH_STYLE_SHAN_MU = event.build(WukongMoveset.MOD_ID, "shanmu");
 
     }
 

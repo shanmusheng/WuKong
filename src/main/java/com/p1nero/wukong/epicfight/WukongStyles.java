@@ -3,7 +3,7 @@ package com.p1nero.wukong.epicfight;
 import yesman.epicfight.world.capabilities.item.Style;
 
 public enum WukongStyles implements Style {
-
+    SWORDING(false),
     SMASH(false),
     THRUST(false),
     PILLAR(false);

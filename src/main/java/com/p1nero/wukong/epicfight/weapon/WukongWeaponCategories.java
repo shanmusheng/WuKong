@@ -6,6 +6,7 @@ import yesman.epicfight.world.capabilities.item.WeaponCategory;
 
 public enum WukongWeaponCategories implements WeaponCategory {
     WK_STAFF,
+    KQ_SWORD,
     RED_TIDE;
     private WukongWeaponCategories(){
         this.id = WeaponCategory.ENUM_MANAGER.assign(this);
